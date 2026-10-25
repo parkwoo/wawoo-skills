@@ -1,9 +1,9 @@
 ---
-description: 自己迭代（retro → pdca-cycle → self-review → plan-md）
+description: 自己改善（retro → pdca-cycle → self-review → plan-md）
 agent: project-manager
 ---
 
-# Self Improve（自己迭代）
+# Self Improve（自己改善）
 
 1. `AGENTS.md` を読み、`memory` を想起（過去の決定・失敗・回避策）。
 2. **`retro`**：この反復の**事実**（何をした・何が起きた・期待との差）を振り返る。

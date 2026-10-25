@@ -63,8 +63,9 @@ python3 mcp/test_server.py           # MCP スモーク
 .kilo/{skills,agents,commands,CAPABILITIES.md}
 .cursor/{rules,mcp.json}
 mcp/{server.py,test_server.py,README.md}
-scripts/{gen_capabilities.py,validate_assets.py,readiness.json}
-docs/{USAGE.md,VERSIONING.md,memory}
+scripts/{gen_capabilities.py,validate_assets.py,readiness.json,bootstrap-internal.sh}
+docs/{USAGE.md,VERSIONING.md,PUBLICATION.md,memory}
+internal.example/   … メンテナ用テンプレ（実体は internal/・git 外）
 LICENSES/
 AGENTS.md
 kilo.json
@@ -103,6 +104,6 @@ kilo.json
 
 ## バージョン
 
-- 現在：**0.3.4**（`VERSION`）
+- 現在：**0.4.0**（`VERSION`）
 - 変更履歴：`CHANGELOG.md`
 - 版の付け方・リリース手順：`docs/VERSIONING.md`

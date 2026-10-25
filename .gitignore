@@ -17,3 +17,15 @@ node_modules/
 
 # kilo runtime
 .kilo/worktrees/
+
+# 内部用（公開 git 外）。テンプレ: internal.example/ → scripts/bootstrap-internal.sh
+/internal/
+
+# 旧内部パス（移行前のローカル残骸も無視）
+/docs/MAINTAINER.md
+/docs/audit/
+/scripts/e2e/
+/docker/e2e/
+/scripts/audit_license_headers.py
+/scripts/audit_skill_quality.py
+/scripts/split_skill_reference.py

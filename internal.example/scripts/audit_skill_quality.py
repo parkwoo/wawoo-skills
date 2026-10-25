@@ -6,9 +6,9 @@ import re
 from datetime import date
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 SKILLS = ROOT / ".kilo" / "skills"
-OUT = ROOT / "docs" / "audit" / "SKILL-QUALITY-REVIEW.md"
+OUT = ROOT / "internal" / "docs" / "audit" / "SKILL-QUALITY-REVIEW.md"
 
 GATE_PATTERNS = re.compile(
     r"(ゲート|承認|approval|human sign-off|Not a substitute|advisory|法的判断)",
@@ -140,7 +140,7 @@ def main() -> None:
         "",
         "## Kilo 実機 E2E",
         "",
-        "手順・受入ゲート: **`docs/audit/KILO-E2E.md`**。",
+        "手順・受入ゲート: **`internal/docs/audit/KILO-E2E.md`**。",
         "",
         "| 項目 | 結果 |",
         "|---|---|",
@@ -150,7 +150,7 @@ def main() -> None:
         "## 改善 backlog（優先）",
         "1. ~~OpenDesign 7 skill の LICENSE 同梱~~ → **対応済**（各ディレクトリ `LICENSE.txt` + `NOTICE.txt`）。",
         "2. ~~大型 skill の references 分割~~ → **対応済**（`ask-matt`・`wayfinder`・`design-brief`・`writing-for-agents` + `imagegen-frontend-mobile`）。",
-        "3. ~~Kilo 実機 E2E~~ → 手順 **`docs/audit/KILO-E2E.md`**（実機記録は未記入）。",
+        "3. ~~Kilo 実機 E2E~~ → 手順 **`internal/docs/audit/KILO-E2E.md`**（実機記録は未記入）。",
         "4. 残: 予算超過 skill の追加分割（`diagnosing-bugs`・`code-review` 等）。",
         "5. 残: `security-review` に findings テンプレ（重大度・再現・修正・検証）を追加。",
         "",

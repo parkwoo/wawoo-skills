@@ -2,6 +2,11 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+## [0.4.2] - 2026-10-25
+
+### 追加
+- `docs/METHODOLOGY.md` — Skill・Agent・ワークフロー方法論（問題定義・三層・WARO・ゲート）。
+
 ## [0.4.1] - 2026-10-25
 
 ### 変更

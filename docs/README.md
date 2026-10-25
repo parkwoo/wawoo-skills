@@ -2,6 +2,7 @@
 
 | 文書 | 内容 |
 |---|---|
+| [METHODOLOGY.md](./METHODOLOGY.md) | Skill・Agent・ワークフローの方法論（なぜ三層か・WARO） |
 | [USAGE.md](./USAGE.md) | Kilo／Cursor／MCP での使い方、制約、コンテキスト予算 |
 | [VERSIONING.md](./VERSIONING.md) | バージョン管理（SemVer・CHANGELOG・タグ） |
 | [PUBLICATION.md](./PUBLICATION.md) | 公開（git 管理）と内部資産の区分 |

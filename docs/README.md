@@ -1,5 +1,7 @@
 # ドキュメント
 
+利用者向けは [README.md](../README.md)。**メンテナ・実測**は [MAINTAINER.md](./MAINTAINER.md)。
+
 | 文書 | 内容 |
 |---|---|
 | [USAGE.md](./USAGE.md) | Kilo／Cursor／MCP での使い方、制約、コンテキスト予算 |

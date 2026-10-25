@@ -55,11 +55,7 @@ python3 mcp/test_server.py   # スモークテスト
 python3 scripts/validate_assets.py   # 資産検証（name=dir・参照・重複・JSON）
 python3 scripts/gen_capabilities.py  # カタログ再生成（手編集しない）
 python3 mcp/test_server.py           # MCP スモーク
-./scripts/e2e/smoke.sh               # 上記まとめ（API キー不要）
 ```
-
-CLI 実測環境（Kilo CLI / Cursor `agent` / Docker）: `docs/audit/CLI-E2E-ENV.md`  
-Docker Compose V2: `./scripts/e2e/install-compose-v2.sh` → `./scripts/e2e/compose.sh run --rm smoke`
 
 ## ディレクトリ
 
@@ -107,6 +103,6 @@ kilo.json
 
 ## バージョン
 
-- 現在：**0.1.0**（`VERSION`）
+- 現在：**0.3.4**（`VERSION`）
 - 変更履歴：`CHANGELOG.md`
 - 版の付け方・リリース手順：`docs/VERSIONING.md`

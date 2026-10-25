@@ -46,6 +46,7 @@ Tools：`capabilities`・`skill_search`・`skill_get`・`workflow_get`・`agent_
 ## 6. コンテキスト予算
 - 契約 ≤500tok／カタログ ≤1k／Workflow ≤1.5k／**Skill 1 個 ≤2〜4KB**／Memory top-5。
 - 段階的開示：全部を一度に渡さない。
+- 予算例外：`imagegen-frontend-mobile` は入口 `SKILL.md` のみ先に読み、詳細は `references/mobile-image-direction.md` を必要時だけ開く。
 
 ## 7. 前提が必要なスキル（3）
 `to-spec`・`to-tickets`・`triage` は issue tracker が必要。初回に `setup-matt-pocock-skills` を実行。

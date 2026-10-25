@@ -17,7 +17,7 @@ alwaysApply: true
 | **`/feature-delivery`** | 機能を discovery → design → implement → test → review → approval で届ける |
 | **`/ui-delivery`** | UI 変更を設計 → 実装 → アクセシビリティ/品質確認 → 承認で届ける |
 | **`/design-review`** | UI の設計レビュー（`design-review`→`web-design-guidelines`→`accessibility-audit`） |
-| **`/research`** | 调研 → 意思決定（`research`→`research-decision-room`→`product-discovery`→`to-spec`/`plan-md`） |
+| **`/research`** | 調査 → 意思決定（`research`→`research-decision-room`→`product-discovery`→`to-spec`/`plan-md`） |
 | **`/market-plan`** | 市場調査→戦略→計画（`research`→`research-decision-room`→`product-discovery`→`marketing-psychology`→`plan-md`） |
 | **`/compliance-review`** | 法務・プライバシー・セキュリティのゲート（`compliance-legal`→`privacy-review`→`security-review`→`release-readiness`） |
 | **`/release-review`** | リリース前の準備・確認（版・CHANGELOG・法務/NOTICE・デプロイ・ロールバック） |
@@ -25,7 +25,7 @@ alwaysApply: true
 | **`/sprint-plan`** | スプリント計画（`wayfinder`→`to-tickets`→優先度/見積/容量→`plan-md`） |
 | **`/status-report`** | 進捗・状況報告（`triage`/`to-tickets`→進捗・リスク→`plan-md`） |
 | **`/self-review`** | 自己修正（`code-review`→`code-skeptic`→`diagnosing-bugs`/`tdd`→`memory`） |
-| **`/self-improve`** | 自己迭代（`retro`→`pdca-cycle`→`plan-md`→`memory`） |
+| **`/self-improve`** | 自己改善（`retro`→`pdca-cycle`→`plan-md`→`memory`） |
 | **`/deck`** | 提案・計画デッキ（`research`→`marketing-psychology`→`slides`。pptx 任意） |
 
 # エージェント役割（Kilo agents 由来）

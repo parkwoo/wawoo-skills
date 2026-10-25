@@ -32,7 +32,7 @@
 | `grill-with-docs` | ✅ | A relentless interview to sharpen a plan or design, which also creates docs (ADR's and glossary) as we go. | `.kilo/skills/grill-with-docs/SKILL.md` |
 | `grilling` | ✅ | Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any '… | `.kilo/skills/grilling/SKILL.md` |
 | `handoff` | ✅ | Compact the current conversation into a handoff document for another agent to pick up. | `.kilo/skills/handoff/SKILL.md` |
-| `imagegen-frontend-mobile` | ✅ | Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Designed for iOS, Android, an… | `.kilo/skills/imagegen-frontend-mobile/SKILL.md` |
+| `imagegen-frontend-mobile` | ✅ | モバイルアプリ向けの高品質画像コンセプト用スキル。iOS/Android 向け画面・フローのプロンプトとビジュアル指針を提供する（コードは書かない）。詳細な英語プロンプト集は references に分離。 | `.kilo/skills/imagegen-frontend-mobile/SKILL.md` |
 | `implement` | ✅ | "Implement a piece of work based on a spec or set of tickets." | `.kilo/skills/implement/SKILL.md` |
 | `implement-spec` | ✅ | "Implement the result of /to-spec and /to-tickets in code." | `.kilo/skills/implement-spec/SKILL.md` |
 | `incident-debugging` | ✅ | Diagnose a software incident or high-impact defect through reproduction, evidence collection, fault isolation, mitigation, verifi… | `.kilo/skills/incident-debugging/SKILL.md` |
@@ -101,8 +101,8 @@
 | `/incident-response` | Investigate and safely resolve an incident or urgent regression with evidence and follow-up. | `.kilo/commands/incident-response.md` |
 | `/market-plan` | 市場調査 → 戦略 → 計画（research → research-decision-room → product-discovery → marketing-psychology → plan-md）。提案デッキは任意（`slides` は Markdo… | `.kilo/commands/market-plan.md` |
 | `/release-review` | Prepare a release-review package with legal/compliance, privacy, version, security, test, artifact, remote, and rollback evidence… | `.kilo/commands/release-review.md` |
-| `/research` | 调研 → 意思決定（research → product-discovery → to-spec/to-tickets） | `.kilo/commands/research.md` |
-| `/self-improve` | 自己迭代（retro → pdca-cycle → self-review → plan-md） | `.kilo/commands/self-improve.md` |
+| `/research` | 調査 → 意思決定（research → product-discovery → to-spec/to-tickets） | `.kilo/commands/research.md` |
+| `/self-improve` | 自己改善（retro → pdca-cycle → self-review → plan-md） | `.kilo/commands/self-improve.md` |
 | `/self-review` | 自己修正（code-review → code-skeptic → diagnosing-bugs/tdd → 修正 → 検証） | `.kilo/commands/self-review.md` |
 | `/sprint-plan` | スプリント計画（wayfinder → to-tickets → 優先度/見積/容量 → plan-md） | `.kilo/commands/sprint-plan.md` |
 | `/status-report` | 進捗・状況報告（triage/to-tickets → 進捗・リスク・次アクション → plan-md） | `.kilo/commands/status-report.md` |

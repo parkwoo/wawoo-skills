@@ -2,6 +2,15 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+## [0.3.3] - 2026-10-25
+
+### 追加
+- `scripts/e2e/install-compose-v2.sh`（`docker compose` プラグイン導入）
+- `scripts/e2e/compose.sh`（V2 優先ラッパー）
+
+### 変更
+- CLI-E2E 手順に Compose V2 トラブルシュートを追記
+
 ## [0.3.2] - 2026-10-25
 
 ### 変更

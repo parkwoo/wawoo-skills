@@ -8,7 +8,7 @@
 |---|---|---|---|
 | **Skills For Real Engineers**（Matt Pocock） | 21 | **MIT** | `LICENSES/skills-for-real-engineers-MIT.txt` |
 | **Kilo 組み込み** | 16 | **MIT**（frontmatter に明記） | `accessibility-audit` 等 |
-| **OpenDesign** | 10 | **Apache-2.0** | `LICENSES/open-design-Apache-2.0.txt` |
+| **OpenDesign** | 10 | **Apache-2.0** | `LICENSES/open-design-Apache-2.0.txt`（各 skill ディレクトリに `LICENSE.txt` + `NOTICE.txt`） |
 | **本リポジトリ** | 8 | **MIT** | `deployment`・`compliance-legal`・`privacy-review`・`changelog`・`memory`・`slides`・`screenshots-marketing`・`plan-md` |
 
 ## Agents

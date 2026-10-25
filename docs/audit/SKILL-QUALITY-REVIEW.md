@@ -10,17 +10,13 @@
 | 指標 | 値 |
 |---|---|
 | skill 数 | 55 |
-| 予算超過（>4KB、入口 SKILL のみ） | 15 |
+| 予算超過（>4KB、入口 SKILL のみ） | 11 |
 | 法務/セキュリティでゲート語なし | 0 |
 
 ## 予算超過（入口 SKILL.md）
 
 | skill | bytes | 備考 |
 |---|---:|---|
-| `design-brief` | 13805 | ルーター/長文 — 段階的開示を推奨 |
-| `ask-matt` | 12594 | ルーター/長文 — 段階的開示を推奨 |
-| `wayfinder` | 12380 | ルーター/長文 — 段階的開示を推奨 |
-| `writing-for-agents` | 10886 | ルーター/長文 — 段階的開示を推奨 |
 | `diagnosing-bugs` | 8664 | ルーター/長文 — 段階的開示を推奨 |
 | `setup-matt-pocock-skills` | 6978 | ルーター/長文 — 段階的開示を推奨 |
 | `code-review` | 6670 | ルーター/長文 — 段階的開示を推奨 |
@@ -40,7 +36,7 @@
 | `accessibility-audit` | 1277 | — | — | — |
 | `api-contract-design` | 1160 | — | — | — |
 | `architecture-decision` | 1142 | ✅ | — | — |
-| `ask-matt` | 12594 | — | ✅ | — |
+| `ask-matt` | 918 | — | — | — |
 | `brand-guidelines` | 1384 | — | — | — |
 | `change-readiness` | 2501 | ✅ | — | — |
 | `changelog` | 1251 | ✅ | ✅ | — |
@@ -50,7 +46,7 @@
 | `database-change-safety` | 1214 | ✅ | — | — |
 | `dependency-upgrade` | 1222 | — | — | — |
 | `deployment` | 1339 | ✅ | ✅ | — |
-| `design-brief` | 13805 | — | ✅ | — |
+| `design-brief` | 1775 | ✅ | — | — |
 | `design-md` | 1174 | — | — | — |
 | `design-review` | 1204 | — | — | — |
 | `diagnosing-bugs` | 8664 | — | ✅ | — |
@@ -88,10 +84,10 @@
 | `to-spec` | 3043 | — | — | — |
 | `to-tickets` | 5812 | — | — | — |
 | `triage` | 6558 | — | ✅ | — |
-| `wayfinder` | 12380 | — | ✅ | — |
+| `wayfinder` | 1002 | ✅ | — | — |
 | `web-design-guidelines` | 2418 | — | — | — |
 | `web-experience-design` | 3533 | ✅ | — | — |
-| `writing-for-agents` | 10886 | — | ✅ | — |
+| `writing-for-agents` | 610 | ✅ | — | — |
 
 ## 法務・セキュリティスキルの実効性（人レビュー）
 
@@ -122,13 +118,16 @@
 
 ## Kilo 実機 E2E
 
+手順・受入ゲート: **`docs/audit/KILO-E2E.md`**。
+
 | 項目 | 結果 |
 |---|---|
-| Kilo CLI / Kilo Code の実行 | **未実施**（この環境に `kilo` コマンドなし） |
+| Kilo CLI / Kilo Code の実行 | **未実施**（開発環境に `kilo` コマンドなし） |
 | MCP stdio スモーク | **合格**（`python3 mcp/test_server.py`） |
-| 推奨手動 E2E | 1) 本 repo を Kilo で開く 2) `/feature-delivery` 3) MCP `skill_search`→`skill_get` 4) `memory_save` 拒否テスト |
 
 ## 改善 backlog（優先）
-1. `privacy-review` の設計パスをプレースホルダ（`docs/security/` 等）に一般化。
-2. 予算超過 skill の `references/` 分割（`ask-matt`・`wayfinder` 等）。
-3. `security-review` に findings テンプレ（重大度・再現・修正・検証）を追加。
+1. ~~OpenDesign 7 skill の LICENSE 同梱~~ → **対応済**（各ディレクトリ `LICENSE.txt` + `NOTICE.txt`）。
+2. ~~大型 skill の references 分割~~ → **対応済**（`ask-matt`・`wayfinder`・`design-brief`・`writing-for-agents` + `imagegen-frontend-mobile`）。
+3. ~~Kilo 実機 E2E~~ → 手順 **`docs/audit/KILO-E2E.md`**（実機記録は未記入）。
+4. 残: 予算超過 skill の追加分割（`diagnosing-bugs`・`code-review` 等）。
+5. 残: `security-review` に findings テンプレ（重大度・再現・修正・検証）を追加。

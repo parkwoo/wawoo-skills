@@ -60,15 +60,31 @@ AGENTS.md
 kilo.json
 ```
 
-## ライセンス・帰属
+## ライセンスと帰属（かんたん説明）
 
-- 本リポジトリの新規部分は **MIT**（`LICENSE`）。
-- 同梱スキルは複数由来（MIT／Apache-2.0）。詳細は `.kilo/skills/ATTRIBUTION.md` と `LICENSES/`。
-- **ライセンス未確認の第三者資産は同梱していない**（Marketplace business 3 件・`fal-gen` は除外）。
-- **無保証（AS IS）**。第三者の権利・利用規約は、利用者が必要に応じて確認する。
+このリポジトリには、**自分で書いたもの**と、**他の人が公開しているもの**が混ざっています。
 
-## 注意
+| 種類 | ライセンス | 場所 |
+|---|---|---|
+| このリポジトリで新しく書いた skill／agent／command／MCP | **MIT**（自由に使える。著作権表示を残す） | `LICENSE` |
+| skills-main 由来の skill（21 件） | **MIT** | `LICENSES/skills-main-MIT.txt` |
+| OpenDesign 由来の skill（10 件） | **Apache-2.0**（著作権表示と NOTICE を残す） | `LICENSES/open-design-Apache-2.0.txt` |
+| Kilo Marketplace 由来の agent（6 件） | **Apache-2.0** | `LICENSES/kilo-marketplace-*` |
+| その他（Kilo 組み込み skill 等） | 各ファイルの frontmatter／MIT | `.kilo/skills/ATTRIBUTION.md` |
 
-- `imagegen-frontend-mobile` はプロンプト指針（画像生成ツールは同梱しない）。
-- `to-spec`/`to-tickets`/`triage` は issue tracker 設定が必要。
-- 秘密（API キー・トークン）をコミットしない。
+- どのファイルがどこ由来かは `.kilo/skills/ATTRIBUTION.md` に一覧があります。
+- **ライセンスが確認できないものは入れていません**（Marketplace の business 3 件と `fal-gen` は除外）。
+- 保証はありません（**AS IS**）。使う前に、必要なら各ライセンスを確認してください。
+
+## 注意（最初に読む）
+
+- **画像生成は付属していません**：`imagegen-frontend-mobile` は「どんな画像を作るか」の**指示文（プロンプト）だけ**です。実際の生成は OpenAI Images／fal／社内ツール等を別途使います。無い場合は**プロンプトのみ**納品します。
+- **3 つの skill は issue tracker が必要**：`to-spec`・`to-tickets`・`triage` は GitHub Issues 等の tracker を前提にしています。初回に `setup-matt-pocock-skills` を実行して設定してください。
+- **秘密を書かない**：API キー・トークン・`.env` の中身をコミットしないでください。`memory_save` は秘密を拒否します。
+- **Cursor は slash command／agent 非対応**：`AGENTS.md`＋`.cursor/rules`＋MCP＋`@file` で使います（`docs/plans/CURSOR-SETUP.md`）。
+
+## バージョン
+
+- 現在：**0.1.0**（`VERSION`）
+- 変更履歴：`CHANGELOG.md`
+- 版の付け方・リリース手順：`docs/plans/VERSIONING.md`

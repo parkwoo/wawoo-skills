@@ -84,7 +84,19 @@ docs/                      … 設計・運用手順・記憶
 
 ---
 
-## 9. 更新履歴
+## 9. バージョン管理
+
+- **`VERSION`**（リポジトリ直下）が唯一の正本。**SemVer**（`MAJOR.MINOR.PATCH`）。
+- 変更時は **`CHANGELOG.md`** を更新し、`VERSION` を上げる。
+  - 削除・改名・MCP ツールの破壊的変更 = **MAJOR**
+  - skill/agent/command の追加・後方互換の追加 = **MINOR**
+  - 誤字・文言・内部リファクタ = **PATCH**
+- リリース時は `v<version>` タグを付ける（例 `v0.1.0`）。
+- 詳細：`docs/plans/VERSIONING.md`。
+
+---
+
+## 10. 更新履歴
 
 | 日付 | 内容 |
 |---|---|

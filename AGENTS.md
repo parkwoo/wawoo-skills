@@ -46,7 +46,7 @@ docs/                      … 設計・運用手順・記憶
 
 - 契約 ≤500tok／カタログ ≤1k／Workflow ≤1.5k／**Skill 1 個 ≤2〜4KB**（例外あり）／Memory top-5。
 - **段階的開示**：全部を一度に渡さない。Reference は必要時のみ。
-- **予算例外**：`imagegen-frontend-mobile` は入口 `SKILL.md` のみ先に読み、詳細は `references/mobile-image-direction.md` を必要時だけ開く（`docs/audit/SKILL-QUALITY-REVIEW.md`）。
+- **予算例外**（入口 `SKILL.md` のみ先読み、詳細は `references/`）：`imagegen-frontend-mobile`・`ask-matt`・`wayfinder`・`design-brief`・`writing-for-agents`（一覧は `docs/audit/SKILL-QUALITY-REVIEW.md`）。
 - 大きいツール結果は**要約＋ID**。矛盾を置かない（SSOT 1 つ）。
 
 ---

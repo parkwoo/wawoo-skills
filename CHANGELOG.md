@@ -2,6 +2,12 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+## [0.3.1] - 2026-10-25
+
+### 追加
+- CLI 実測環境: `docker/e2e/`、`scripts/e2e/`、`docs/audit/CLI-E2E-ENV.md`
+- `.env.example`、`.cursor/cli.json.example`（Cursor Agent 読み取り専用用）
+
 ## [0.3.0] - 2026-10-25
 
 ### 追加

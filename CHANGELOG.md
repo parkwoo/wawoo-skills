@@ -2,6 +2,11 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+## [0.3.4] - 2026-10-25
+
+### 変更
+- 公開 README からメンテナ向け E2E/Docker 記述を除去し `docs/MAINTAINER.md` に移動。
+
 ## [0.3.3] - 2026-10-25
 
 ### 追加

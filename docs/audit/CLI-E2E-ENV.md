@@ -24,9 +24,26 @@ cd /path/to/wawoo-skills
 
 ### 2. Docker（L1 のみ）
 
+**Compose V2**（`docker compose`、ハイフン無し）が必要。`docker: unknown command: docker compose` のとき:
+
 ```bash
+./scripts/e2e/install-compose-v2.sh   # ~/.docker/cli-plugins に V2 プラグイン
+docker compose version
+```
+
+実行:
+
+```bash
+./scripts/e2e/compose.sh run --rm smoke
+# または
 docker compose -f docker/e2e/docker-compose.yml run --rm smoke
 ```
+
+| 症状 | 対処 |
+|---|---|
+| `unknown command: docker compose` | `install-compose-v2.sh` |
+| `unknown shorthand flag: 'f' in -f` | 古い `docker` が `compose` を解釈していない → 上と同じ |
+| `docker-compose` だけある | V2 standalone でも可。`compose.sh` がフォールバック |
 
 ### 3. Kilo CLI
 

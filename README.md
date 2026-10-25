@@ -126,6 +126,6 @@ kilo.json
 
 ## バージョン
 
-- 現在：**0.4.3**（`VERSION`）
+- 現在：**0.4.4**（`VERSION`）
 - 変更履歴：`CHANGELOG.md`
 - 版の付け方・リリース手順：`docs/VERSIONING.md`

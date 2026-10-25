@@ -5,6 +5,8 @@
 | [USAGE.md](./USAGE.md) | Kilo／Cursor／MCP での使い方、制約、コンテキスト予算 |
 | [VERSIONING.md](./VERSIONING.md) | バージョン管理（SemVer・CHANGELOG・タグ） |
 | [memory/INDEX.md](./memory/INDEX.md) | 記憶の索引（テンプレート） |
+| [audit/SKILL-QUALITY-REVIEW.md](./audit/SKILL-QUALITY-REVIEW.md) | 全 skill 品質・法務/セキュリティ実効性 |
+| [audit/LICENSE-HEADER-AUDIT.md](./audit/LICENSE-HEADER-AUDIT.md) | 第三者 skill ライセンス表記の棚卸し |
 
 ## リポジトリ全体
 - `README.md` … 概要・収録・クイックスタート

@@ -1,7 +1,17 @@
 # wawoo-skills
 
 AI コーディングエージェント向けの**再利用可能な skills／agents／workflows／MCP サーバ**の汎用キット。
-Kilo と Cursor の両方で使える（Cursor は MCP／rules／AGENTS.md 経由）。
+**Kilo CLI / Kilo Code** と **Cursor** で使える（Cursor は MCP／rules／AGENTS.md 経由）。
+
+## 対応ツール（公式）
+
+| ツール | 正式名 | 公式 URL |
+|---|---|---|
+| Kilo CLI | Kilo（CLI） | https://kilo.ai |
+| Kilo Code | Kilo Code（VS Code 拡張） | https://kilocode.ai |
+| Cursor | Cursor | https://cursor.com |
+| MCP | Model Context Protocol | https://modelcontextprotocol.io |
+| AGENTS.md | AGENTS.md | https://agents.md |
 
 ## 収録
 
@@ -75,6 +85,14 @@ kilo.json
 - どのファイルがどこ由来かは `.kilo/skills/ATTRIBUTION.md` に一覧があります。
 - **ライセンスが確認できないものは入れていません**（Marketplace の business 3 件と `fal-gen` は除外）。
 - 保証はありません（**AS IS**）。使う前に、必要なら各ライセンスを確認してください。
+
+### 収録元（公式）
+| 収録元 | 公式 URL |
+|---|---|
+| Skills For Real Engineers（Matt Pocock） | https://github.com/mattpocock/skills ・ https://skills.sh/mattpocock/skills |
+| OpenDesign | https://open-design.ai ・ https://github.com/nexu-io/open-design |
+| Kilo Marketplace（Kilo エコシステム） | https://kilo.ai |
+| Semantic Versioning | https://semver.org |
 
 ## 注意（最初に読む）
 

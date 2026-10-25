@@ -5,7 +5,7 @@ agent: market-researcher
 
 # Market Plan（市場調査・事業計画）
 
-> **標準フローは Ready のスキルのみ**。外部依存が必要なものは「任意」節に分離（`docs/plans/SKILLS-READINESS.md`）。
+> **標準フローは Ready のスキルのみ**。外部依存が必要なものは「任意」節に分離（`scripts/readiness.json`）。
 
 2. **調査**：`research`（一次情報。**証拠と推測を分離**）。
 3. **整理**：`research-decision-room`（証拠台帳・テーマ・確信度・機会・意思決定メモ）。

@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+"""Validate .kilo assets (skills/agents/commands). Stdlib only.
+
+Checks:
+- every skill dir has SKILL.md with name+description; name matches dir
+- every agent has description+mode
+- every command's `agent:` exists
+- duplicate names across skills/agents/commands
+- readiness.json entries exist as skills
+- key JSON config files parse
+Exit code 1 if issues found.
+"""
+from __future__ import annotations
+
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+KILO = ROOT / ".kilo"
+
+
+def fm(path: Path) -> dict[str, str]:
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    if not text.startswith("---"):
+        return {}
+    end = text.find("\n---", 3)
+    if end == -1:
+        return {}
+    out: dict[str, str] = {}
+    for line in text[3:end].splitlines():
+        m = re.match(r"^([A-Za-z0-9_-]+):\s*(.*)$", line)
+        if m:
+            out[m.group(1)] = m.group(2).strip()
+    return out
+
+
+def main() -> int:
+    issues: list[str] = []
+
+    # JSON configs
+    for rel in ("kilo.json", ".cursor/mcp.json", "scripts/readiness.json"):
+        p = ROOT / rel
+        if p.exists():
+            try:
+                json.loads(p.read_text(encoding="utf-8"))
+            except Exception as exc:
+                issues.append(f"invalid JSON: {rel} ({exc})")
+
+    skill_names: dict[str, str] = {}
+    for d in sorted((KILO / "skills").glob("*/")):
+        f = d / "SKILL.md"
+        if not f.exists():
+            issues.append(f"skill missing SKILL.md: {d.name}")
+            continue
+        meta = fm(f)
+        name = meta.get("name") or d.name
+        if not meta.get("name"):
+            issues.append(f"skill missing name: {d.name}")
+        elif name != d.name:
+            issues.append(f"skill name!=dir: {name} vs {d.name}")
+        if not meta.get("description"):
+            issues.append(f"skill missing description: {d.name}")
+        if name in skill_names:
+            issues.append(f"duplicate skill name: {name} ({d.name} vs {skill_names[name]})")
+        skill_names[name] = d.name
+
+    agent_names: set[str] = set()
+    for f in sorted((KILO / "agents").glob("*.md")):
+        meta = fm(f)
+        if not meta.get("description"):
+            issues.append(f"agent missing description: {f.name}")
+        if not meta.get("mode"):
+            issues.append(f"agent missing mode: {f.name}")
+        agent_names.add(f.stem)
+
+    command_names: set[str] = set()
+    for f in sorted((KILO / "commands").glob("*.md")):
+        if f.stem == "README":
+            continue
+        command_names.add(f.stem)
+        meta = fm(f)
+        if not meta.get("description"):
+            issues.append(f"command missing description: {f.name}")
+        a = meta.get("agent")
+        if a and a not in agent_names:
+            issues.append(f"command {f.stem} -> missing agent {a}")
+
+    # cross-kind duplicates: skill/agent share model-selectable namespace (error);
+    # command is slash-namespaced, so collisions with commands are warnings.
+    warnings: list[str] = []
+    for n in sorted(set(skill_names) & agent_names):
+        issues.append(f"name used as both skill and agent: {n}")
+    for n in sorted(set(skill_names) & command_names):
+        warnings.append(f"name used as both skill and command (slash vs model): {n}")
+    for n in sorted(agent_names & command_names):
+        warnings.append(f"name used as both agent and command (slash vs model): {n}")
+
+    # readiness references
+    rp = ROOT / "scripts" / "readiness.json"
+    if rp.exists():
+        try:
+            data = json.loads(rp.read_text(encoding="utf-8"))
+            for n in (data.get("needs_setup") or {}):
+                if n not in skill_names:
+                    issues.append(f"readiness references unknown skill: {n}")
+        except Exception:
+            pass
+
+    for w in warnings:
+        print("WARN:", w)
+    if issues:
+        print("ISSUES:")
+        for i in issues:
+            print(" -", i)
+        return 1
+    print(f"OK: skills={len(skill_names)} agents={len(agent_names)} commands={len(command_names)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

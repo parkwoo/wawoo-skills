@@ -1,0 +1,7 @@
+{
+  "needs_setup": {
+    "to-spec": "issue tracker (setup-matt-pocock-skills)",
+    "to-tickets": "issue tracker (setup-matt-pocock-skills)",
+    "triage": "issue tracker (setup-matt-pocock-skills)"
+  }
+}

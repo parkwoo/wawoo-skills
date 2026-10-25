@@ -1,19 +1,30 @@
 #!/usr/bin/env bash
-# Cursor Agent CLI で MCP + ワークスペースを実測（要 CURSOR_API_KEY）
+# Cursor Agent CLI で MCP + ワークスペースを実測（要: agent login 済み、または CURSOR_API_KEY）
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
-
-if [[ -z "${CURSOR_API_KEY:-}" ]]; then
-  echo "CURSOR_API_KEY が未設定です。agent login または .env を用意してください。" >&2
-  exit 1
-fi
 
 AGENT="${AGENT_BIN:-agent}"
 if ! command -v "$AGENT" >/dev/null 2>&1; then
   echo "Cursor Agent CLI が見つかりません。インストール:" >&2
   echo "  curl https://cursor.com/install -fsS | bash" >&2
+  echo "  （PATH に ~/.cursor/bin を通す）" >&2
   exit 1
+fi
+
+# 認証: 通常は `agent login`（ブラウザ）。CI/無人のみ CURSOR_API_KEY。
+if [[ -z "${CURSOR_API_KEY:-}" ]]; then
+  if ! "$AGENT" status >/dev/null 2>&1; then
+    echo "未ログインです。先に次を実行してください:" >&2
+    echo "  agent login" >&2
+    echo "" >&2
+    echo "（GitHub Actions 等の無人実行だけ CURSOR_API_KEY を使います）" >&2
+    exit 1
+  fi
+  echo "== agent status (login セッション) =="
+  "$AGENT" status || true
+else
+  echo "== CURSOR_API_KEY による認証（無人向け） =="
 fi
 
 # 読み取り中心（cli.json.example を .cursor/cli.json にコピーするとより安全）

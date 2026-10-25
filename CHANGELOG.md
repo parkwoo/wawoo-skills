@@ -2,6 +2,11 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+## [0.3.2] - 2026-10-25
+
+### 変更
+- Cursor Agent CLI 実測を **`agent login` 優先**に修正（`CURSOR_API_KEY` は CI 用オプション）。
+
 ## [0.3.1] - 2026-10-25
 
 ### 追加

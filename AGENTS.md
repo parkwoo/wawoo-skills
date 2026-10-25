@@ -33,6 +33,8 @@ docs/                      … 設計・運用手順・記憶
 
 ## 3. 呼び出しプロトコル（必須）
 
+理論・設計判断: `docs/METHODOLOGY.md`（Skill／Agent／ワークフローの分担と WARO）。
+
 1. **入口＝Workflow**：Kilo は `/name`、Cursor は `@.kilo/commands/<name>.md`。
 2. **候補選定＝カタログ／MCP**：`.kilo/CAPABILITIES.md` または MCP `capabilities`／`skill_search`。**全部読まない**。
 3. **手順＝Skill**：Workflow が挙げた skill を**必要分だけ** `skill_get`／`@.kilo/skills/<name>/SKILL.md` で開く。

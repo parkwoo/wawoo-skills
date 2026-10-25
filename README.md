@@ -17,6 +17,8 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 
 エージェントの創造性を奪うのではなく、**再現可能な手順とツール呼び出し**のレールを敷くためのキットです。
 
+Skill・Agent・ワークフローの役割分担と呼び出しの考え方: **[docs/METHODOLOGY.md](docs/METHODOLOGY.md)**（方法論）。
+
 ## 対応環境
 
 - **Kilo CLI / Kilo Code**：`.kilo/` の探索、slash ワークフロー（`/feature-delivery` 等）、`kilo.json` の MCP。
@@ -123,6 +125,6 @@ kilo.json
 
 ## バージョン
 
-- 現在：**0.4.1**（`VERSION`）
+- 現在：**0.4.2**（`VERSION`）
 - 変更履歴：`CHANGELOG.md`
 - 版の付け方・リリース手順：`docs/VERSIONING.md`

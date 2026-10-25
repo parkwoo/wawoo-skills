@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Kilo CLI: バージョン + プロジェクト MCP 設定の存在確認（TUI/認証は別）
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$ROOT"
 
 KILO="${KILO_BIN:-kilo}"
@@ -31,4 +31,4 @@ if [[ $code -ne 0 ]]; then
   echo "WARN: kilo mcp list は認証/設定未完了の可能性（スモークは kilo.json の記述確認まで）"
 fi
 
-echo "手動 E2E: 本ディレクトリで \`kilo\` を起動し /feature-delivery を実行（docs/audit/KILO-E2E.md）"
+echo "手動 E2E: 本ディレクトリで \`kilo\` を起動し /feature-delivery を実行（internal/docs/audit/KILO-E2E.md）"

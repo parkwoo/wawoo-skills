@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Cursor Agent CLI で MCP + ワークスペースを実測（要: agent login 済み、または CURSOR_API_KEY）
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$ROOT"
 
 AGENT="${AGENT_BIN:-agent}"

@@ -1,0 +1,17 @@
+# 実測環境（段階的）
+#   ./internal/scripts/e2e/compose.sh run --rm smoke
+services:
+  smoke:
+    build:
+      context: ../../..
+      dockerfile: internal/docker/e2e/Dockerfile.smoke
+    image: wawoo-skills-e2e-smoke:local
+
+  kilo-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile.kilo
+    image: wawoo-skills-kilo-cli:local
+    working_dir: /work
+    volumes:
+      - ../../..:/work

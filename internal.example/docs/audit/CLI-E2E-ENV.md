@@ -6,7 +6,7 @@
 
 | 層 | 手段 | API キー | Docker |
 |---|---|:---:|:---:|
-| **L1** | `scripts/e2e/smoke.sh` / `docker compose … smoke` | 不要 | 可 |
+| **L1** | `internal/scripts/e2e/smoke.sh` / `docker compose … smoke` | 不要 | 可 |
 | **L2a Kilo** | `kilo` TUI + `/feature-delivery`、`kilo mcp list` | 要（モデル） | 可（CLI のみ） |
 | **L2b Cursor** | `agent login` → `agent -p --mode ask` + `.cursor/mcp.json` | **`agent login`（通常）** / `CURSOR_API_KEY` は CI 用のみ | CLI イメージは非推奨※ |
 | **L3 Cursor IDE** | デスクトップで MCP + `@.kilo/commands/…` | アカウント | 不可 |
@@ -19,7 +19,7 @@
 
 ```bash
 cd /path/to/wawoo-skills
-./scripts/e2e/smoke.sh
+./internal/scripts/e2e/smoke.sh
 ```
 
 ### 2. Docker（L1 のみ）
@@ -27,16 +27,16 @@ cd /path/to/wawoo-skills
 **Compose V2**（`docker compose`、ハイフン無し）が必要。`docker: unknown command: docker compose` のとき:
 
 ```bash
-./scripts/e2e/install-compose-v2.sh   # ~/.docker/cli-plugins に V2 プラグイン
+./internal/scripts/e2e/install-compose-v2.sh   # ~/.docker/cli-plugins に V2 プラグイン
 docker compose version
 ```
 
 実行:
 
 ```bash
-./scripts/e2e/compose.sh run --rm smoke
+./internal/scripts/e2e/compose.sh run --rm smoke
 # または
-docker compose -f docker/e2e/docker-compose.yml run --rm smoke
+docker compose -f internal/docker/e2e/docker-compose.yml run --rm smoke
 ```
 
 | 症状 | 対処 |
@@ -51,7 +51,7 @@ docker compose -f docker/e2e/docker-compose.yml run --rm smoke
 npm install -g @kilocode/cli   # または npx @kilocode/cli
 cd /path/to/wawoo-skills
 kilo auth                      # 初回
-./scripts/e2e/kilo-mcp.sh
+./internal/scripts/e2e/kilo-mcp.sh
 kilo                           # TUI → /feature-delivery
 ```
 
@@ -60,8 +60,8 @@ kilo                           # TUI → /feature-delivery
 Docker で CLI だけ試す例:
 
 ```bash
-docker compose -f docker/e2e/docker-compose.yml run --rm kilo-cli kilo --version
-docker compose -f docker/e2e/docker-compose.yml run --rm kilo-cli kilo mcp list
+docker compose -f internal/docker/e2e/docker-compose.yml run --rm kilo-cli kilo --version
+docker compose -f internal/docker/e2e/docker-compose.yml run --rm kilo-cli kilo mcp list
 ```
 
 （認証はホストで `kilo auth` 後、必要なら `~/.config` を volume マウント。）
@@ -79,7 +79,7 @@ agent status         # ログイン確認
 
 cd /path/to/wawoo-skills
 cp .cursor/cli.json.example .cursor/cli.json   # 任意: 読み取り専用
-./scripts/e2e/cursor-agent-mcp.sh
+./internal/scripts/e2e/cursor-agent-mcp.sh
 ```
 
 `.cursor/mcp.json` がそのまま読まれる（[CLI MCP](https://cursor.com/docs/cli/using)）。

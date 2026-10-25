@@ -6,9 +6,9 @@ import re
 from datetime import date
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 SKILLS = ROOT / ".kilo" / "skills"
-OUT = ROOT / "docs" / "audit" / "LICENSE-HEADER-AUDIT.md"
+OUT = ROOT / "internal" / "docs" / "audit" / "LICENSE-HEADER-AUDIT.md"
 
 # ATTRIBUTION の大分類（手動マッピングの補助）
 OPENDESIGN = {

@@ -5,7 +5,7 @@ alwaysApply: true
 
 # ワークフロー（Kilo commands 由来）
 
-**ワークフロー主導**：プロセスは commands が所有し、skills-main の思考法・解法を各ステップに埋め込む。agent が skill を飛ばす前提で、**workflow が明示的に呼ぶ**。
+**ワークフロー主導**：プロセスは commands が所有し、Skills For Real Engineers の思考法・解法を各ステップに埋め込む。agent が skill を飛ばす前提で、**workflow が明示的に呼ぶ**。
 `.kilo/commands/` の **13 ワークフロー**を、Cursor でも同じ手順として適用する。
 
 > **Cursor の制約**：slash command／agent はネイティブ実行できない。**手順は `@.kilo/commands/<name>.md` を開いて手動適用**し、各ステップで `@.kilo/skills/<skill>/SKILL.md` を読む。役割は `@.kilo/agents/<role>.md` を参照。

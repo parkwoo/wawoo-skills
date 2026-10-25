@@ -14,8 +14,8 @@ Kilo と Cursor の両方で使える（Cursor は MCP／rules／AGENTS.md 経�
 | Cursor ルール | 3 | `.cursor/rules/*.mdc` |
 
 - カタログ（自動生成）：`.kilo/CAPABILITIES.md`
-- Readiness：`scripts/readiness.json`／`docs/plans/SKILLS-READINESS.md`
-- 呼び出し・コンテキスト設計：`docs/plans/AGENT-INVOCATION-AND-CONTEXT.md`
+- Readiness（外部前提）：`scripts/readiness.json`
+- 呼び出し・コンテキスト設計：`docs/USAGE.md`
 
 ## クイックスタート
 
@@ -31,7 +31,7 @@ Kilo と Cursor の両方で使える（Cursor は MCP／rules／AGENTS.md 経�
 2. **Settings → MCP** で `wawoo-skills` を有効化（`.cursor/mcp.json`）
 3. `capabilities`／`skill_search`／`skill_get` をツールとして利用
 - **slash command／agent は非対応**。手順は `@.kilo/commands/<name>.md` を開いて適用。
-- 詳細：`docs/plans/CURSOR-SETUP.md`
+- 詳細：`docs/USAGE.md`
 
 ### MCP
 ```bash
@@ -54,7 +54,7 @@ python3 mcp/test_server.py           # MCP スモーク
 .cursor/{rules,mcp.json}
 mcp/{server.py,test_server.py,README.md}
 scripts/{gen_capabilities.py,validate_assets.py,readiness.json}
-docs/{plans,memory}
+docs/{USAGE.md,VERSIONING.md,memory}
 LICENSES/
 AGENTS.md
 kilo.json
@@ -67,7 +67,7 @@ kilo.json
 | 種類 | ライセンス | 場所 |
 |---|---|---|
 | このリポジトリで新しく書いた skill／agent／command／MCP | **MIT**（自由に使える。著作権表示を残す） | `LICENSE` |
-| skills-main 由来の skill（21 件） | **MIT** | `LICENSES/skills-main-MIT.txt` |
+| Skills For Real Engineers 由来の skill（21 件） | **MIT** | `LICENSES/skills-for-real-engineers-MIT.txt` |
 | OpenDesign 由来の skill（10 件） | **Apache-2.0**（著作権表示と NOTICE を残す） | `LICENSES/open-design-Apache-2.0.txt` |
 | Kilo Marketplace 由来の agent（6 件） | **Apache-2.0** | `LICENSES/kilo-marketplace-*` |
 | その他（Kilo 組み込み skill 等） | 各ファイルの frontmatter／MIT | `.kilo/skills/ATTRIBUTION.md` |
@@ -81,10 +81,10 @@ kilo.json
 - **画像生成は付属していません**：`imagegen-frontend-mobile` は「どんな画像を作るか」の**指示文（プロンプト）だけ**です。実際の生成は OpenAI Images／fal／社内ツール等を別途使います。無い場合は**プロンプトのみ**納品します。
 - **3 つの skill は issue tracker が必要**：`to-spec`・`to-tickets`・`triage` は GitHub Issues 等の tracker を前提にしています。初回に `setup-matt-pocock-skills` を実行して設定してください。
 - **秘密を書かない**：API キー・トークン・`.env` の中身をコミットしないでください。`memory_save` は秘密を拒否します。
-- **Cursor は slash command／agent 非対応**：`AGENTS.md`＋`.cursor/rules`＋MCP＋`@file` で使います（`docs/plans/CURSOR-SETUP.md`）。
+- **Cursor は slash command／agent 非対応**：`AGENTS.md`＋`.cursor/rules`＋MCP＋`@file` で使います（`docs/USAGE.md`）。
 
 ## バージョン
 
 - 現在：**0.1.0**（`VERSION`）
 - 変更履歴：`CHANGELOG.md`
-- 版の付け方・リリース手順：`docs/plans/VERSIONING.md`
+- 版の付け方・リリース手順：`docs/VERSIONING.md`

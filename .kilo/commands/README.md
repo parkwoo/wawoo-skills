@@ -1,6 +1,6 @@
 # ワークフロー（commands）— プロセスの所有者
 
-本プロジェクトは **ワークフロー主導**。プロセスは commands が所有し、**skills-main の思考法・解法を各ステップに埋め込む**。agent が skill を飛ばす前提で、workflow が**明示的に呼ぶ**。
+本プロジェクトは **ワークフロー主導**。プロセスは commands が所有し、**Skills For Real Engineers の思考法・解法を各ステップに埋め込む**。agent が skill を飛ばす前提で、workflow が**明示的に呼ぶ**。
 
 ## 一覧（13）
 | command | 用途 | 主なスキル鎖 |
@@ -22,6 +22,6 @@
 ## ゲート（必須）
 - **承認**：破壊的変更・本番・削除・外部送信・契約/規約は停止して承認。
 - **証拠**：実行コマンド・結果・スクショ/diff。実測／未検証を区別。
-- **失敗観察**：skills-main の原則（observed failure）に倣い、推測ではなく実際に起きた失敗に基づく。
+- **失敗観察**：Skills For Real Engineers の原則（observed failure）に倣い、推測ではなく実際に起きた失敗に基づく。
 - **法務**：法的判断は人が行う（`compliance-legal` は証拠とチェックのみ）。
 

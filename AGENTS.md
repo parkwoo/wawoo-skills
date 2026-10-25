@@ -54,7 +54,7 @@ docs/                      … 設計・運用手順・記憶
 
 - **Kilo**：`.kilo/` を自動探索（skills/agents/commands）＋ `kilo.json`。**ネイティブ起動可**。
 - **Cursor**：`AGENTS.md`＋`.cursor/rules`＋**MCP**＋`@file`。**slash command／agent／SKILL のネイティブ実行は無い**。
-- 詳細：`docs/plans/CURSOR-SETUP.md`。
+- 詳細：`docs/USAGE.md`。
 
 ---
 
@@ -62,7 +62,7 @@ docs/                      … 設計・運用手順・記憶
 
 - 外部前提：`scripts/readiness.json` に記載（例：issue tracker）。
 - `to-spec`/`to-tickets`/`triage` は issue tracker 設定が必要。未設定は標準フローに載せない。MCP `capabilities {ready_only:true}` で除外可能。
-- 詳細：`docs/plans/SKILLS-READINESS.md`。
+- 詳細：`scripts/readiness.json`。
 
 ---
 
@@ -92,7 +92,7 @@ docs/                      … 設計・運用手順・記憶
   - skill/agent/command の追加・後方互換の追加 = **MINOR**
   - 誤字・文言・内部リファクタ = **PATCH**
 - リリース時は `v<version>` タグを付ける（例 `v0.1.0`）。
-- 詳細：`docs/plans/VERSIONING.md`。
+- 詳細：`docs/VERSIONING.md`。
 
 ---
 

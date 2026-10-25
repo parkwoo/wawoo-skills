@@ -2,6 +2,11 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+## [0.4.1] - 2026-10-25
+
+### 変更
+- README に「skill／workflow が呼ばれない」問題への設計思想（なぜこのキットか）を追記。
+
 ## [0.4.0] - 2026-10-25
 
 ### 変更

@@ -58,7 +58,8 @@ python3 mcp/test_server.py           # MCP スモーク
 ./scripts/e2e/smoke.sh               # 上記まとめ（API キー不要）
 ```
 
-CLI 実測環境（Kilo CLI / Cursor `agent` / Docker）: `docs/audit/CLI-E2E-ENV.md`
+CLI 実測環境（Kilo CLI / Cursor `agent` / Docker）: `docs/audit/CLI-E2E-ENV.md`  
+Docker Compose V2: `./scripts/e2e/install-compose-v2.sh` → `./scripts/e2e/compose.sh run --rm smoke`
 
 ## ディレクトリ
 

@@ -7,12 +7,12 @@
 - MCP：`mcp/server.py`
 - カタログ（自動生成）：`.kilo/CAPABILITIES.md`
 
-## 2. Kilo
+## 2. Kilo CLI / Kilo Code（https://kilo.ai ・ https://kilocode.ai）
 1. このディレクトリを開く（`.kilo/` を自動探索、`kilo.json` で MCP 有効）。
 2. ワークフロー：`/feature-delivery` など。
 3. スキル：モデルが `SKILL.md` を選択、または明示的に参照。
 
-## 3. Cursor
+## 3. Cursor（https://cursor.com）
 1. このディレクトリを開く（`AGENTS.md` と `.cursor/rules` を読む）。
 2. **Settings → MCP** で `wawoo-skills` を有効化（`.cursor/mcp.json`）。
 3. ツール `capabilities`／`skill_search`／`skill_get` を利用。
@@ -28,7 +28,7 @@
 @.kilo/commands/<name>.md の手順を適用して。
 ```
 
-## 4. MCP
+## 4. MCP（Model Context Protocol: https://modelcontextprotocol.io）
 ```bash
 python3 mcp/server.py        # stdio（通常はクライアントが起動）
 python3 mcp/test_server.py   # スモークテスト

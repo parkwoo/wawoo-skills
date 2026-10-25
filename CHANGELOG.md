@@ -2,6 +2,15 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+## [0.4.0] - 2026-10-25
+
+### 変更
+- メンテナ・監査・実測資産を **git 管理外**（`internal/`）に移行。テンプレは `internal.example/` + `scripts/bootstrap-internal.sh`。
+- 公開範囲の説明: `docs/PUBLICATION.md`。
+
+### 削除（公開 clone から除外）
+- `docs/audit/`、`docs/MAINTAINER.md`、`scripts/e2e/`、`docker/e2e/`、監査用 `scripts/audit_*.py` 等（`internal.example` に同梱）。
+
 ## [0.3.4] - 2026-10-25
 
 ### 変更

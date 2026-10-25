@@ -2,6 +2,11 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+## [0.4.3] - 2026-10-25
+
+### 追加
+- `docs/PROCESS-PHILOSOPHY.md` — 工程思想論（納品ライフサイクル・ゲート理論・環境反復）。
+
 ## [0.4.2] - 2026-10-25
 
 ### 追加

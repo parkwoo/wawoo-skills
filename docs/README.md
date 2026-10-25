@@ -3,6 +3,7 @@
 | 文書 | 内容 |
 |---|---|
 | [METHODOLOGY.md](./METHODOLOGY.md) | Skill・Agent・ワークフローの方法論（なぜ三層か・WARO） |
+| [PROCESS-PHILOSOPHY.md](./PROCESS-PHILOSOPHY.md) | 工程思想論（ライフサイクル D0–D7・ゲート・トレーサビリティ） |
 | [USAGE.md](./USAGE.md) | Kilo／Cursor／MCP での使い方、制約、コンテキスト予算 |
 | [VERSIONING.md](./VERSIONING.md) | バージョン管理（SemVer・CHANGELOG・タグ） |
 | [PUBLICATION.md](./PUBLICATION.md) | 公開（git 管理）と内部資産の区分 |

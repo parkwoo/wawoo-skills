@@ -1,0 +1,11 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "instructions": ["AGENTS.md"],
+  "mcp": {
+    "wawoo-skills": {
+      "type": "local",
+      "command": ["python3", "mcp/server.py"],
+      "enabled": true
+    }
+  }
+}

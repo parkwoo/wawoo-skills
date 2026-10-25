@@ -1,0 +1,36 @@
+---
+description: 利用可能なスキル（skills-main／OpenDesign／Kilo・Marketplace）と適用方法
+alwaysApply: true
+---
+
+# スキル（55 件）
+
+- **候補選定**：MCP が使えるなら `capabilities`／`skill_search` → `skill_get`。無ければ `@.kilo/CAPABILITIES.md`（生成物・1 行説明）で選び、**選んだものだけ** `@.kilo/skills/<name>/SKILL.md` を開く（全部読まない）。
+- **コンテキスト予算**：契約 ≤500tok／カタログ ≤1k／Skill 1 個 ≤2〜4KB／Memory top-5。
+- 原本・ライセンス：`.kilo/skills/ATTRIBUTION.md`／`LICENSES/`
+- 内訳：skills-main 21（MIT）／Kilo 16（MIT）／OpenDesign 10（Apache-2.0）／本リポジトリ 8（MIT）
+
+## 未セットアップ（標準フローに載せない）
+`to-spec`・`to-tickets`・`triage`（issue tracker）。詳細：`docs/plans/SKILLS-READINESS.md`。
+
+## 開発
+`setup-matt-pocock-skills` → `to-spec` → `to-tickets` → `implement`／`implement-spec`（`tdd`）→ `code-review` → `retro`。迷ったら `ask-matt`。
+
+## 設計（web/app UI）
+`design-brief` → `reference-design-contract` → `design-md` → `frontend-design` → `design-review` → `web-design-guidelines` → `accessibility-audit` → `web-experience-design`。必要画像は利用可能な画像ツール（同梱なし）。
+
+## 市場・事業計画
+`research` → `research-decision-room` → `product-discovery` → `marketing-psychology` → `plan-md`。ブランドは `brand-guidelines`。デッキは `slides`（`/deck`）。
+
+## 法務・安全
+`compliance-legal` → `privacy-review` → `security-review` → `release-readiness`。**法的判断は人の承認**。
+
+## 記憶・版管理
+`memory`（決定・落とし穴の永続化／`docs/memory/`）・`changelog`（git log→CHANGELOG・SemVer）。
+
+## 品質・運用
+`architecture-decision`・`engineering-quality`・`test-engineering`・`performance-audit`・`database-change-safety`・`dependency-upgrade`・`incident-debugging`・`deployment`・`pdca-cycle`。
+
+## 注意
+- **大量収集はしない**（必要分のみ）。
+- Marketplace business 3 件は**第三者ソースでライセンス未確認**（再配布前に確認）。

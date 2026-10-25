@@ -2,6 +2,17 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+## [0.3.0] - 2026-10-25
+
+### 追加
+- OpenDesign 7 skill に `LICENSE.txt` / `NOTICE.txt` を同梱。
+- `docs/audit/KILO-E2E.md`（Kilo 実機 `/feature-delivery` + MCP 手順）。
+- `scripts/split_skill_reference.py`（skill 分割用）。
+
+### 変更
+- 大型 skill を `references/` に分割：`ask-matt`・`wayfinder`・`design-brief`・`writing-for-agents`。
+- 監査記録を再生成（ライセンス要確認 0 件）。
+
 ## [0.2.0] - 2026-10-25
 
 ### 追加

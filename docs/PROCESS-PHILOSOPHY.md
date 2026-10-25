@@ -19,7 +19,9 @@
 
 ---
 
-## 2. 二層モデル：マクロ経路とミクロ技法
+## 2. マクロ・ミクロ・メタ（＋観点）
+
+[METHODOLOGY.md](./METHODOLOGY.md) の三層（ワークフロー／skill／agent）に、**時間軸**でメタ学習を足したモデル。agent は常駐プロセスではなく、レビュー・進行の**観点**（§2 表の「観点」行）。
 
 ```mermaid
 flowchart TB
@@ -49,6 +51,7 @@ flowchart TB
 |---|---|---|
 | **マクロ** | 何を届ける経路か | `.kilo/commands`（13 ワークフロー） |
 | **ミクロ** | この段でどう手を動かすか | `.kilo/skills` |
+| **観点** | 誰の目線で見るか | `.kilo/agents`（command の `agent:` と併用） |
 | **メタ** | 次回の工程をどう良くするか | `retro`・`pdca-cycle`・`memory` |
 
 **原則**: マクロがミクロを**呼ぶ**。ミクロだけ並べても工程にならない（[METHODOLOGY.md](./METHODOLOGY.md) のワークフロー主導）。
@@ -70,7 +73,21 @@ flowchart TB
 | **D6** | 承認と放出 | 本番・公開は人の判断 | `release-readiness`・`compliance-legal` |
 | **D7** | 学習 | 環境と手順を更新 | `retro`・`pdca-cycle` |
 
-`/feature-delivery` は D0–D6 の**標準経路の実装例**。UI・調査・障害・コンプライアンスは別ワークフローが D0 の入口を変える。
+**正本**: 各工程の skill 鎖は **`.kilo/commands/<name>.md` 本文**が正。`.kilo/commands/README.md` の一覧表は要約であり、**本文と食い違うことがある**（例: `/feature-delivery` 本文は `product-discovery`→`architecture-decision`→実装委譲→`test-engineering`→`change-readiness`。表の `to-spec`→`implement` 鎖は別系統の要約）。
+
+`/feature-delivery` と D 段の対応（本文ベース）:
+
+| D 段 | 本文での扱い |
+|---|---|
+| D0 | `product-discovery` |
+| D1 | `architecture-decision`（該当時） |
+| D3 | 実装委譲＋`engineering-quality` |
+| D4 | `test-engineering` |
+| D5 | UI/境界に応じ `web-experience-design`・`accessibility-audit`・`security-review` |
+| D6 | `change-readiness`・承認ゲート（push/本番禁止） |
+| D2・D7 | 本文では明示なし（チケット化・retro は別 workflow／省略時は理由を残す） |
+
+UI・調査・障害・コンプライアンスは別ワークフローが D0 の入口を変える。
 
 **省略規則**: 段を飛ばすときは**理由と証拠**を残す（「小変更なので D1 省略」→ スコープ一文と diff で代替）。
 
@@ -147,7 +164,7 @@ flowchart TB
 | 経路タイプ | 代表 | 工程上の意味 |
 |---|---|---|
 | **納品** | `/feature-delivery`・`/ui-delivery` | D0–D6 の製品変更 |
-| **判断** | `/research`・`/market-plan` | D0 強化、D6 前の意思決定 |
+| **判断** | `/research`・`/market-plan` | 主に D0–D2（調査・計画）。D6 の放出直前なら `/release-review` を併用 |
 | **ゲート集約** | `/compliance-review`・`/release-review` | Gₐ・Gₑ の束ね |
 | **運用** | `/incident-response` | 時間圧下下的な D4–D7 |
 | **計画・報告** | `/sprint-plan`・`/status-report` | 鎖の同期 |
@@ -157,16 +174,27 @@ flowchart TB
 
 ---
 
-## 9. WARO と工程の接続
+## 9. WARO と D 段（混同しない）
 
-[METHODOLOGY.md](./METHODOLOGY.md) の WARO を時間軸に重ねる。
+**WARO**（[METHODOLOGY.md](./METHODOLOGY.md) §4）は**1 回の依頼の中での操作順**。**D0–D7** は**納品ライフサイクルの抽象段**。同じ文字（特に A）を別概念に使わない。
 
-| WARO | 工程段 |
+### 9.1 WARO（操作プロトコル）
+
+| 段 | 行動 | 注意 |
+|---|---|---|
+| **W** | command を選び出力形を確認 | §8 の標準経路 |
+| **A** | `capabilities` / `skill_search` で候補を絞る | **D0 の discovery とは別**。workflow が skill 名を書いていれば A は省略可 |
+| **R** | 指定された `SKILL.md` を開く | D3–D5 の多くはここ |
+| **O** | Gₑ・Gₐ を満たして成果物を出す | 完了宣言の条件 |
+
+### 9.2 D 段（ライフサイクル）との対応（目安）
+
+| D 段 | 主に関わる WARO |
 |---|---|
-| **W**orkflow | マクロ経路の選択（§8） |
-| **A**cquire | D0–D2 の材料収集・チケット化 |
-| **R**ead skill | D3–D5 のミクロ実行 |
-| **O**bserve & Output | Gₑ・Gₐ・D7 |
+| D0–D2 | W（経路）＋ R（discovery/spec 系 skill）。A は skill 名が不明なときのみ |
+| D3–D5 | R ＋ O（証拠） |
+| D6 | O（Gₐ 承認） |
+| D7 | 別セッションの W（`/self-improve` 等）＋ R（`retro`） |
 
 ---
 
@@ -199,3 +227,5 @@ flowchart TB
 | `.kilo/commands/README.md` | ワークフロー一覧と skill 鎖 |
 
 **正本の優先**: 工程の必須動作は **AGENTS.md** と各 **command** 本文。本書はその**理論的整理**。
+
+**既知のリポジトリ課題**（理論書の外だが笑い話になるため記載）: 一部 command 本文と `commands/README.md` の skill 鎖が一致しない。直すときは**本文を正本**に表を追随させる。

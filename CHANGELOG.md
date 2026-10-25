@@ -2,6 +2,11 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+## [0.4.4] - 2026-10-25
+
+### 変更
+- METHODOLOGY / PROCESS-PHILOSOPHY 監査反映（WARO と D 段の分離、正本の明示、ゲート符号統一、効き方の限界）。
+
 ## [0.4.3] - 2026-10-25
 
 ### 追加

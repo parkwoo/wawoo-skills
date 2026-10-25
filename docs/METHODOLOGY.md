@@ -2,6 +2,8 @@
 
 > **§0 一文**: エージェントが手順と役割を飛ばさないよう、**ワークフローがプロセスを所有し、スキルが手順を供給し、エージェント定義が観点を固定する**三層で問題を解く。
 
+**時間軸・ゲート・納品ライフサイクル**の理論: [PROCESS-PHILOSOPHY.md](./PROCESS-PHILOSOPHY.md)（工程思想論）。
+
 ## 1. 解く問題
 
 | 症状 | 原因（構造） | 本方法論の答え |
@@ -146,6 +148,7 @@ flowchart TB
 | [USAGE.md](./USAGE.md) | ツール別の操作 |
 | [AGENTS.md](../AGENTS.md) | エージェント契約（必須） |
 | [README.md](../README.md) | 概要・収録 |
+| [PROCESS-PHILOSOPHY.md](./PROCESS-PHILOSOPHY.md) | 工程思想論（ライフサイクル・ゲート・トレーサビリティ） |
 | `.kilo/commands/README.md` | ワークフロー一覧 |
 
 ---

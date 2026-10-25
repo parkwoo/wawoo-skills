@@ -62,9 +62,10 @@ kilo.json
 
 ## ライセンス・帰属
 
-- 同梱スキルは複数由来（MIT／Apache-2.0／第三者）。詳細は `.kilo/skills/ATTRIBUTION.md` と `LICENSES/`。
-- **ライセンス未確認の第三者資産**は再配布しない（`docs/plans/SKILLS-READINESS.md`・`SYSTEM-AUDIT.md`）。
-- 本リポジトリは**個人・非公開**前提。
+- 本リポジトリの新規部分は **MIT**（`LICENSE`）。
+- 同梱スキルは複数由来（MIT／Apache-2.0）。詳細は `.kilo/skills/ATTRIBUTION.md` と `LICENSES/`。
+- **ライセンス未確認の第三者資産は同梱していない**（Marketplace business 3 件・`fal-gen` は除外）。
+- **無保証（AS IS）**。第三者の権利・利用規約は、利用者が必要に応じて確認する。
 
 ## 注意
 

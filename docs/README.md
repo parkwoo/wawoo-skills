@@ -8,6 +8,7 @@
 | [audit/SKILL-QUALITY-REVIEW.md](./audit/SKILL-QUALITY-REVIEW.md) | 全 skill 品質・法務/セキュリティ実効性 |
 | [audit/LICENSE-HEADER-AUDIT.md](./audit/LICENSE-HEADER-AUDIT.md) | 第三者 skill ライセンス表記の棚卸し |
 | [audit/KILO-E2E.md](./audit/KILO-E2E.md) | Kilo 実機 E2E（/feature-delivery + MCP）手順 |
+| [audit/CLI-E2E-ENV.md](./audit/CLI-E2E-ENV.md) | Kilo CLI + Cursor Agent CLI 実測環境 |
 
 ## リポジトリ全体
 - `README.md` … 概要・収録・クイックスタート

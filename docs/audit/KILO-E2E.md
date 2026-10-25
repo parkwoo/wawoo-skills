@@ -11,6 +11,8 @@
 | Python | 3.10+（`python3 mcp/server.py`） |
 | 設定 | ルートの `kilo.json` で MCP `wawoo-skills` が **enabled** |
 
+**実測環境の構築**（Docker / Cursor `agent` / スクリプト）: [CLI-E2E-ENV.md](./CLI-E2E-ENV.md)
+
 ## フロー
 
 ```mermaid

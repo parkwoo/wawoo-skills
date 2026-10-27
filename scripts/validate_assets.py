@@ -19,6 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 KILO = ROOT / ".kilo"
+MEMORY = ROOT / "docs" / "memory"
 
 
 def fm(path: Path) -> dict[str, str]:
@@ -34,6 +35,12 @@ def fm(path: Path) -> dict[str, str]:
         if m:
             out[m.group(1)] = m.group(2).strip()
     return out
+
+
+def documents_entry(command_path: Path, name: str) -> bool:
+    """command が「入口は command／手順は同名 skill」を明文化しているか（意図的な同名か）。"""
+    text = command_path.read_text(encoding="utf-8", errors="ignore")
+    return "**入口**" in text and name in text
 
 
 def main() -> int:
@@ -88,11 +95,15 @@ def main() -> int:
             issues.append(f"command {f.stem} -> missing agent {a}")
 
     # cross-kind duplicates: skill/agent share model-selectable namespace (error);
-    # command is slash-namespaced, so collisions with commands are warnings.
+    # command is slash-namespaced, so collisions with commands are warnings —
+    # ただし command 側で「入口は command／手順は同名 skill」を明文化していれば意図的とみなし警告しない。
     warnings: list[str] = []
     for n in sorted(set(skill_names) & agent_names):
         issues.append(f"name used as both skill and agent: {n}")
     for n in sorted(set(skill_names) & command_names):
+        cmd = KILO / "commands" / f"{n}.md"
+        if cmd.exists() and documents_entry(cmd, n):
+            continue
         warnings.append(f"name used as both skill and command (slash vs model): {n}")
     for n in sorted(agent_names & command_names):
         warnings.append(f"name used as both agent and command (slash vs model): {n}")
@@ -107,6 +118,19 @@ def main() -> int:
                     issues.append(f"readiness references unknown skill: {n}")
         except Exception:
             pass
+
+    # memory: 秘密パターン（MCP memory_save と同じ規則）
+    if MEMORY.is_dir():
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(
+            "memory_ops", ROOT / "mcp" / "memory_ops.py"
+        )
+        if spec and spec.loader:
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            for line in mod.scan_memory_secrets(MEMORY):
+                issues.append(line)
 
     for w in warnings:
         print("WARN:", w)

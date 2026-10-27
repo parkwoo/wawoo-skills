@@ -2,6 +2,86 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+## [Unreleased]
+
+### 追加
+- 意図ルーティング: L0 slash／L1 学習 SQLite／L2 上流 JSON スコア、workflow `description` 付きカタログ。
+- MCP: `interpret_intent`・`route_task`・`workflow_clear`・`delegate_subtask`、確定後 `mcp_tools_allow` ゲート。
+- 対外ドキュメント: `docs/INTENT-ROUTING.md`、`mcp/README.md` 全面更新。
+
+### 変更
+- MCP server バージョン表記 `0.4.0`（意図ツール・ゲート）。
+- L3 `delegation_hint` 既定を `upstream-subagent` に（特定 API 製品名を含めない）。
+- 設計文書: co-taro 等とは**別プロジェクト**として境界を明記。
+- Kilo: `config.instructions` は**絶対パス**で指定する（相対 `ROUTER.md` は実行時コンテキストに注入されない）。§4 に「非自明な依頼は最初のツール呼び出しを `workflow_get`／`interpret_intent` にする」を強制として追加。
+- `gen_router.py`: ルーター手順を必須化（`workflow_get` を必ず呼ぶ・ネイティブ `skill` での代替禁止）。
+- `/delivery-lite`: 手順 0 で `wawoo-skills_workflow_get` を呼び、MCP の手順を正本にする。
+- 既存 agent 定義（21）に `## Routing (MCP first)` を追加: 最初のツールを `workflow_get`／`interpret_intent` にし、親 workflow が確定済みならそれに従う。ネイティブ `skill` は MCP 不能時のみ。
+- 新規 agent `wawoo-router`（`mode: primary`）: 既定の入口として非自明な依頼で必ず MCP を先に呼び、その workflow を自ら実行する。`instructions` は絶対パス、`default_agent` 既定を `wawoo-router` に。
+- `install_global.py`: `ROUTER.md` 生成・`instructions` 絶対パス登録・`default_agent` 設定を追加（`--default-agent`／`--no-default-agent`／`--force-default-agent`）。
+
+## [0.5.0] - 2026-10-25
+
+### 追加
+- 実機 E2E（internal.example）: `agent-active-live.sh`（delivery-lite / content-delivery-lite、MODE=dry|cursor|kilo）。
+- 公開 CI: `e2e_flows` に `agent_active_sandbox_dry`。
+
+## [0.4.9] - 2026-10-25
+
+### 追加
+- `/content-delivery-lite`、`CONTENT.example.md`、`scripts/plan_content.py`。
+- `scripts/cli_adapters_mock.py` — Kilo `/slash` と Cursor `@commands` の MCP parity モック（実 CLI 不要）。
+- METHODOLOGY §5.1 交付物タイプ表。
+
+### 変更
+- `/ui-delivery`・`/research`・`/market-plan` を `ACTIVE.md` + `plan_active` に接続。
+- E2E: content 契約・交付物 hook・CLI モック。
+
+## [0.4.8] - 2026-10-25
+
+### 追加
+- E2E: `l0_simulated_flow`・`l2_simulated_flow`・`l3_simulated_flow`・`ceremony_levels_matrix`。
+- `scripts/plan_l2_backlog.py`・`plan_l3_record.py`。
+- `docs/plans/BACKLOG.example.md`・`RETRO.example.md`。
+
+### 変更
+- `/sprint-plan` を L2 SSOT・`plan_l2_backlog` 検証付きに整理。
+- `AGENTS.md` SSOT 表に L2 バックログ・L3 retro を追記。
+
+## [0.4.7] - 2026-10-25
+
+### 追加
+- `scripts/e2e_flows.py` — 契約・ACTIVE 状態機械・MCP・workflow の E2E（API 不要）。
+- `scripts/plan_active.py` — ACTIVE タスク表の Gₑ 検証 CLI。
+
+### 変更
+- `/delivery-lite` 検証手順に `plan_active`・`e2e_flows` を追加。
+- `/status-report` を ACTIVE（L1）と issue（L2）で整理。
+- CI・`internal.example` smoke に memory E2E を追加。
+
+## [0.4.6] - 2026-10-25
+
+### 追加
+- `/delivery-lite` — L1 軽量納品（`docs/plans/ACTIVE.md` 状態機械）。
+- `docs/plans/`（`README.md`・`ACTIVE.md` テンプレ）。
+- `docs/METHODOLOGY.md` §5 儀式レベル L0–L3。
+
+### 変更
+- `AGENTS.md` §3 タスク SSOT、既定入口を `/delivery-lite` に。
+- `commands/README.md`・USAGE・PROCESS・PUBLICATION・README を追随。
+
+## [0.4.5] - 2026-10-25
+
+### 追加
+- `mcp/memory_ops.py` — memory 想起・保存・秘密スキャン（INDEX＋topic ファイル）。
+- `docs/memory/TEMPLATE.md`・`MEMORY-TOOLS.md`・`kit.md`。
+- `mcp/test_memory_ops.py`。
+
+### 変更
+- MCP `memory_recall`／`memory_save` を skill と一致（セクション・MEM id・tags／source）。
+- `memory` スキル、`/feature-delivery`、AGENTS、PROCESS P4、PUBLICATION、USAGE を配線。
+- `validate_assets.py` が `docs/memory/` を秘密パターン検査。
+
 ## [0.4.4] - 2026-10-25
 
 ### 変更

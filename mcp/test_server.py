@@ -35,7 +35,18 @@ def main() -> int:
 
         tools = rpc(proc, {"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
         names = {t["name"] for t in tools["result"]["tools"]}
-        for required in ("capabilities", "skill_search", "skill_get", "workflow_get", "agent_get", "memory_recall", "memory_save", "evidence_check"):
+        for required in (
+            "capabilities",
+            "skill_search",
+            "skill_get",
+            "workflow_get",
+            "agent_get",
+            "memory_recall",
+            "memory_save",
+            "evidence_check",
+            "interpret_intent",
+            "route_task",
+        ):
             assert required in names, (required, names)
 
         cap = rpc(proc, {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "capabilities", "arguments": {}}})
@@ -54,6 +65,18 @@ def main() -> int:
 
         bad = rpc(proc, {"jsonrpc": "2.0", "id": 7, "method": "tools/call", "params": {"name": "skill_get", "arguments": {"name": "../etc/passwd"}}})
         assert bad["result"].get("isError") is True, bad
+
+        route = rpc(
+            proc,
+            {
+                "jsonrpc": "2.0",
+                "id": 8,
+                "method": "tools/call",
+                "params": {"name": "interpret_intent", "arguments": {"text": "/incident-response 障害対応"}},
+            },
+        )
+        assert not route["result"].get("isError"), route
+        assert "incident-response" in route["result"]["content"][0]["text"]
 
         print("MCP server smoke test: OK")
         return 0

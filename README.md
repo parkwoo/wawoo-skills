@@ -13,6 +13,7 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 | **契約**（`AGENTS.md`・Cursor rules） | 何を先に読み、何を勝手に省略しないかを固定 |
 | **ワークフロー**（`.kilo/commands`） | プロセスの入口。どの skill をどの順で使うかを明示 |
 | **カタログ／MCP** | 55 件を一度に渡さず、候補選定→必要分だけ取得（段階的開示） |
+| **意図ルーティング** | `interpret_intent` で workflow 選定・学習 trigger・ツール権限ゲート（[docs/INTENT-ROUTING.md](docs/INTENT-ROUTING.md)） |
 | **ゲート** | 承認・証拠・失敗観察。推測だけで「完了」にしない |
 
 エージェントの創造性を奪うのではなく、**再現可能な手順とツール呼び出し**のレールを敷くためのキットです。
@@ -41,13 +42,14 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 |---|---|---|
 | Skills | **55** | `.kilo/skills/<name>/SKILL.md` |
 | Agents | **21** | `.kilo/agents/<name>.md` |
-| Workflows | **13** | `.kilo/commands/<name>.md` |
+| Workflows | **15** | `.kilo/commands/<name>.md`（コード L1: `/delivery-lite`、知識 L1: `/content-delivery-lite`） |
 | MCP サーバ | 1 | `mcp/server.py`（stdio・stdlib のみ） |
 | Cursor ルール | 3 | `.cursor/rules/*.mdc` |
 
 - カタログ（自動生成）：`.kilo/CAPABILITIES.md`
 - Readiness（外部前提）：`scripts/readiness.json`
 - 呼び出し・コンテキスト設計：`docs/USAGE.md`
+- 意図ルーティング（対外）：`docs/INTENT-ROUTING.md`
 
 ## クイックスタート
 
@@ -61,7 +63,7 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 ### Cursor
 1. このディレクトリを開く（`AGENTS.md` と `.cursor/rules` を読む）
 2. **Settings → MCP** で `wawoo-skills` を有効化（`.cursor/mcp.json`）
-3. `capabilities`／`skill_search`／`skill_get` をツールとして利用
+3. MCP で `interpret_intent`（入口選定）→ `workflow_get`／`skill_get` 等（[INTENT-ROUTING.md](docs/INTENT-ROUTING.md)）
 - **slash command／agent は非対応**。手順は `@.kilo/commands/<name>.md` を開いて適用。
 - 詳細：`docs/USAGE.md`
 
@@ -84,9 +86,9 @@ python3 mcp/test_server.py           # MCP スモーク
 ```
 .kilo/{skills,agents,commands,CAPABILITIES.md}
 .cursor/{rules,mcp.json}
-mcp/{server.py,test_server.py,README.md}
+mcp/{server.py,intent_*.py,test_*.py,README.md}
 scripts/{gen_capabilities.py,validate_assets.py,readiness.json,bootstrap-internal.sh}
-docs/{USAGE.md,VERSIONING.md,PUBLICATION.md,memory}
+docs/{USAGE.md,INTENT-ROUTING.md,VERSIONING.md,PUBLICATION.md,memory,plans,design}
 internal.example/   … メンテナ用テンプレ（実体は internal/・git 外）
 LICENSES/
 AGENTS.md
@@ -126,6 +128,6 @@ kilo.json
 
 ## バージョン
 
-- 現在：**0.4.4**（`VERSION`）
+- 現在：**0.5.0**（`VERSION`）
 - 変更履歴：`CHANGELOG.md`
 - 版の付け方・リリース手順：`docs/VERSIONING.md`

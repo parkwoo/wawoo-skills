@@ -1,12 +1,14 @@
 ---
-description: 進捗・状況報告（triage/to-tickets → 進捗・リスク・次アクション → plan-md）
+description: 進捗・状況報告（ACTIVE または triage/to-tickets → 進捗・リスク → plan-md）
 agent: project-manager
 ---
 
 # Status Report（進捗・状況報告）
 
-2. **`triage`／`to-tickets`**：作業項目の現状（未着手/進行/レビュー/完了）とブロッカーを整理。
-3. **進捗**：完了・進行・遅延を**証拠**（PR/コミット/テスト結果）で示す。未確認は未確認と明記。
+1. **SSOT**: **L1** は `docs/plans/ACTIVE.md` を読む。**L2** は issue tracker（`triage`／`to-tickets`）。二重の進捗表は作らない。
+2. **`triage`／`to-tickets`**（L2 またはブロッカー整理時）：作業項目の現状とブロッカーを整理。
+3. **進捗**：完了・進行・遅延を**証拠**（PR/コミット/テスト結果/ACTIVE の証拠列）で示す。未確認は未確認と明記。
+4. **リスク・次アクション**：遅延要因と承認が必要な判断を列挙。
 5. **`plan-md`**：状況報告を Markdown に保存（期間・指標・次アクション）。
 6. 報告：**進捗 / リスク / ブロッカー / 次の承認事項**。
 

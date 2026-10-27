@@ -32,3 +32,7 @@ Guidelines:
 - Avoid changing non-notebook files unless explicitly requested or necessary to complete the task
 - Inspect cell output before answering, and keep notebook outputs and final summaries concise
 - Never claim execution when a notebook cell did not run
+
+## Routing (MCP first)
+
+Before any other tool, call the MCP tool `wawoo-skills_workflow_get` (when the workflow is unclear, call `wawoo-skills_interpret_intent` first). If a parent session already fixed the workflow, follow that. Use the native `skill` tool only when the MCP server is unavailable, and say so explicitly.

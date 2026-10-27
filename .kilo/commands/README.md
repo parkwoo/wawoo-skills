@@ -2,11 +2,16 @@
 
 本プロジェクトは **ワークフロー主導**。プロセスは commands が所有し、**Skills For Real Engineers の思考法・解法を各ステップに埋め込む**。agent が skill を飛ばす前提で、workflow が**明示的に呼ぶ**。
 
-## 一覧（13）
+## 一覧（15）
+
+**正本**: 下表の「主なスキル鎖」は概要。手順の SSOT は各 `commands/<name>.md` 本文。
+
 | command | 用途 | 主なスキル鎖 |
 |---|---|---|
-| `/feature-delivery` | 機能の discovery→design→implement→test→review→approval | `to-spec`→`to-tickets`→`implement`/`implement-spec`（`tdd`）→`code-review`→`retro` |
-| `/ui-delivery` | UI 変更の納品 | `design-brief`→`frontend-design`→`web-experience-design`→`accessibility-audit` |
+| `/delivery-lite` | **L1 コード** — ACTIVE.md 状態機械で軽量納品 | `plan-md`（任意）→`implement`→`engineering-quality`→検証 |
+| `/content-delivery-lite` | **L1 知識** — 書籍・長文・レポート（CONTENT.md） | `plan-md`→`writing-for-agents`→`plan_content.py` |
+| `/ui-delivery` | UI 納品（ACTIVE + DESIGN） | `web-experience-design`→実装→audit |
+| `/feature-delivery` | L1 超・ゲート多め — discovery→design→implement→test→review | 本文の skill 鎖（README 表と異なる場合は**本文優先**） |
 | `/design-review` | UI の設計レビュー | `design-review`→`web-design-guidelines`→`accessibility-audit` |
 | `/research` | 調査→意思決定 | `research`→`research-decision-room`→`product-discovery`→`to-spec`/`plan-md` |
 | `/market-plan` | 市場調査→戦略→計画 | `research`→`research-decision-room`→`product-discovery`→`marketing-psychology`→`plan-md`（`competitive-ads*` は任意） |

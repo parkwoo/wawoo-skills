@@ -3,6 +3,9 @@
 .env.*
 !.env.example
 
+# 意図学習 DB（ローカル・ユーザーごと）
+data/*.db
+
 # python
 __pycache__/
 *.py[cod]
@@ -15,5 +18,21 @@ node_modules/
 # os
 .DS_Store
 
+# E2E 実行ログ（再実行で生成。手順は docs/plans/E2E-WORKFLOW-COVERAGE.md）
+docs/plans/evidence/
+
 # kilo runtime
 .kilo/worktrees/
+
+# 内部用（公開 git 外）。テンプレ: internal.example/ → scripts/bootstrap-internal.sh
+/internal/
+
+# 旧内部パス（移行前のローカル残骸も無視）
+/docs/MAINTAINER.md
+docs/PUBLICATION.md
+/docs/audit/
+/scripts/e2e/
+/docker/e2e/
+/scripts/audit_license_headers.py
+/scripts/audit_skill_quality.py
+/scripts/split_skill_reference.py

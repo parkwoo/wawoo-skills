@@ -79,7 +79,7 @@ def main() -> None:
         "",
         "> `python3 scripts/gen_capabilities.py` で再生成。手で編集しない。",
         "> まず本カタログで候補を選び、必要なものだけ `SKILL.md` を開く（段階的開示）。",
-        "> `⚠️` は外部セットアップが必要（`docs/plans/SKILLS-READINESS.md`）。標準フローでは使わない。",
+        "> `⚠️` は外部セットアップが必要（`scripts/readiness.json`）。標準フローでは使わない。",
         "",
         f"## Skills（{len(skills)}）",
         "",
@@ -102,7 +102,7 @@ def main() -> None:
         "",
         "## 呼び出し規約",
         "1. Workflow（入口）を選ぶ。2. その本文の skill を**必要分だけ**開く。3. 出力スキーマとゲートに従う。",
-        "詳細：`docs/plans/AGENT-INVOCATION-AND-CONTEXT.md`。",
+        "詳細：`docs/USAGE.md`。",
         "",
     ]
     out = KILO / "CAPABILITIES.md"

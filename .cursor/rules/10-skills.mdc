@@ -1,5 +1,5 @@
 ---
-description: 利用可能なスキル（skills-main／OpenDesign／Kilo・Marketplace）と適用方法
+description: 利用可能なスキル（Skills For Real Engineers／OpenDesign／Kilo・Marketplace）と適用方法
 alwaysApply: true
 ---
 
@@ -8,10 +8,10 @@ alwaysApply: true
 - **候補選定**：MCP が使えるなら `capabilities`／`skill_search` → `skill_get`。無ければ `@.kilo/CAPABILITIES.md`（生成物・1 行説明）で選び、**選んだものだけ** `@.kilo/skills/<name>/SKILL.md` を開く（全部読まない）。
 - **コンテキスト予算**：契約 ≤500tok／カタログ ≤1k／Skill 1 個 ≤2〜4KB／Memory top-5。
 - 原本・ライセンス：`.kilo/skills/ATTRIBUTION.md`／`LICENSES/`
-- 内訳：skills-main 21（MIT）／Kilo 16（MIT）／OpenDesign 10（Apache-2.0）／本リポジトリ 8（MIT）
+- 内訳：Skills For Real Engineers 21（MIT）／Kilo 16（MIT）／OpenDesign 10（Apache-2.0）／本リポジトリ 8（MIT）
 
 ## 未セットアップ（標準フローに載せない）
-`to-spec`・`to-tickets`・`triage`（issue tracker）。詳細：`docs/plans/SKILLS-READINESS.md`。
+`to-spec`・`to-tickets`・`triage`（issue tracker）。詳細：`scripts/readiness.json`。
 
 ## 開発
 `setup-matt-pocock-skills` → `to-spec` → `to-tickets` → `implement`／`implement-spec`（`tdd`）→ `code-review` → `retro`。迷ったら `ask-matt`。

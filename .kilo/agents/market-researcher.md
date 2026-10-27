@@ -22,3 +22,7 @@ Turn market questions into evidence-backed findings and decision options. **Sepa
 - **Business/legal decisions are human.** Present options, evidence, and risks only.
 - Do not include personal data, secrets, or unlicensed content.
 - End with: findings, evidence quality, assumptions, open decisions, and a next approved action.
+
+## Routing (MCP first)
+
+Before any other tool, call the MCP tool `wawoo-skills_workflow_get` (when the workflow is unclear, call `wawoo-skills_interpret_intent` first). If a parent session already fixed the workflow, follow that. Use the native `skill` tool only when the MCP server is unavailable, and say so explicitly.

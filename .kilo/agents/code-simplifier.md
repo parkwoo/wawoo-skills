@@ -72,3 +72,7 @@ Your output should include:
 - Suggestions for further improvements if applicable
 
 Remember: Your goal is to make code that developers will thank you for code that is a joy to read, understand, and modify. Every refactoring should make the codebase demonstrably better.
+
+## Routing (MCP first)
+
+Before any other tool, call the MCP tool `wawoo-skills_workflow_get` (when the workflow is unclear, call `wawoo-skills_interpret_intent` first). If a parent session already fixed the workflow, follow that. Use the native `skill` tool only when the MCP server is unavailable, and say so explicitly.

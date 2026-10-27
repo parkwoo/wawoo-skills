@@ -64,7 +64,7 @@
 | `web-experience-design` | ✅ | Design, implement, audit, and hand off web interfaces with evidence for user tasks, visual hierarchy, responsive behavior, access… | `.kilo/skills/web-experience-design/SKILL.md` |
 | `writing-for-agents` | ✅ | Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md. | `.kilo/skills/writing-for-agents/SKILL.md` |
 
-## Agents（21）
+## Agents（22）
 
 | name | 説明 | path |
 |---|---|---|
@@ -88,14 +88,17 @@
 | `release-manager` | Prepares releases with version, legal, artifact, compatibility, rollback, and remote-verification checks. | `.kilo/agents/release-manager.md` |
 | `security-reviewer` | Performs read-only security review of code, configuration, dependencies, and delivery changes. | `.kilo/agents/security-reviewer.md` |
 | `sre-operator` | Performs cautious read-first operations analysis for logs, monitoring, incidents, and cloud environments. | `.kilo/agents/sre-operator.md` |
+| `wawoo-router` | Default entry agent. Routes non-trivial requests to a wawoo workflow via MCP before any other tool, then executes that workflow. … | `.kilo/agents/wawoo-router.md` |
 | `web-designer` | Designs and implements accessible responsive web interfaces, then audits rendered behavior before handoff. | `.kilo/agents/web-designer.md` |
 
-## Workflows（13）
+## Workflows（15）
 
 | name | 説明 | path |
 |---|---|---|
 | `/compliance-review` | 法務・プライバシー・セキュリティのゲート（compliance-legal → privacy-review → security-review → release-readiness） | `.kilo/commands/compliance-review.md` |
+| `/content-delivery-lite` | L1 knowledge delivery — books, long docs, reports via CONTENT.md state machine (not code implement). | `.kilo/commands/content-delivery-lite.md` |
 | `/deck` | 提案・計画デッキ（Markdown/HTML 既定・pptx は任意）。標準の開発フローには含めない。 | `.kilo/commands/deck.md` |
+| `/delivery-lite` | Lightweight delivery — SSOT plan file state machine, minimal ceremony (L0–L1). Default for single-feature requests without full f… | `.kilo/commands/delivery-lite.md` |
 | `/design-review` | UI の設計レビュー（design-review → web-design-guidelines → accessibility-audit） | `.kilo/commands/design-review.md` |
 | `/feature-delivery` | Deliver a feature through discovery, design, implementation, testing, review, and approval gates. | `.kilo/commands/feature-delivery.md` |
 | `/incident-response` | Investigate and safely resolve an incident or urgent regression with evidence and follow-up. | `.kilo/commands/incident-response.md` |
@@ -104,8 +107,8 @@
 | `/research` | 調査 → 意思決定（research → product-discovery → to-spec/to-tickets） | `.kilo/commands/research.md` |
 | `/self-improve` | 自己改善（retro → pdca-cycle → self-review → plan-md） | `.kilo/commands/self-improve.md` |
 | `/self-review` | 自己修正（code-review → code-skeptic → diagnosing-bugs/tdd → 修正 → 検証） | `.kilo/commands/self-review.md` |
-| `/sprint-plan` | スプリント計画（wayfinder → to-tickets → 優先度/見積/容量 → plan-md） | `.kilo/commands/sprint-plan.md` |
-| `/status-report` | 進捗・状況報告（triage/to-tickets → 進捗・リスク・次アクション → plan-md） | `.kilo/commands/status-report.md` |
+| `/sprint-plan` | スプリント計画 L2（wayfinder → to-tickets → 優先度/見積/容量 → plan-md） | `.kilo/commands/sprint-plan.md` |
+| `/status-report` | 進捗・状況報告（ACTIVE または triage/to-tickets → 進捗・リスク → plan-md） | `.kilo/commands/status-report.md` |
 | `/ui-delivery` | Design, implement, and audit a web UI change across responsive and accessibility states. | `.kilo/commands/ui-delivery.md` |
 
 ## 呼び出し規約

@@ -21,3 +21,7 @@ Keep delivery predictable and visible: plan iterations, track progress, surface 
 - Workflow-first: follow `.kilo/commands/sprint-plan.md` and `.kilo/commands/status-report.md`.
 - Evidence over estimates: mark unverified dates/estimates explicitly.
 - End with: progress, risks, blockers, next actions, and required approvals.
+
+## Routing (MCP first)
+
+Before any other tool, call the MCP tool `wawoo-skills_workflow_get` (when the workflow is unclear, call `wawoo-skills_interpret_intent` first). If a parent session already fixed the workflow, follow that. Use the native `skill` tool only when the MCP server is unavailable, and say so explicitly.

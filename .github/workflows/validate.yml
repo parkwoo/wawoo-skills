@@ -17,3 +17,9 @@ jobs:
         run: python3 scripts/validate_assets.py
       - name: mcp test_server.py
         run: python3 mcp/test_server.py
+      - name: mcp test_memory_ops.py
+        run: python3 mcp/test_memory_ops.py
+      - name: e2e_flows.py
+        run: python3 scripts/e2e_flows.py
+      - name: cli_adapters_mock.py
+        run: python3 scripts/cli_adapters_mock.py

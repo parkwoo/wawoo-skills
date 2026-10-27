@@ -4,7 +4,7 @@
 
 利用者向けのキット本体:
 
-- `README.md`、`AGENTS.md`、`docs/USAGE.md`、`docs/VERSIONING.md`、`docs/memory/`
+- `README.md`、`AGENTS.md`、`docs/USAGE.md`、`docs/INTENT-ROUTING.md`、`docs/VERSIONING.md`、`docs/memory/`、`docs/plans/`、`docs/design/INTENT-RECEIVER.md`（意図ルーティング設計）
 - `.kilo/`（skills / agents / commands）、`.cursor/rules`、`mcp/`
 - `scripts/validate_assets.py`、`scripts/gen_capabilities.py`
 - `.github/workflows/`（資産・MCP スモーク）
@@ -34,3 +34,13 @@
 ## 秘密
 
 `.env` は従来どおり gitignore（`.env.example` はキー名の例のみ）。
+
+## 記憶（`docs/memory/`）
+
+| 利用形態 | 推奨 |
+|----------|------|
+| **キット本体**（wawoo-skills） | `INDEX.md`・`kit.md` 等を **git 管理**（汎用決定の共有） |
+| **消費側プロジェクト**（キットをコピーして別製品を開発） | チーム共有する決定は **コミット**、個人メモのみなら `docs/memory/local/` を `.gitignore` に追加（`local/` は任意・未同梱） |
+| **秘密** | memory に書かない（`validate_assets.py` がパターン検査） |
+
+ツールの優先順: `docs/memory/MEMORY-TOOLS.md`。

@@ -167,6 +167,7 @@ UI・調査・障害・コンプライアンスは別ワークフローが D0 �
 | **判断** | `/research`・`/market-plan` | 主に D0–D2（調査・計画）。D6 の放出直前なら `/release-review` を併用 |
 | **ゲート集約** | `/compliance-review`・`/release-review` | Gₐ・Gₑ の束ね |
 | **運用** | `/incident-response` | 時間圧下下的な D4–D7 |
+| **軽量納品** | `/delivery-lite` | L1。`docs/plans/ACTIVE.md` で D2–D4 をファイル状態機械に同期 |
 | **計画・報告** | `/sprint-plan`・`/status-report` | 鎖の同期 |
 | **メタ** | `/self-review`・`/self-improve` | 品質と工程の自己修正 |
 
@@ -214,7 +215,7 @@ UI・調査・障害・コンプライアンスは別ワークフローが D0 �
 | P1 | 変更に対応するワークフロー（または省略理由）が言える | ログ・PR に一文 |
 | P2 | 完了宣言に証拠が付く | Gₑ |
 | P3 | 不可逆操作の前に承認がある | Gₐ |
-| P4 | 振り返りが環境または手順に還元される | D7 が空でない |
+| P4 | 振り返りが環境または手順に還元される | D7 が空でない（`docs/memory/` 追記・`memory` スキル／MCP `memory_save`。テンプレは `docs/memory/TEMPLATE.md`） |
 
 ---
 

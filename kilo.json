@@ -1,6 +1,7 @@
 {
   "$schema": "https://app.kilo.ai/config.json",
   "instructions": ["AGENTS.md"],
+  "default_agent": "wawoo-router",
   "mcp": {
     "wawoo-skills": {
       "type": "local",

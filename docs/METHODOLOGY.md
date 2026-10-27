@@ -94,14 +94,47 @@ flowchart TB
 | **R** | Read skill | ワークフローが指定した `SKILL.md` だけ開く |
 | **O** | Observe & Output | ゲートを通し、証拠付きで成果物を出す |
 
-## 5. いつ何を足すか（設計判断）
+## 5. 儀式レベル（L0–L3）
+
+管理は**会話の繰り返し**ではなく、**デフォルト入口＋ファイル状態機械**に載せる。利用者は依頼だけ出し、エージェントは SSOT を読んで更新する。
+
+| レベル | いつ | 入口 workflow | 進捗の正本（SSOT） | やらないこと |
+|--------|------|---------------|-------------------|--------------|
+| **L0** | 単一箇所・範囲明確 | （省略可）`implement` のみ | なし（`git diff` が証拠） | 計画ファイル・PDCA・スプリント |
+| **L1** | 通常の機能・複数ステップ | **`/delivery-lite`** | **`docs/plans/ACTIVE.md`** | 毎回の口頭手順・二重の進捗表 |
+| **L2** | 複数タスク・同期が必要 | `/sprint-plan`・`/status-report` | **issue tracker**（`to-tickets`）＋必要なら `plan-md` | issue と別の Excel 的進捗の二重管理 |
+| **L3** | プロセス改善・反復事故 | `/self-improve`・`pdca-cycle` | `retro` 記録・`memory`・手順更新 | 小さな機能依頼ごとの PDCA |
+
+**状態機械（L1）**: `todo` → `doing`（同時 1 件）→ `done`（証拠必須）。詳細は `docs/plans/README.md`。
+
+**PDCA／アジャイル**: L2 の境界（スプリント）や L3 で使う。L1 の各タスクに PDCA 全文を載せない。
+
+### 5.1 交付物タイプ → 入口 workflow → SSOT
+
+儀式（L0–L3）は共通。**入口と正本ファイルだけ**交付物で変える（全部 `/delivery-lite` に載せない）。
+
+| 交付物 | 典型 L | 入口 workflow | 進捗 SSOT | 成果 SSOT |
+|--------|--------|---------------|-----------|-----------|
+| コード機能 | L1 | `/delivery-lite` | `docs/plans/ACTIVE.md` | リポジトリ・テストログ |
+| Web / UI | L1 | `/ui-delivery` | `ACTIVE.md` + `DESIGN.md` | スクショ・audit |
+| 調査・意思決定 | L1 | `/research` | `ACTIVE.md` | `docs/` 調査 MD |
+| 市場・事業計画 | L1 | `/market-plan` | `ACTIVE.md` + `plan-md` | 計画書 MD |
+| 長文・書籍・レポート | L1 | `/content-delivery-lite` | `docs/plans/CONTENT.md` | 原稿パス |
+| 複数タスク同期 | L2 | `/sprint-plan` | issue / `BACKLOG*.md` | — |
+| プロセス改善 | L3 | `/self-improve` | `RETRO*.md` + `memory` | — |
+
+**ツール別入口**: Kilo は `/name`、Cursor は `@.kilo/commands/<name>.md`（slash 非対応）。parity 検証: `python3 scripts/cli_adapters_mock.py`。
+
+## 6. いつ何を足すか（設計判断）
 
 | 欲しいもの | 追加する層 | 例 |
 |---|---|---|
 | 新しい単技（テストの書き方、法務チェックリスト） | **Skill** | `tdd`, `compliance-legal` |
 | 新しい観点（セキュリティレビュアの目線） | **Agent** | `security-reviewer` |
 | 新しい納品経路（UI 変更の標準ルート） | **Workflow** | `/ui-delivery` |
+| 単一依頼の既定ルート（進捗 SSOT） | **Workflow** | `/delivery-lite` ＋ `docs/plans/ACTIVE.md` |
 | 候補が多すぎて選べない | **カタログ／MCP** | 再生成 `gen_capabilities.py`、説明文の改善 |
+| 依頼が曖昧で workflow が決まらない | **意図ルーティング（MCP）** | `interpret_intent`（[INTENT-ROUTING.md](./INTENT-ROUTING.md)） |
 | 外部前提（issue tracker 未設定） | **Readiness** | `scripts/readiness.json` で標準フローから外す |
 
 **アンチパターン**
@@ -110,7 +143,7 @@ flowchart TB
 - agent に実装手順だけ書く → 観点が再利用できない。手順は skill に。
 - 55 skill を毎回プロンプトに貼る → コンテキスト枯渇。カタログ＋段階的開示。
 
-## 6. ゲート（品質の止めどころ）
+## 7. ゲート（品質の止めどころ）
 
 すべてのワークフローで共通の**完了の定義**に使う。符号は [PROCESS-PHILOSOPHY.md](./PROCESS-PHILOSOPHY.md) §4 と対応。
 
@@ -122,22 +155,24 @@ flowchart TB
 
 法務・プライバシー系 skill は**判断をエージェントに委ねない**（チェックリストと証拠まで）。
 
-## 7. コンテキスト予算（方法論の制約）
+## 8. コンテキスト予算（方法論の制約）
 
 モデルに渡す情報量も設計の一部。
 
-- 契約・カタログ・ワークフロー・skill は**上限あり**（[AGENTS.md](../AGENTS.md) §4）。
+- 契約・カタログ・ワークフロー・skill は**上限あり**（[AGENTS.md](../AGENTS.md) §5）。
 - **SSOT を一つ**: 同じ手順を README と skill に二重に書かない。正本は skill。
 - 大きい skill は `references/` に逃がし、入口だけ先に読む。
 
-## 8. ツールとの対応
+## 9. ツールとの対応
 
 | 環境 | ワークフロー | Skill | Agent | 選定 |
 |---|---|---|---|---|
-| Kilo | `/name` | 自動／明示参照 | `agent:` 推奨 | MCP・`.kilo/` |
-| Cursor | `@commands/...` | `@skills/.../SKILL.md` | `@agents/...` | MCP・`@CAPABILITIES.md` |
+| Kilo | `/name` | 自動／明示参照 | `agent:` 推奨 | MCP・`.kilo/`・`interpret_intent`（任意） |
+| Cursor | `@commands/...` | `@skills/.../SKILL.md` | `@agents/...` | MCP・`@CAPABILITIES.md`・`interpret_intent`（任意） |
 
-## 9. 受入（この方法論が効いているか）
+意図ルーティングの手順・JSON 契約: [INTENT-ROUTING.md](./INTENT-ROUTING.md)。儀式レベル L0–L3（§5）とは別の **ルート層** L0–L2／委譲 L3 を指す。
+
+## 10. 受入（この方法論が効いているか）
 
 | id | 確認 | Pass |
 |---|---|---|
@@ -146,7 +181,7 @@ flowchart TB
 | M3 | ゲート該当時に停止または承認依頼がある | 本番直叩き無し |
 | M4 | 同種タスクの手順が再現できる | 2 回目以降も同じ鎖 |
 
-## 10. 関連文書
+## 11. 関連文書
 
 | 文書 | 用途 |
 |---|---|

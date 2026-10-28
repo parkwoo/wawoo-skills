@@ -100,26 +100,24 @@ def skill_budget_warnings() -> list[str]:
     return [f"{len(over)} skills over 4KB budget (see AGENTS §5): " + ", ".join(over)]
 
 def public_boundary_violations() -> list[str]:
-    """Tracked files that are internal dev materials (violate the public boundary).
+    """Boundary check for the source -> publish model.
 
-    Files already deleted in the working tree (a pending, uncommitted removal) are
-    skipped so the check reflects the intended (post-commit) index.
+    This repo is the private source of truth and tracks `internal/` by design; the
+    public repo is generated from `.publish-allowlist`. The boundary to enforce is
+    therefore that the allowlist never names an internal-only path.
     """
-    try:
-        out = subprocess.run(
-            ["git", "ls-files"], cwd=ROOT, capture_output=True, text=True
-        )
-    except Exception:
-        return []
-    if out.returncode != 0:
+    al = ROOT / ".publish-allowlist"
+    if not al.exists():
         return []
     bad: list[str] = []
-    for path in out.stdout.splitlines():
-        path = path.strip()
-        if not path or not (ROOT / path).exists():
+    for raw in al.read_text(encoding="utf-8").splitlines():
+        entry = raw.strip()
+        if not entry or entry.startswith("#"):
             continue
-        if any(re.match(p, path) for p in INTERNAL_PUBLIC_PATTERNS):
-            bad.append(path)
+        if entry == ".publish-allowlist" or any(
+            re.match(p, entry) for p in INTERNAL_PUBLIC_PATTERNS
+        ):
+            bad.append(entry)
     return bad
 
 
@@ -213,7 +211,7 @@ def main() -> int:
                 issues.append(line)
 
     for b in public_boundary_violations():
-        issues.append(f"internal dev material tracked in public tree: {b}")
+        issues.append(f"publish allowlist must not include internal path: {b}")
 
     issues.extend(command_replay_issues())
     warnings.extend(skill_budget_warnings())

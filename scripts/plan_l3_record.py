@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""L3 振り返り・PDCA 記録の最小構造を検証。stdlib のみ。"""
+"""Validate the minimal structure of an L3 retro / PDCA record. stdlib only."""
 from __future__ import annotations
 
 import argparse
@@ -7,7 +7,7 @@ import re
 import sys
 from pathlib import Path
 
-# pdca-cycle Completion criteria に合わせた見出しキーワード
+# Heading keywords aligned with the pdca-cycle completion criteria
 REQUIRED_SECTIONS = (
     ("baseline", re.compile(r"^##\s+.*(baseline|ベースライン|現状)", re.I | re.M)),
     ("action", re.compile(r"^##\s+.*(action|実施|Do)", re.I | re.M)),

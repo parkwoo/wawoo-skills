@@ -1,28 +1,28 @@
-# 記憶ツールの優先順位（Kilo / Cursor / MCP）
+# Memory tool priority (Kilo / Cursor / MCP)
 
-複数の記憶手段が同時に使えるときの**競合時ルール**。詳細手順は `.kilo/skills/memory/SKILL.md`。
+**Conflict-resolution rules** for when several memory mechanisms are available at once. Detailed steps: `.kilo/skills/memory/SKILL.md`.
 
-## 取得（recall）
+## Recall
 
-| 順位 | 手段 | 使う条件 |
+| Priority | Means | Condition |
 |------|------|----------|
-| 1 | MCP `memory_recall` | Cursor／MCP 接続時。`docs/memory/` をチャンク単位で返す |
-| 2 | `docs/memory/INDEX.md` を読む | MCP 無し・軽量確認 |
-| 3 | `docs/memory/<topic>.md` | トピックが分かっているとき |
-| 4 | Kilo `kilo_memory_recall` | Kilo ネイティブが有効なとき。**ファイルと矛盾したらファイルを正**とし、Kilo 側を更新する |
+| 1 | MCP `memory_recall` | With Cursor / MCP connected. Returns `docs/memory/` in chunks |
+| 2 | Read `docs/memory/INDEX.md` | Without MCP, lightweight check |
+| 3 | `docs/memory/<topic>.md` | When the topic is known |
+| 4 | Kilo `kilo_memory_recall` | When Kilo native is enabled. **On conflict with files, the files win**, and update the Kilo side |
 
-## 保存（save）
+## Save
 
-| 順位 | 手段 | 使う条件 |
+| Priority | Means | Condition |
 |------|------|----------|
-| 1 | MCP `memory_save` | INDEX＋topic ファイルへ構造化追記（推奨） |
-| 2 | 手動で `INDEX`／`<topic>.md` 追記 | テンプレは `TEMPLATE.md` |
-| 3 | Kilo `kilo_memory_save` | 補助。**必ず** `docs/memory/` に同内容を反映（または export） |
+| 1 | MCP `memory_save` | Structured append to INDEX + a topic file (recommended) |
+| 2 | Manually append `INDEX` / `<topic>.md` | Template: `TEMPLATE.md` |
+| 3 | Kilo `kilo_memory_save` | Auxiliary. **Always** mirror the same content into `docs/memory/` (or export) |
 
-## 正本（SSOT）
+## SSOT
 
-このキットでは **`docs/memory/` の Markdown** が正本。Kilo 内蔵メモリはセッション補助に留める。
+In this kit, the **Markdown under `docs/memory/`** is the SSOT. Kilo's built-in memory is only a session aid.
 
-## 工程との接続
+## Ties to the process
 
-- **D7／P4**（振り返りの還元）: 新しい制約・落とし穴・決定は `memory` に残す。`docs/PROCESS-PHILOSOPHY.md` §11 P4。
+- **D7 / P4** (feeding back the retro): keep new constraints, gotchas, and decisions in `memory`.

@@ -1,19 +1,21 @@
 ---
-description: 自己改善（retro → pdca-cycle → self-review → plan-md）
+description: Self-improvement (retro → pdca-cycle → self-review → plan-md)
 agent: project-manager
+replay: safe
 ---
 
-# Self Improve（自己改善）
+# Self Improve
 
-1. `AGENTS.md` を読み、`memory` を想起（過去の決定・失敗・回避策）。
-2. **`retro`**：この反復の**事実**（何をした・何が起きた・期待との差）を振り返る。
-3. **`pdca-cycle`**：Plan → Do → Check → Act で**改善アクション**を決める（測定可能に）。
-4. 必要なら**自己修正の手順を展開**（`code-review`→（`.kilo/agents/code-skeptic.md` の観点）→`tdd`）で技術的負債を解消。
-5. 必要なら **`.kilo/agents/code-simplifier.md` の観点**で複雑さを下げる（挙動を変えない。Task 委譲可）。
-6. **`plan-md`**：改善計画を Markdown に保存（**担当・期限・指標**）。
-7. **`memory`**：学び・再発防止を保存。次回の `retro` で効果を確認。
+1. Read `AGENTS.md` and recall `memory` (past decisions, failures, avoidances).
+2. **`retro`**: review the **facts** of this iteration (what you did, what happened, the gap vs expectation).
+3. **`pdca-cycle`**: decide **improvement actions** via Plan → Do → Check → Act (make them measurable).
+4. If needed, **roll out the self-correction steps** (`code-review` → the `.kilo/agents/code-skeptic.md` viewpoint → `tdd`) to pay down technical debt.
+5. If needed, reduce complexity using the **`.kilo/agents/code-simplifier.md` viewpoint** (no behavior change; Task delegation allowed).
+6. **`plan-md`**: save the improvement plan as Markdown (**owner, deadline, metric**).
+7. **`memory`**: save learnings and prevention. Confirm the effect at the next `retro`.
 
-## ゲート
-- 改善は**証拠**（メトリクス・失敗ログ）に基づく。推測で「改善した」と言わない。
-- 事業判断・契約・法務は人が決める。
-- 破壊的変更・本番・削除は承認必須。
+## Gates
+
+- Base improvements on **evidence** (metrics, failure logs). Do not claim "improved" by inference.
+- Business decisions, contracts, and legal are made by humans.
+- Destructive changes, production, and deletions require approval.

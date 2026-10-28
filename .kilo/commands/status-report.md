@@ -1,18 +1,20 @@
 ---
-description: 進捗・状況報告（ACTIVE または triage/to-tickets → 進捗・リスク → plan-md）
+description: Progress / status report (ACTIVE or triage/to-tickets → progress/risk → plan-md)
 agent: project-manager
+replay: safe
 ---
 
-# Status Report（進捗・状況報告）
+# Status Report
 
-1. **SSOT**: **L1** は `docs/plans/ACTIVE.md` を読む。**L2** は issue tracker（`triage`／`to-tickets`）。二重の進捗表は作らない。
-2. **`triage`／`to-tickets`**（L2 またはブロッカー整理時）：作業項目の現状とブロッカーを整理。
-3. **進捗**：完了・進行・遅延を**証拠**（PR/コミット/テスト結果/ACTIVE の証拠列）で示す。未確認は未確認と明記。
-4. **リスク・次アクション**：遅延要因と承認が必要な判断を列挙。
-5. **`plan-md`**：状況報告を Markdown に保存（期間・指標・次アクション）。
-6. 報告：**進捗 / リスク / ブロッカー / 次の承認事項**。
+1. **SSOT**: for **L1**, read `docs/plans/ACTIVE.md`. For **L2**, use the issue tracker (`triage` / `to-tickets`). Never create a second progress table.
+2. **`triage` / `to-tickets`** (for L2 or when unblocking): organize item status and blockers.
+3. **Progress**: show done / in progress / delayed with **evidence** (PR, commit, test result, ACTIVE evidence column). Mark unconfirmed as unconfirmed.
+4. **Risks and next actions**: list delay causes and decisions needing approval.
+5. **`plan-md`**: save the status report as Markdown (period, metrics, next actions).
+6. Report: **progress / risks / blockers / next approvals**.
 
-## ゲート
-- 数値・日付は**推測で断定しない**（実測/未検証を区別）。
-- 事業判断・契約・法務は人が決める。
-- 破壊的変更・本番・削除は承認必須。
+## Gates
+
+- Do not assert numbers or dates as fact (**distinguish measured from unverified**).
+- Business decisions, contracts, and legal are made by humans.
+- Destructive changes, production, and deletions require approval.

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""意図受信器 — 常駐プロセス。NDJSON で意図を受け取り workflow をスケジュールする。
+"""Intent receiver — a resident process. Receives intents over NDJSON and schedules a workflow.
 
-意図スコアリングの常駐入口（stdio / Unix ソケット）。判定は上流 LLM、DB 書込は非同期。
+The resident entry for intent scoring (stdio / Unix socket). The decision is made by the upstream LLM; DB writes are async.
 
 起動:
   python3 mcp/intent_receiver.py
   python3 mcp/intent_receiver.py --socket /run/user/1000/wawoo-intent.sock
 
-プロトコル（1 行 1 JSON）:
-  要求: {"id":"1","text":"バグを直したい","meta":{}}
+Protocol (one JSON per line):
+  request: {"id":"1","text":"I want to fix a bug","meta":{}}
   応答: {"id":"1","ok":true,"schedule":{...}}
 """
 from __future__ import annotations
@@ -23,7 +23,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-# 同ディレクトリのモジュール
+# modules in the same directory
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from intent_interpreter import interpret_intent_payload
 
@@ -99,7 +99,7 @@ def run_socket(path: str) -> None:
         sock_path.unlink()
     sock_path.parent.mkdir(parents=True, exist_ok=True)
     server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    # 権限を絞る（/tmp 等の緩い umask でも他ユーザから投函されないように）
+    # restrict permissions (so other users cannot post even with a loose umask like /tmp)
     old_umask = os.umask(0o177)
     try:
         server.bind(str(sock_path))
@@ -127,7 +127,7 @@ def main() -> int:
     parser.add_argument(
         "--socket",
         default=os.environ.get("WAWOO_INTENT_SOCKET", "").strip() or None,
-        help="Unix ソケットパス（未指定時は stdio）",
+        help="Unix socket path (stdio when omitted)",
     )
     args = parser.parse_args()
     socket_path = args.socket or os.environ.get("WAWOO_INTENT_SOCKET", "").strip()

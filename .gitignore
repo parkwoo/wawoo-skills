@@ -5,6 +5,8 @@
 
 # 意図学習 DB（ローカル・ユーザーごと）
 data/*.db
+data/intent_session.json
+data/intent_session.json.tmp
 
 # python
 __pycache__/
@@ -18,21 +20,11 @@ node_modules/
 # os
 .DS_Store
 
-# E2E 実行ログ（再実行で生成。手順は docs/plans/E2E-WORKFLOW-COVERAGE.md）
+# E2E 実行ログ（再実行で生成。手順は internal/docs/plans/E2E-WORKFLOW-COVERAGE.md）
 docs/plans/evidence/
 
 # kilo runtime
 .kilo/worktrees/
 
-# 内部用（公開 git 外）。テンプレ: internal.example/ → scripts/bootstrap-internal.sh
-/internal/
-
-# 旧内部パス（移行前のローカル残骸も無視）
-/docs/MAINTAINER.md
-docs/PUBLICATION.md
-/docs/audit/
-/scripts/e2e/
-/docker/e2e/
-/scripts/audit_license_headers.py
-/scripts/audit_skill_quality.py
-/scripts/split_skill_reference.py
+# 内部物は本リポジトリ（非公開ソース）で追跡する。公開は publish（.publish-allowlist）で抽出する。
+# （旧: /internal/・キット SSOT・記憶を gitignore していたが、非公開ソース化に伴い追跡へ変更）

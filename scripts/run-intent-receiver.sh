@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 意図受信器を常駐起動（Unix ソケット）
+# Start the intent receiver as a resident process (Unix socket)
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SOCKET="${WAWOO_INTENT_SOCKET:-/tmp/wawoo-intent.sock}"

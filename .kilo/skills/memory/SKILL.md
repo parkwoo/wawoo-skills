@@ -3,47 +3,47 @@ name: memory
 description: Persist and recall durable project knowledge (decisions, constraints, gotchas, recurring fixes) across sessions. Use before starting work and after a decision. File-based so it works in both Kilo and Cursor; use Kilo memory tools when available.
 ---
 
-# Memory（記憶）
+# Memory
 
-## 優先順（取得・保存）
+## Order (recall / save)
 
-詳細表: `docs/memory/MEMORY-TOOLS.md`
+Full table: `docs/memory/MEMORY-TOOLS.md`
 
-| 操作 | 順位 |
-|------|------|
-| **取得** | 1. MCP `memory_recall` → 2. `INDEX.md` → 3. `<topic>.md` → 4. Kilo recall（矛盾時はファイルが正） |
-| **保存** | 1. MCP `memory_save` → 2. 手動追記（`TEMPLATE.md`）→ 3. Kilo save（ファイルへ同期） |
+| Operation | Order |
+|-----------|-------|
+| **Recall** | 1. MCP `memory_recall` → 2. `INDEX.md` → 3. `<topic>.md` → 4. Kilo recall (on conflict, the file wins) |
+| **Save** | 1. MCP `memory_save` → 2. manual append (`TEMPLATE.md`) → 3. Kilo save (syncs to file) |
 
-## 保存場所
+## Where it lives
 
-- `docs/memory/INDEX.md` — 索引（セクション別一行＋履歴）
-- `docs/memory/<topic>.md` — トピック別の詳細（`### MEM-YYYYMMDD-NNN` 形式）
-- MCP `memory_save`: **両方に追記**（`tags` で種別と `topic:name`）
+- `docs/memory/INDEX.md` — index (one line per section + history)
+- `docs/memory/<topic>.md` — per-topic detail (`### MEM-YYYYMMDD-NNN`)
+- MCP `memory_save`: appends to **both** (`tags` carries the kind and `topic:name`)
 
-### MCP 引数
+### MCP arguments
 
-- `text`（必須）: 本文
-- `tags`: `decision|constraint|gotcha|fix|open` と `topic:名前`（例 `decision,topic:kit`）
-- `source`: 出典（ファイル・PR・URL）
+- `text` (required): the body
+- `tags`: `decision|constraint|gotcha|fix|open` and `topic:name` (e.g. `decision,topic:kit`)
+- `source`: provenance (file, PR, URL)
 
-## いつ使うか
+## When to use
 
-- **作業前**（WARO の W 前）: 想起 — 特に `/feature-delivery`・`/self-review` の入口。
-- **ゲート後・納品前**: 新しい決定・制約・落とし穴を保存（PROCESS P4／D7）。
-- **再発する失敗**: 原因と回避策（observed failure）。
+- **Before work** (the W of WARO): recall — especially at the entry of `/feature-delivery` and `/self-review`.
+- **After a gate, before delivery**: save a new decision, constraint, or gotcha (PROCESS P4 / D7).
+- **Recurring failures**: cause and avoidance (observed failure).
 
-## 何を保存するか
+## What to save
 
-- 決定（何を・なぜ・代替案・日付）／制約／落とし穴／再発修正／未決事項。
-- **保存しない**: 秘密・鍵・個人情報・本文ログ。
+- Decisions (what, why, alternatives, date), constraints, gotchas, recurring fixes, open questions.
+- **Do not save**: secrets, keys, personal data, raw logs.
 
-## 書き方
+## How to write
 
-- `docs/memory/TEMPLATE.md` の最小フォーマット。
-- 簡潔に。**出典**を必ず付ける。
-- 変更時は追記（履歴を消さない）。
+- Use the minimal format in `docs/memory/TEMPLATE.md`.
+- Be concise. Always include **provenance**.
+- Append on change (never delete history).
 
-## 関連
+## Related
 
-- 引き継ぎ：`handoff`／計画：`plan-md`／改善：`retro`・`pdca-cycle`
-- 工程: `docs/PROCESS-PHILOSOPHY.md` §11 P4
+- Handoff: `handoff` / planning: `plan-md` / improvement: `retro`, `pdca-cycle`
+- Process: keep decisions/gotchas in `memory` (see `docs/memory/MEMORY-TOOLS.md`)

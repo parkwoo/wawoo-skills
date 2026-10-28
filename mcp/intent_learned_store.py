@@ -1,4 +1,4 @@
-"""学習済み意図ルート（動的・SQLite）。高信頼 LLM 判定だけを蓄積する。"""
+"""Learned intent routes (dynamic, SQLite). Accumulates only high-confidence LLM decisions."""
 from __future__ import annotations
 
 import os
@@ -127,7 +127,7 @@ class IntentLearnedStore:
         kind: PatternKind = "substring",
         regex_pattern: str | None = None,
     ) -> bool:
-        """信頼度が閾値以上のときだけ呼ぶ。"""
+        """Call only when confidence is at or above the threshold."""
         if workflow not in WORKFLOW_AGENTS:
             return False
         trigger_norm = (trigger or "").strip().lower()

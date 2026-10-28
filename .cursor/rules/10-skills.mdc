@@ -1,36 +1,44 @@
 ---
-description: 利用可能なスキル（Skills For Real Engineers／OpenDesign／Kilo・Marketplace）と適用方法
+description: Available skills (Skills For Real Engineers / OpenDesign / Kilo, Marketplace) and how to apply them
 alwaysApply: true
 ---
 
-# スキル（55 件）
+# Skills (63)
 
-- **候補選定**：MCP が使えるなら `capabilities`／`skill_search` → `skill_get`。無ければ `@.kilo/CAPABILITIES.md`（生成物・1 行説明）で選び、**選んだものだけ** `@.kilo/skills/<name>/SKILL.md` を開く（全部読まない）。
-- **コンテキスト予算**：契約 ≤500tok／カタログ ≤1k／Skill 1 個 ≤2〜4KB／Memory top-5。
-- 原本・ライセンス：`.kilo/skills/ATTRIBUTION.md`／`LICENSES/`
-- 内訳：Skills For Real Engineers 21（MIT）／Kilo 16（MIT）／OpenDesign 10（Apache-2.0）／本リポジトリ 8（MIT）
+- **Selection**: if MCP is available, use `capabilities` / `skill_search` → `skill_get`. Otherwise use `@.kilo/CAPABILITIES.md` (generated, one-line each) and open **only the chosen** `@.kilo/skills/<name>/SKILL.md` (do not read everything).
+- **Context budget**: contract ≤500tok / catalog ≤1k / one skill ≤2–4KB / memory top-5.
+- Origins and licenses: `.kilo/skills/ATTRIBUTION.md` / `LICENSES/`
+- Breakdown: Skills For Real Engineers 25 (MIT) / Kilo 16 (MIT) / OpenDesign 10 (Apache-2.0) / this repo 12 (MIT)
 
-## 未セットアップ（標準フローに載せない）
-`to-spec`・`to-tickets`・`triage`（issue tracker）。詳細：`scripts/readiness.json`。
+## Not set up (keep off the standard flow)
 
-## 開発
-`setup-matt-pocock-skills` → `to-spec` → `to-tickets` → `implement`／`implement-spec`（`tdd`）→ `code-review` → `retro`。迷ったら `ask-matt`。
+`to-spec`, `to-tickets`, `triage` (issue tracker). Details: `scripts/readiness.json`.
 
-## 設計（web/app UI）
-`design-brief` → `reference-design-contract` → `design-md` → `frontend-design` → `design-review` → `web-design-guidelines` → `accessibility-audit` → `web-experience-design`。必要画像は利用可能な画像ツール（同梱なし）。
+## Development
 
-## 市場・事業計画
-`research` → `research-decision-room` → `product-discovery` → `marketing-psychology` → `plan-md`。ブランドは `brand-guidelines`。デッキは `slides`（`/deck`）。
+`setup-matt-pocock-skills` → `to-spec` → `to-tickets` → `implement` / `implement-spec` (`tdd`) → `code-review` → `retro`. When unsure, `ask-matt`.
 
-## 法務・安全
-`compliance-legal` → `privacy-review` → `security-review` → `release-readiness`。**法的判断は人の承認**。
+## Design (web/app UI)
 
-## 記憶・版管理
-`memory`（決定・落とし穴の永続化／`docs/memory/`）・`changelog`（git log→CHANGELOG・SemVer）。
+`design-brief` → `reference-design-contract` → `design-md` → `frontend-design` → `design-review` → `web-design-guidelines` → `accessibility-audit` → `web-experience-design`. Generate images with an available image tool (not bundled).
 
-## 品質・運用
-`architecture-decision`・`engineering-quality`・`test-engineering`・`performance-audit`・`database-change-safety`・`dependency-upgrade`・`incident-debugging`・`deployment`・`pdca-cycle`。
+## Market / business planning
 
-## 注意
-- **大量収集はしない**（必要分のみ）。
-- Marketplace business 3 件は**第三者ソースでライセンス未確認**（再配布前に確認）。
+`research` → `research-decision-room` → `product-discovery` → `marketing-psychology` → `plan-md`. Brand: `brand-guidelines`. Decks: `slides` (`/deck`).
+
+## Legal / safety
+
+`compliance-legal` → `privacy-review` → `security-review` → `release-readiness`. **Legal calls require human approval.**
+
+## Memory / versioning
+
+`memory` (persist decisions and gotchas / `docs/memory/`) · `changelog` (git log → CHANGELOG, SemVer).
+
+## Quality / operations
+
+`architecture-decision`, `engineering-quality`, `test-engineering`, `performance-audit`, `database-change-safety`, `dependency-upgrade`, `incident-debugging`, `deployment`, `pdca-cycle`.
+
+## Cautions
+
+- **Do not harvest en masse** (only what you need).
+- The 3 Marketplace "business" items are **third-party source with unverified licenses** (verify before redistribution).

@@ -2,16 +2,16 @@
 name: writing-for-agents
 description: Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.
 ---
-# Writing for Agents（エージェント向け文書）
+# Writing for Agents
 
-エージェントが読む文書（skills、`AGENTS.md`、 pointed docs）の書き方の参照。
+A reference for how to write documents that agents read (skills, `AGENTS.md`, pointed docs).
 
-## コンテキスト予算
+## Context budget
 
-- 入口: 本 `SKILL.md`。
-- 詳細・メカニクス: [`references/writing-guide.md`](writing-guide.md)、[`SKILL-MECHANICS.md`](../SKILL-MECHANICS.md)。
+- Entry: this `SKILL.md`.
+- Detail & mechanics: [`references/writing-guide.md`](writing-guide.md), [`SKILL-MECHANICS.md`](../SKILL-MECHANICS.md).
 
-## ゲート
+## Gates
 
-- 秘密・個人情報を例文に含めない。
-- 1 文書 1 目的（SSOT を壊さない）。
+- Do not include secrets or personal data in examples.
+- One document, one purpose (do not break the SSOT).

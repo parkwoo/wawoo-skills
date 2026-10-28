@@ -1,18 +1,20 @@
 ---
-description: 提案・計画デッキ（Markdown/HTML 既定・pptx は任意）。標準の開発フローには含めない。
+description: Proposal / planning deck (Markdown/HTML by default; pptx optional). Not part of the standard development flow.
 agent: market-researcher
+replay: safe
 ---
 
-# Deck（提案・計画スライド）
+# Deck (proposal / planning slides)
 
-2. 目的・聴衆・持ち時間・**意思決定してほしいこと**を確認。
-3. 証拠：`research`／`research-decision-room` の結果を使う（**事実と推測を分離**）。
-4. 構成：`marketing-psychology`（フレーミング/価格の見せ方）を参考に、1 スライド 1 メッセージ。
-5. 生成：**`slides`**（Markdown/HTML を `docs/decks/` に保存。`pptx` は PptxGenJS 導入時のみ）。
-5b. **画像が必要な場合のみ** `fal-gen`（`FAL_KEY`）で生成。未設定ならプレースホルダ＋出典。
-6. 見直し：必要なら `design-review`／`web-design-guidelines`。
-7. 報告：**出典・未検証・意思決定の選択肢**。公開・外部送信は承認後。
+2. Confirm purpose, audience, time, and **the decision you want**.
+3. Evidence: use results from `research` / `research-decision-room` (**separate fact from inference**).
+4. Structure: one slide, one message, guided by `marketing-psychology` (framing / how pricing is shown).
+5. Generate: **`slides`** (save Markdown/HTML into `docs/decks/`; `pptx` only when PptxGenJS is installed).
+5b. **Only if images are needed**, generate with `fal-gen` (`FAL_KEY`). If unset, use a placeholder + source.
+6. Review: `design-review` / `web-design-guidelines` if needed.
+7. Report: **sources, unverified items, decision options**. Publishing and external transmission after approval.
 
-## ゲート
-- 事業判断（価格・契約・法務）は人が決める。
-- 秘密・個人情報・ライセンス未確認素材を使わない。
+## Gates
+
+- Business decisions (pricing, contracts, legal) are made by humans.
+- Do not use secrets, personal data, or unverified-license assets.

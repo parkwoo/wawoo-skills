@@ -1,4 +1,4 @@
-"""L3: workflow 起動後の subagent 委譲ヒント（上流エージェント / Task 向け）。"""
+"""L3: a subagent delegation hint after the workflow starts (for the upstream agent / Task)."""
 from __future__ import annotations
 
 import json
@@ -12,15 +12,17 @@ def build_delegation_payload(
     label: str = "",
     background: bool = False,
     suggested_agent: str = "",
+    idempotency_key: str = "",
+    model_tier: str = "",
 ) -> dict[str, Any]:
-    """OpenCode subagent 相当の構造化指示（実行は上流エージェントが Task 等で行う）。"""
+    """Structured instruction equivalent to an OpenCode subagent (the upstream agent runs it via Task, etc.)."""
     subtask = (subtask or "").strip()
     if not subtask:
         raise ValueError("subtask is required")
     wf = str(parent_schedule.get("workflow", "")).strip()
     agent = suggested_agent.strip() or str(parent_schedule.get("agent", "")).strip()
     hint = str(parent_schedule.get("delegation_hint", "upstream-subagent")).strip()
-    return {
+    payload = {
         "route_layer": "L3",
         "delegation": hint,
         "parent_workflow": wf,
@@ -29,11 +31,18 @@ def build_delegation_payload(
         "label": (label or subtask[:40]).strip(),
         "background": background,
         "instruction": (
-            f"親 workflow /{wf} の実行中。次のサブタスクを隔離セッション（subagent）で実行し、"
-            f"結果だけ親に返す。サブタスク: {subtask}"
+            f"While the parent workflow /{wf} is running, run the following subtask in an isolated session (subagent) and"
+            f"return only the result to the parent. Subtask: {subtask}"
         ),
         "command_path": parent_schedule.get("command_path", ""),
     }
+    key = idempotency_key.strip()
+    if key:
+        payload["idempotency_key"] = key
+    tier = model_tier.strip().lower()
+    if tier in ("fast", "reasoning"):
+        payload["model_tier"] = tier
+    return payload
 
 
 def format_delegation_text(payload: dict[str, Any]) -> str:

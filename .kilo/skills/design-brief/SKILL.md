@@ -34,20 +34,20 @@ od:
   capabilities_required:
     - file_write
 ---
-# Design Brief（I-Lang → DESIGN.md）
+# Design Brief (I-Lang → DESIGN.md)
 
-構造化ブリーフ（I-Lang または自然言語）を `DESIGN.md` とプレビュー用 HTML に落とす。
+Turn a structured brief (I-Lang or natural language) into `DESIGN.md` and a preview HTML.
 
-## コンテキスト予算
+## Context budget
 
-- 入口: 本 `SKILL.md`。
-- 8 次元・マッピング表・ワークフロー全文: [`references/design-brief-guide.md`](design-brief-guide.md)。
+- Entry: this `SKILL.md`.
+- The 8 dimensions, the mapping table, and the full workflow: [`references/design-brief-guide.md`](design-brief-guide.md).
 
-## ゲート
+## Gates
 
-- 未指定の次元は**明示的にフラグ**し、勝手に埋めない。
-- 生成物は消費プロジェクトの `DESIGN.md` パスに合わせる（本キット内の `design-systems/` は参照例）。
+- **Flag** unspecified dimensions explicitly; do not fill them in on your own.
+- Match the artifact to the consuming project's `DESIGN.md` path (`design-systems/` in this kit is a reference example).
 
-## ライセンス
+## License
 
-Apache-2.0 — 同ディレクトリの `LICENSE.txt` / `NOTICE.txt`。
+Apache-2.0 — see `LICENSE.txt` / `NOTICE.txt` in the same directory.

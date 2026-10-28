@@ -1,4 +1,4 @@
-"""意図解釈 — L0 明示/command → L1 学習 → L2 上流スコア、DB 書き込みは非同期。"""
+"""Intent interpretation — L0 explicit/command → L1 learned → L2 upstream score; DB writes are async."""
 from __future__ import annotations
 
 import os
@@ -9,7 +9,6 @@ from typing import Any, Literal
 from intent_catalog import (
     WORKFLOW_AGENTS,
     catalog_for_upstream,
-    classify_by_trigger,
     implement_allowed,
     mcp_tools_allow,
     phase_dicts,
@@ -18,6 +17,7 @@ from intent_catalog import (
 from intent_commands import match_slash_route
 from intent_learn_queue import enqueue_hit, enqueue_promote, flush, reset_learn_queue
 from intent_learned_store import IntentLearnedStore, default_db_path
+from intent_seed import seed_learned_store
 from intent_upstream import (
     UpstreamScoring,
     parse_upstream,
@@ -28,7 +28,7 @@ from intent_upstream import (
 UpstreamClassification = UpstreamScoring
 
 Confidence = Literal["high", "medium", "low"]
-Source = Literal["explicit", "learned", "trigger", "upstream", "pending", "fallback"]
+Source = Literal["explicit", "learned", "upstream", "pending", "fallback"]
 RouteLayer = Literal["L0", "L1", "L2"]
 
 _store: IntentLearnedStore | None = None
@@ -46,6 +46,7 @@ def _get_store() -> IntentLearnedStore:
     if _store is None:
         root = Path(os.environ.get("WAWOO_SKILLS_ROOT", "")).expanduser() if os.environ.get("WAWOO_SKILLS_ROOT") else None
         _store = IntentLearnedStore(default_db_path(root if root and root.exists() else Path(__file__).resolve().parents[1]))
+        seed_learned_store(_store)
     return _store
 
 
@@ -107,7 +108,7 @@ def _enrich_workflow_meta(schedule: IntentSchedule) -> IntentSchedule:
     schedule.phases = phase_dicts(schedule.workflow)
     schedule.implement_allowed = implement_allowed(schedule.workflow)
     if schedule.phases and not schedule.implement_allowed:
-        schedule.gate = "この workflow は読み取り専用フェーズのみ。実装が必要なら理由と新 workflow（例: feature-delivery）を宣言して切替える。"
+        schedule.gate = "This workflow is read-only phases only. If implementation is needed, declare the reason and a new workflow (e.g. feature-delivery) and switch."
     return schedule
 
 
@@ -158,7 +159,7 @@ def apply_upstream_scoring(
     intent_id: str = "",
     learn: bool = True,
 ) -> IntentSchedule:
-    """上流 LLM のスコアリング結果を適用（SQLite 昇格はキューへ）。 """
+    """Apply the upstream LLM scoring result (SQLite promotion goes to the queue). """
     raw = (text or "").strip()
     trace = [f"L2:upstream:{scoring.workflow}:{scoring.score:.2f}"]
     learn_queued = False
@@ -197,7 +198,7 @@ def interpret_intent_payload(
     classification: dict[str, Any] | None = None,
     scoring: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """MCP 向け: コンパクト dict。scoring/classification ありなら上流スコアを適用。"""
+    """For MCP: a compact dict. If scoring/classification is present, apply the upstream score."""
     raw = (text or "").strip()
     upstream_json = scoring if scoring is not None else classification
     if upstream_json:
@@ -261,34 +262,6 @@ def interpret_intent_payload(
         )
         return {"ok": True, "needs_upstream": False, "needs_scoring": False, "route_layer": "L1", "schedule": sched.to_dict()}
 
-    match = classify_by_trigger(raw)
-    if match:
-        learn_queued = match.score >= _LEARN_MIN_SCORE
-        if learn_queued:
-            enqueue_promote(
-                store,
-                trigger=match.trigger,
-                workflow=match.workflow,
-                confidence=match.score,
-            )
-        trace = [f"L1:trigger:{match.trigger}:{match.score:.2f}"]
-        if learn_queued:
-            trace.append("learn:queued")
-        sched = _schedule_from_workflow(
-            raw,
-            match.workflow,
-            intent_id=intent_id or f"trigger-{match.trigger}",
-            task_type="trigger",
-            confidence=_score_to_confidence(match.score),
-            source="trigger",
-            route_layer="L1",
-            route_subsource="trigger_table",
-            score=match.score,
-            trace=trace,
-            learn_queued=learn_queued,
-        )
-        return {"ok": True, "needs_upstream": False, "needs_scoring": False, "route_layer": "L1", "schedule": sched.to_dict()}
-
     prompt = upstream_score_prompt(raw)
     return {
         "ok": True,
@@ -301,7 +274,7 @@ def interpret_intent_payload(
         "workflows": workflow_ids_compact(),
         "workflow_catalog": catalog_for_upstream(),
         "score_schema": {"workflow": "id", "score": "0.0-1.0 fit to input", "trigger": "2-40 chars from input"},
-        "delegation_note": "L3（subagent 委譲）は workflow 起動後、ホストエージェントの実行フェーズで行う（interpret では L2 まで）。",
+        "delegation_note": "L3 (subagent delegation) happens after the workflow starts, in the host agent's execution phase (interpret goes as far as L2).",
     }
 
 
@@ -313,7 +286,7 @@ def interpret_intent(
     classification: dict[str, Any] | None = None,
     scoring: dict[str, Any] | None = None,
 ) -> IntentSchedule:
-    """CLI 互換: schedule だけ欲しい場合。"""
+    """CLI compatibility: when you only want the schedule."""
     payload = interpret_intent_payload(
         text, intent_id=intent_id, learn=learn, classification=classification, scoring=scoring
     )
@@ -341,10 +314,10 @@ def format_needs_scoring_text(payload: dict[str, Any]) -> str:
     lines = [
         "NEEDS SCORING (L2)",
         "=" * 50,
-        "L1 学習ルートに一致しません。上流 LLM で入力全文を読み、workflow 適合度 score を付けてください。",
-        "思索モードは使わず JSON 1 行のみ。次に interpret_intent に scoring を渡します。",
-        "learn は上流判定の再適用時のみ true（任意）。",
-        "L3 委譲は workflow 起動後（ホストエージェント / Task）。",
+        "No L1 learned route matched. Have the upstream LLM read the full input and assign a workflow fitness score.",
+        "Do not use thinking mode; return one JSON line. Then pass scoring to interpret_intent.",
+        "learn=true only on re-applying an upstream decision (optional).",
+        "L3 delegation happens after the workflow starts (host agent / Task).",
         "=" * 50,
         "",
         payload.get("upstream_prompt", ""),
@@ -380,5 +353,5 @@ def format_route_task_text(schedule: IntentSchedule) -> str:
 
 
 def flush_learn_writes() -> None:
-    """テスト用。"""
+    """For tests."""
     flush(_get_store())

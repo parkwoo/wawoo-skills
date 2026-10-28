@@ -1,4 +1,4 @@
-"""docs/memory の読み書き・想起（stdlib のみ）。server とテストから利用。"""
+"""Read/write/recall for docs/memory (stdlib only). Used by the server and tests."""
 from __future__ import annotations
 
 import re
@@ -49,7 +49,7 @@ def parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
 
 
 def split_memory_chunks(text: str, path_name: str) -> list[tuple[str, str, int]]:
-    """(chunk_id, chunk_text, base_score_boost) のリスト。"""
+    """List of (chunk_id, chunk_text, base_score_boost)."""
     chunks: list[tuple[str, str, int]] = []
     boost = 3 if path_name.upper() == "INDEX.MD" else 0
     meta, body = parse_frontmatter(text)
@@ -104,7 +104,7 @@ def recall_memory(memory_dir: Path, query: str, top_k: int = 5) -> str:
             hits.append((sc, cid, chunk[:900]))
 
     if not terms:
-        # 空クエリ: スコア＝ブースト順（INDEX・MEM 見出し優先）
+        # Empty query: order by boost (INDEX and MEM headings first)
         hits = [(sc, cid, ch) for sc, cid, ch in hits if sc > 0]
         if not hits:
             idx = memory_dir / "INDEX.md"
@@ -120,7 +120,7 @@ def recall_memory(memory_dir: Path, query: str, top_k: int = 5) -> str:
 
 
 def resolve_kind_and_topic(tags: str) -> tuple[str, str]:
-    """tags: 'decision,topic:kit' または '決定,kit'。"""
+    """tags: 'decision,topic:kit' or a Japanese kind."""
     parts = [p.strip() for p in tags.split(",") if p.strip()]
     kind = "fix"
     topic = "general"

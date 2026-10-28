@@ -1,4 +1,4 @@
-"""意図受信器（常駐）へのクライアント。"""
+"""Client for the (resident) intent receiver."""
 from __future__ import annotations
 
 import json
@@ -14,10 +14,10 @@ def socket_path() -> str | None:
 
 
 def submit_intent(text: str, *, intent_id: str = "", timeout: float = 2.0) -> dict[str, Any]:
-    """常駐受信器へ意図を送り、スケジュールを得る。未設定時は None を返す代わりに例外。"""
+    """Send an intent to the resident receiver and get a schedule. Raises instead of returning None when unset."""
     path = socket_path()
     if not path or not Path(path).parent.exists():
-        raise FileNotFoundError("WAWOO_INTENT_SOCKET が未設定、または親ディレクトリが無い")
+        raise FileNotFoundError("WAWOO_INTENT_SOCKET is unset, or the parent directory is missing")
     payload = {"id": intent_id or "", "text": text}
     data = (json.dumps(payload, ensure_ascii=False) + "\n").encode("utf-8")
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:

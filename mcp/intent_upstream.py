@@ -1,4 +1,4 @@
-"""上流 LLM：入力全文を読み workflow 適合度を score 化（別 API なし）。"""
+"""Upstream LLM: read the full input and score workflow fitness (no separate API)."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -9,16 +9,16 @@ from intent_catalog import WORKFLOW_AGENTS, catalog_for_upstream
 UPSTREAM_FIELDS = ("workflow", "score", "trigger")
 
 _NO_THINK_RULES = (
-    "【意図スコアリング】extended thinking/思索/推理モードは使わない。"
-    "chain-of-thought・・分析過程・前置き・markdown・コードブロック禁止。"
-    "ユーザーへの自然文は書かない。出力はJSON1行のみ。"
+    "[intent scoring]Do not use extended thinking or deliberation mode."
+    "No chain-of-thought, analysis, preamble, markdown, or code blocks."
+    "Do not write prose to the user. Output one JSON line only."
 )
 
 _SCORE_RULES = (
-    "入力全文を読み、最も適する workflow を1つ選び、"
-    "その入力に対する適合度を score(0.0-1.0) で必ず付ける。"
-    "未確定・曖昧でも score は付与（低くてよい）。分類だけで score を省略しない。"
-    "trigger は入力から抽出した短いフレーズ（学習用・2-40字）。"
+    "Read the full input, choose the single most fitting workflow,"
+    "and always assign the fitness score(0.0-1.0) for that input."
+    "Even if uncertain or ambiguous, still give a score (it may be low). Never omit the score when classifying."
+    "trigger is a short phrase extracted from the input (for learning, 2-40 chars)."
 )
 
 
@@ -53,7 +53,7 @@ def _catalog_prompt_segment(max_items: int = 15) -> str:
 
 
 def upstream_score_prompt(user_text: str, max_input: int = 2000) -> str:
-    """上流 LLM：入力文章に対する workflow 適合度スコアリング用プロンプト。"""
+    """Upstream LLM: the prompt for scoring workflow fitness for the input text."""
     text = (user_text or "").strip()
     if len(text) > max_input:
         text = text[: max_input - 1] + "…"
@@ -61,7 +61,7 @@ def upstream_score_prompt(user_text: str, max_input: int = 2000) -> str:
     return (
         f"{_NO_THINK_RULES} {_SCORE_RULES} "
         f'JSON:{{"workflow":"<id>","score":0.0-1.0,"trigger":"2-40字"}} '
-        f"候補(id:いつ使う)={catalog} "
+        f"candidates(id:when to use)={catalog} "
         f"入力全文:{text}"
     )
 

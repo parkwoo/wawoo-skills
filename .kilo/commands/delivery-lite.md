@@ -1,37 +1,38 @@
 ---
 description: Lightweight delivery — SSOT plan file state machine, minimal ceremony (L0–L1). Default for single-feature requests without full feature-delivery.
 agent: implementer
+replay: safe
 ---
 
-# Delivery Lite（軽量納品）
+# Delivery Lite
 
-**目的**: 依頼を分析し、`docs/plans/ACTIVE.md` で進捗を管理し、実装・検証まで行う。**会話で毎回手順を説明しない**（AGENTS §3・本 workflow がデフォルト）。
+**Goal**: analyze the request, track progress in `docs/plans/ACTIVE.md`, and implement through verification. **Do not re-explain the procedure in chat** (AGENTS §3; this workflow is the default).
 
-## 適用レベル
+## Levels
 
-- **L0**: 単一ファイル・明確な修正 → ACTIVE を更新せず実装のみ可（利用者が「L0」と言った場合）。
-- **L1（既定）**: 本 workflow。ACTIVE が SSOT。
-- **L2 以上**: `/sprint-plan`・issue tracker・`/feature-delivery` にエスカレート（容量・法務・本番が関わるとき）。
+- **L0**: single file, clear fix → implement without updating ACTIVE (only when the user says "L0").
+- **L1 (default)**: this workflow. ACTIVE is the SSOT.
+- **L2+**: escalate to `/sprint-plan`, an issue tracker, or `/feature-delivery` (when capacity, legal, or production is involved).
 
-## 手順
+## Steps
 
-0. **MCP で本 workflow を取得**: `wawoo-skills_workflow_get {name:"delivery-lite"}` を呼び、返った手順に従う（MCP が接続不能なときだけ本ファイルを正本とする）。
-1. `AGENTS.md` §3（SSOT）と `docs/plans/ACTIVE.md` を読む。`git status` で未関係変更を壊さない。
-2. **Memory（入口・短く）**: 依頼が既存の制約に触れるときだけ `memory_recall` または `docs/memory/INDEX.md`。
-3. **計画**: 依頼を分解し、ACTIVE の表に `id`・`todo`・内容・完了条件を追記。複雑なら `plan-md` で `docs/plans/<id>.md` を作り ACTIVE にリンク。
-4. **実行**: 先頭の `todo` を `doing` にし、1 件ずつ。実装は `implement`／`engineering-quality` を必要分だけ。
-5. **検証**: 該当テスト・lint。キット本体を触った場合は `python3 scripts/validate_assets.py` と `python3 scripts/e2e_flows.py`。ACTIVE を更新したら `python3 scripts/plan_active.py docs/plans/ACTIVE.md`（**Gₑ**: 証拠なし `done` は CLI が落とす）。
-6. **完了**: `doing` → `done`、証拠を埋める。メタの最終更新日を今日に。上記 check が通ることを確認。
-7. **Memory（出口）**: 新しい**決定・制約・落とし穴**だけ `memory_save`（タスク完了の記録は ACTIVE のみ）。
-8. **コミット・push・デプロイ**: 利用者が**明示したときのみ**（毎タスク必須ではない）。
+0. **Get this workflow via MCP**: call `wawoo-skills_workflow_get {name:"delivery-lite"}` and follow the returned steps (treat this file as authoritative only when MCP is unavailable).
+1. Read `AGENTS.md` §3 (SSOT) and `docs/plans/ACTIVE.md`. Check `git status` and do not break unrelated changes.
+2. **Memory (entry, brief)**: only when the request touches existing constraints, use `memory_recall` or `docs/memory/INDEX.md`.
+3. **Plan**: break the request down and add rows to the ACTIVE table (`id`, `todo`, content, done criteria). If complex, create `docs/plans/<id>.md` with `plan-md` and link it from ACTIVE.
+4. **Execute**: set the top `todo` to `doing`, one at a time. Use `implement` / `engineering-quality` as needed.
+5. **Verify**: relevant tests and lint. For kit changes, run `python3 scripts/validate_assets.py` and `python3 scripts/e2e_flows.py`. After updating ACTIVE, run `python3 scripts/plan_active.py docs/plans/ACTIVE.md` (**Gₑ**: a `done` without evidence fails the CLI).
+6. **Complete**: `doing` → `done` with evidence filled in. Set the meta "last updated" to today. Confirm the checks above pass.
+7. **Memory (exit)**: save only **new decisions, constraints, or gotchas** with `memory_save` (task-completion logs go only in ACTIVE).
+8. **Commit / push / deploy**: only when the user **explicitly asks** (not required per task).
 
-## 出力
+## Output
 
-- 更新された `docs/plans/ACTIVE.md`（必須）
-- 変更コードと証拠の要約（チャットは短く。詳細は ACTIVE）
+- Updated `docs/plans/ACTIVE.md` (required)
+- A brief summary of changed code and evidence (keep chat short; details live in ACTIVE)
 
-## ゲート
+## Gates
 
-- **Gₐ**: 破壊的変更・本番・外部送信・契約は停止して承認。
-- **Gₑ**: `done` に証拠なしの完了宣言は禁止。
-- **Gₒ**: 失敗したら原因を ACTIVE の該当行または memory に残しから再試行。
+- **Gₐ**: stop and get approval for destructive changes, production, external transmission, or contracts.
+- **Gₑ**: never claim `done` without evidence.
+- **Gₒ**: on failure, record the cause in the ACTIVE row or memory before retrying.

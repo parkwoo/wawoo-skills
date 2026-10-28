@@ -1,41 +1,52 @@
 ---
-description: 開発ワークフローとエージェント役割（Kilo / Cursor 共通）
+description: Development workflows and agent roles (shared by Kilo / Cursor)
 alwaysApply: true
 ---
 
-# ワークフロー（Kilo commands 由来）
+# Workflows (from Kilo commands)
 
-**ワークフロー主導**：プロセスは commands が所有し、Skills For Real Engineers の思考法・解法を各ステップに埋め込む。agent が skill を飛ばす前提で、**workflow が明示的に呼ぶ**。
-`.kilo/commands/` の **13 ワークフロー**を、Cursor でも同じ手順として適用する。
+**Workflow-driven**: commands own the process and embed Skills For Real Engineers thinking and solutions into each step. Because agents may skip skills, **the workflow calls them explicitly**.
+Apply the **16 workflows** under `.kilo/commands/` as the same steps in Cursor.
 
-> **Cursor の制約**：slash command／agent はネイティブ実行できない。**手順は `@.kilo/commands/<name>.md` を開いて手動適用**し、各ステップで `@.kilo/skills/<skill>/SKILL.md` を読む。役割は `@.kilo/agents/<role>.md` を参照。
+> **Cursor limitations**: slash commands / agents cannot run natively. **Open `@.kilo/commands/<name>.md` and apply the steps manually**, reading `@.kilo/skills/<skill>/SKILL.md` at each step. Roles are in `@.kilo/agents/<role>.md`.
 >
-> **呼び出し手順**：① MCP `capabilities`／`skill_search`（無ければ `@.kilo/CAPABILITIES.md`）で候補選定 → ② `@.kilo/commands/<name>.md` → ③ 必要分の `SKILL.md` → ④ 出力スキーマとゲートに従う。
+> **Call order**: ① select via MCP `capabilities` / `skill_search` (or `@.kilo/CAPABILITIES.md`) → ② `@.kilo/commands/<name>.md` → ③ the skills you need → ④ follow the output schema and gates.
 
-| ワークフロー | 目的 |
+| Workflow | Purpose |
 |---|---|
-| **`/feature-delivery`** | 機能を discovery → design → implement → test → review → approval で届ける |
-| **`/ui-delivery`** | UI 変更を設計 → 実装 → アクセシビリティ/品質確認 → 承認で届ける |
-| **`/design-review`** | UI の設計レビュー（`design-review`→`web-design-guidelines`→`accessibility-audit`） |
-| **`/research`** | 調査 → 意思決定（`research`→`research-decision-room`→`product-discovery`→`to-spec`/`plan-md`） |
-| **`/market-plan`** | 市場調査→戦略→計画（`research`→`research-decision-room`→`product-discovery`→`marketing-psychology`→`plan-md`） |
-| **`/compliance-review`** | 法務・プライバシー・セキュリティのゲート（`compliance-legal`→`privacy-review`→`security-review`→`release-readiness`） |
-| **`/release-review`** | リリース前の準備・確認（版・CHANGELOG・法務/NOTICE・デプロイ・ロールバック） |
-| **`/incident-response`** | 障害の再現 → 隔離 → 緩和 → 恒久対応 → 振り返り |
-| **`/sprint-plan`** | スプリント計画（`wayfinder`→`to-tickets`→優先度/見積/容量→`plan-md`） |
-| **`/status-report`** | 進捗・状況報告（`triage`/`to-tickets`→進捗・リスク→`plan-md`） |
-| **`/self-review`** | 自己修正（`code-review`→`code-skeptic`→`diagnosing-bugs`/`tdd`→`memory`） |
-| **`/self-improve`** | 自己改善（`retro`→`pdca-cycle`→`plan-md`→`memory`） |
-| **`/deck`** | 提案・計画デッキ（`research`→`marketing-psychology`→`slides`。pptx 任意） |
+| **`/feature-delivery`** | Deliver a feature through discovery → design → implement → test → review → approval |
+| **`/ui-delivery`** | Deliver a UI change through design → implement → accessibility/quality check → approval |
+| **`/design-review`** | UI design review (`design-review` → `web-design-guidelines` → `accessibility-audit`) |
+| **`/research`** | Research → decision (`research` → `research-decision-room` → `product-discovery` → `to-spec`/`plan-md`) |
+| **`/market-plan`** | Market research → strategy → plan (`research` → `research-decision-room` → `product-discovery` → `marketing-psychology` → `plan-md`) |
+| **`/compliance-review`** | Legal / privacy / security gate (`compliance-legal` → `privacy-review` → `security-review` → `release-readiness`) |
+| **`/release-review`** | Pre-release preparation / check (version, CHANGELOG, legal/NOTICE, deploy, rollback) |
+| **`/incident-response`** | Incident: reproduce → isolate → mitigate → permanent fix → retro |
+| **`/sprint-plan`** | Sprint planning (`wayfinder` → `to-tickets` → priority/estimate/capacity → `plan-md`) |
+| **`/status-report`** | Progress / status report (`triage`/`to-tickets` → progress/risk → `plan-md`) |
+| **`/self-review`** | Self-correction (`code-review` → `code-skeptic` → `diagnosing-bugs`/`tdd` → `memory`) |
+| **`/self-improve`** | Self-improvement (`retro` → `pdca-cycle` → `plan-md` → `memory`) |
+| **`/deck`** | Proposal / planning deck (`research` → `marketing-psychology` → `slides`; pptx optional) |
+| **`/writing`** | Creative/article writing (explore → beats → shape): blog, essay, fiction, script drafts (`writing-fragments` → `writing-beats` → `writing-shape`) |
 
-# エージェント役割（Kilo agents 由来）
+# Agent roles (from Kilo agents)
 
-`.kilo/agents/` の 21 ロール。Cursor では「該当ロールの観点」でレビュー／実装する。
-- 進行/設計/実装/品質：delivery-lead／project-manager／product-owner／architect／implementer／qa-engineer／data／code-reviewer／code-skeptic／code-simplifier
-- 安全/運用/リリース：security-reviewer／compliance-reviewer／performance-reviewer／sre-operator／release-manager
-- UI/文書/市場：web-designer／frontend-specialist／accessibility-reviewer／docs-specialist／docs-localization-reviewer／market-researcher
+The 22 roles under `.kilo/agents/`. In Cursor, review/implement "from that role's viewpoint".
+- Entry: **wawoo-auto** (default primary agent; ALWAYS route non-trivial work via MCP first)
+- Delivery/design/implementation/quality: delivery-lead, project-manager, product-owner, architect, implementer, qa-engineer, data, code-reviewer, code-skeptic, code-simplifier
+- Security/ops/release: security-reviewer, compliance-reviewer, performance-reviewer, sre-operator, release-manager
+- UI/docs/market: web-designer, frontend-specialist, accessibility-reviewer, docs-specialist, docs-localization-reviewer, market-researcher
 
-# ゲート（必須）
-- **承認**：破壊的変更・本番・削除・外部送信・契約/規約は停止して承認。
-- **証拠**：実行コマンド・結果・スクショ/diff。実測／未検証を区別。
-- **失敗観察**：推測ではなく実際に起きた失敗に基づく。
+
+## MCP tools (Kilo / Cursor / OpenCode)
+
+`interpret_intent` → `workflow_get` → `skill_get` / `memory_recall` → `delegate_subtask` / `steer_task` → `workflow_clear`.
+
+- Workflows declare `replay: safe|unsafe`; pass `idempotency_key` for `unsafe` steps and re-run only `safe` steps automatically.
+- Decomposition (goal → step → verify success → next) is the PM / Delivery Lead supervision loop.
+
+# Gates (required)
+
+- **Approval**: stop and get approval for destructive changes, production, deletions, external transmission, and contracts/terms.
+- **Evidence**: commands run, results, screenshots/diff. Distinguish measured from unverified.
+- **Observed failure**: base work on failures that actually happened, not inference.

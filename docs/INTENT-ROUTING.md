@@ -1,56 +1,63 @@
-# 意図ルーティング（Workflow 選定）
+# Intent routing (workflow selection)
 
-ユーザー依頼を **15 種の workflow**（`.kilo/commands/<id>.md`）のどれで進めるか選び、必要な MCP ツールだけ使えるようにする機能です。**別の LLM API は不要** — Cursor / Kilo の会話モデルが短い JSON でスコアを返します。
+> Japanese version: [INTENT-ROUTING.ja.md](INTENT-ROUTING.ja.md)
 
-本キットは **単体の汎用リポジトリ**です。社内 LLM API（co.taro.bz 等）とは別プロジェクトで、API 側が必要なときだけ `WAWOO_SKILLS_ROOT` で本 MCP を参照します。
+Choose which of the **16 workflows** (`.kilo/commands/<id>.md`) to run a request through, and allow only the MCP tools you need. **No separate LLM API is required** — the Cursor / Kilo conversation model returns a short JSON score.
 
-- 実装の詳細・常駐受信器: [design/INTENT-RECEIVER.md](design/INTENT-RECEIVER.md)
-- MCP ツール一覧: [../mcp/README.md](../mcp/README.md)
+This kit is a **standalone generic repository**. It is a separate project from any internal LLM API (e.g. co.taro.bz); the API side references this MCP via `WAWOO_SKILLS_ROOT` only when needed.
+
+- Implementation details: `mcp/README.md`
+- MCP tool list: [../mcp/README.md](../mcp/README.md)
 
 ---
 
-## 1. いつ使うか
+## 1. When to use
 
-| 使う | 使わなくてよい |
+| Use | Can skip |
 |------|----------------|
-| 依頼がどの workflow か曖昧 | 最初から `/delivery-lite` や `/research` を明示している |
-| チームで同じ言い回しを学習させたい | 散文だけで `@.kilo/commands/...` を開く運用で足りている |
+| The request's workflow is ambiguous | You already specify `/delivery-lite` or `/research` up front |
+| You want a team to learn the same phrasings | Opening `@.kilo/commands/...` in prose already works |
 
-**儀式レベル L0–L3**（`METHODOLOGY.md` §5）とは別の **ルート層** です。ここでは次の **L0 / L1 / L2 / L3（委譲）** を指します。
+**Ceremony levels L0–L3** (`AGENTS.md` §3) are separate from this **route layer**. Here, L0 / L1 / L2 / L3 (delegation) mean:
 
-| 層 | 意味 | 例 |
+| Layer | Meaning | Example |
 |----|------|-----|
-| **L0** | ユーザー明示（slash / command） | `/research 調査して` |
-| **L1** | 学習済み trigger（SQLite） | 過去に高スコアで覚えたフレーズ |
-| **L2** | 上流 LLM が workflow 適合度を付与 | `needs_scoring` → JSON 1 行 |
-| **L3** | workflow 実行中の subagent 委譲 | `delegate_subtask`（実行は IDE の Task 等） |
+| **L0** | User-explicit (slash / command) | `/research 調査して` |
+| **L1** | Learned trigger (SQLite) | A phrase learned earlier with a high score |
+| **L2** | An upstream LLM assigns workflow fitness | `needs_scoring` → one JSON line |
+| **L3** | Subagent delegation during a workflow | `delegate_subtask` (executed by the IDE Task, etc.) |
+
+> **Note:** the `L0–L3` here are **route layers** (how a request is routed). They are a different axis from the **ceremony levels** `L0–L3` in `AGENTS.md` §3 (how much process a task carries). Same letters, different meanings.
 
 ---
 
-## 2. 推奨フロー（MCP）
+## 2. Recommended flow (MCP)
 
 ```text
 interpret_intent(text)
-  → schedule（workflow, agent, mcp_tools_allow, command_path）
+  → schedule (workflow, agent, mcp_tools_allow, command_path)
   → workflow_get(name)
   → skill_get … / memory_recall …
-  → （並列サブタスク）delegate_subtask(subtask)
+  → (parallel subtasks) delegate_subtask(subtask)
   → workflow_clear()
 ```
 
-1. **`interpret_intent`** — 入力を渡す。`needs_scoring: true` のときはプロンプトに従い **思索モードなし**で JSON 1 行だけ返し、再度 `interpret_intent` に `scoring` を渡す。
-2. **`schedule` 確定後** — その workflow で **許可されていない MCP ツールは拒否**される（例: `compliance-review` では `memory_save` 不可）。
-3. **`workflow_get`** — `schedule.workflow` と同じ id の command を読む。
-4. **`delegate_subtask`** — 大きい作業を切り出すとき。返る JSON を **Cursor Task / Kilo subagent** で実行する（MCP は子セッションを作らない）。
-5. **`workflow_clear`** — ゲート解除。別 workflow に切り替える前にも呼ぶ。
+1. **`interpret_intent`** — pass the input. If `needs_scoring: true`, follow the prompt to return one JSON line **with no thinking mode**, and pass `scoring` back to `interpret_intent`.
+2. **After `schedule` is fixed** — MCP tools **not allowed** for that workflow are rejected (e.g. `compliance-review` cannot use `memory_save`).
+3. **`workflow_get`** — read the command with the same id as `schedule.workflow`.
+4. **`delegate_subtask`** — when carving off large work. Execute the returned JSON in a **Cursor Task / Kilo subagent** (MCP creates no child session).
+5. **`workflow_clear`** — release the gate. Call it before switching workflows too.
 
-人間向けテキストだけ欲しい場合は **`route_task`**（`needs_scoring` 時は誤ルートせず `NEEDS SCORING` を表示）。
+If you only want human-readable text, use **`route_task`** (on `needs_scoring` it shows `NEEDS SCORING` instead of misrouting).
+
+**Amend / steer**: `steer_task {text}` returns an `amend` instruction using the running plan as context. Without `op`, it returns `needs_classification` (the host LLM picks add/reorder/reprioritize/scope_change/abort and re-calls with `op`/`target`). It never writes the plan files itself; the host applies at a step boundary.
+
 
 ---
 
-## 3. `interpret_intent` の返却（要約）
+## 3. `interpret_intent` response (summary)
 
-**ルート済み**
+**Routed**
 
 ```json
 {
@@ -62,111 +69,117 @@ interpret_intent(text)
     "agent": "product-owner",
     "route_layer": "L0",
     "command_path": ".kilo/commands/research.md",
-    "workflow_description": "調査と意思決定…",
+    "workflow_description": "Research and decisions…",
     "mcp_tools_allow": ["capabilities", "skill_get", "…"],
     "delegation_hint": "upstream-subagent"
   }
 }
 ```
 
-**スコア待ち（L2）**
+**Awaiting score (L2)**
 
 ```json
 {
   "ok": true,
   "needs_scoring": true,
   "route_layer": "L2",
-  "upstream_prompt": "…候補(id:いつ使う)=delivery-lite:…|…",
+  "upstream_prompt": "…candidates(id:when)=delivery-lite:…|…",
   "no_thinking": true,
   "workflow_catalog": [{"id": "delivery-lite", "description": "…"}]
 }
 ```
 
-**上流 JSON 契約**（1 行・フィールドのみ）
+**Upstream JSON contract** (one line, fields only)
 
 ```json
-{"workflow":"deck","score":0.88,"trigger":"投資家向け"}
+{"workflow":"deck","score":0.88,"trigger":"investor deck"}
 ```
 
-- `learn: true` は **再適用時のみ**（高スコアを SQLite に非同期登録。既定は `false`）。
-- `workflow` は 15 id のいずれか。台帳外は学習・採用されない。
+- `learn: true` only on **re-apply** (register a high score to SQLite asynchronously; default `false`).
+- `workflow` is one of the 16 ids. Off-ledger values are not learned or adopted.
 
 ---
 
-## 3.1 L1 トリガ分類器（決定論・無料）
+## 3.1 Resolution layers (deterministic → learned → upstream)
 
-`interpret_intent` は **L0 slash → L1 学習 → L1 トリガ → L2 上流スコア** の順で解決する。
+`interpret_intent` resolves in the order **L0 slash → L1 learned → L2 upstream score (LLM)**.
 
-- **トリガ表**（`mcp/intent_catalog.py: TRIGGER_KEYWORDS`）は `ROUTER.md` の発火語と**同一の正本**。長い（具体的な）語ほど高スコア。
-- 閾値（既定 `0.85`）以上、かつ 2 位と十分差があるときだけ採用。曖昧なら `needs_scoring` にフォールバック（誤ルートを避ける）。
-- 長い語に内包される短い語（例: 「市場調査」の中の「調査」）は競合として数えない。
-- 採用時は `source: "trigger"` / `route_layer: "L1"`。高スコア（≥0.85）は学習 DB に**非同期昇格**され、次回は L1 学習として即答になる。
-- 一般語（「実装」「修正」等）は `WEAK_TRIGGERS` としてスコアを下げ、単独では採用しない（誤爆防止）。
+- **L0 slash**: `/workflow ...` is adopted immediately as explicit (`route_layer: "L0"`).
+- **L1 learned**: adopt a high-confidence substring match from `data/intent_learned.db` (SQLite) (`source: "learned"`). The hand-maintained multilingual **static trigger table is removed** (`TRIGGER_KEYWORDS` / `WEAK_TRIGGERS` are gone).
+- **seed**: an empty learned DB is bootstrapped with **catalog (workflow id) seeds**. The legacy vocabulary is migrated into the local learned DB (**not distributed**).
+- **L2 upstream score**: if nothing matches, return `needs_scoring: true`; the host LLM adds `workflow`+`score` and re-calls (`source: "upstream"`).
+- **Language-independent**: drop vocabulary maintenance and rely on **learned (grows with use) + upstream (LLM)** (multilingual).
 
-## 3.2 フェーズ（workflow の分解）
+## 3.2 Phases (workflow decomposition)
 
-各 workflow は **phase** に分解され、`schedule.phases` と `workflow_get {name, phase:<id>}` で取得できる。
+Each workflow is decomposed into **phases**, available via `schedule.phases` and `workflow_get {name, phase:<id>}`.
 
 ```json
-{"id":"audit","goal":"読み取り専用の審査","agent":"security-reviewer",
+{"id":"audit","goal":"read-only review","agent":"security-reviewer",
  "skills":["security-review"],"mcp_tools_allow":["skill_get","memory_recall","…"],
- "exit_criteria":["所見と証跡（重要度付き）"],"parallel_group":"readonly-parallel"}
+ "exit_criteria":["findings and evidence (with severity)"],"parallel_group":"readonly-parallel"}
 ```
 
-- **P2: phase 単位の道具立て** — `audit`/`research`/`verify` は `readonly-parallel`（並列可・読み取り中心）。実装系の workflow だけが `implement` を持つ。
-- **監査系に `implement` は無い** — `design-review`・`compliance-review`・`release-review`・`self-review` では `schedule.gate` が非空になり、実装が必要なら **workflow 切替を宣言**する。
-- **P3: 並列委譲** — 独立した対象は `delegate_subtask {subtask, phase}` で phase の `exit_criteria` を添えて subagent に渡す（MCP は子セッションを作らない）。
-- **P4: 完了条件** — `exit_criteria` を満たすまで phase を閉じない（例: `verify` は「未収束 FAILED 0／残留コンテナ 0」）。
+- **P2: per-phase tooling** — `audit` / `research` / `verify` are `readonly-parallel` (parallelizable, read-oriented). Only implementation workflows carry `implement`.
+- **Audit workflows have no `implement`** — for `design-review`, `compliance-review`, `release-review`, `self-review`, `schedule.gate` is non-empty; if implementation is needed, **declare a workflow switch**.
+- **P3: parallel delegation** — pass independent targets to a subagent via `delegate_subtask {subtask, phase}` with the phase's `exit_criteria` (MCP creates no child session).
+- **P4: done criteria** — do not close a phase until `exit_criteria` is met (e.g. `verify` = "0 unconverged FAILED / 0 leftover containers").
 
 ---
 
-## 4. 常駐受信器（任意）
+## 4. Resident receiver (optional)
 
-MCP を都度起動する代わりに、ソケットで常駐させる場合:
+Instead of launching MCP each time, keep it resident over a socket:
 
 ```bash
 export WAWOO_INTENT_SOCKET=/tmp/wawoo-intent.sock
 python3 mcp/intent_receiver.py --socket "$WAWOO_INTENT_SOCKET"
 ```
 
-MCP で `interpret_intent` に `via_receiver: true` を付与。**未起動ならエラー**（ローカル解釈にフォールバックしない）。
+Add `via_receiver: true` to `interpret_intent`. If it is **not running, it errors** (no fallback to local interpretation).
 
 ---
 
-## 5. 環境変数
+## 5. Environment variables
 
-| 変数 | 説明 |
+| Variable | Description |
 |------|------|
-| `WAWOO_SKILLS_ROOT` | キット root（MCP と同じ） |
-| `WAWOO_INTENT_LEARN_DB` | 学習 DB パス（既定 `data/intent_learned.db`） |
-| `WAWOO_INTENT_SOCKET` | 常駐受信器の Unix ソケット |
+| `WAWOO_SKILLS_ROOT` | Kit root (same as MCP) |
+| `WAWOO_INTENT_LEARN_DB` | Learned DB path (default `data/intent_learned.db`) |
+| `WAWOO_INTENT_SOCKET` | Unix socket of the resident receiver |
+| `WAWOO_INTENT_SESSION` | Persisted session file (minimal gate fields; default `<root>/data/intent_session.json`) |
+| `WAWOO_INTENT_RESUME` | `1`/`true` enables resume of the persisted gate after restart (default off; writes only when enabled) |
+| `WAWOO_INTENT_CLIENT` | Per-client session file suffix (`intent_session.<client>.json`) to avoid cross-client bleed |
 
 ---
 
-## 6. テスト
+## 6. Tests
 
 ```bash
-python3 mcp/test_intent.py
-python3 mcp/test_intent_session.py   # ツールゲート・L3
-python3 mcp/test_server.py
+python3 scripts/e2e_flows.py   # public E2E (interpret/route, tool gate, L3 included)
+# unit tests (test_intent*, test_server) live in internal/tests/ (non-public, maintainers only)
 ```
 
 ---
 
-## 7. OpenCode / Kilo の subagent との違い
+## 7. Difference from OpenCode / Kilo subagents
 
 | | OpenCode/Kilo | wawoo-skills |
 |--|----------------|--------------|
-| workflow 選定 | 主にユーザーが agent 選択 | L0–L2 + 学習 trigger |
-| 並列 subagent | ランタイムが子セッション作成 | **L3 は指示 JSON のみ**（IDE が実行） |
-| ツール制限 | agent permission | **`mcp_tools_allow` ゲート** |
+| workflow selection | user mainly selects the agent | L0–L2 + learned triggers |
+| parallel subagents | the runtime creates child sessions | **L3 is an instruction JSON only** (the IDE executes) |
+| tool restriction | agent permission | **`mcp_tools_allow` gate** |
 
-並列・探索が多い skill（`implement-spec` 等）は、L3 JSON を受け取った **上流エージェント**が Task を並列起動する想定です。
+For skills with heavy parallelism/exploration (e.g. `implement-spec`), the **upstream agent** that receives the L3 JSON is expected to launch Tasks in parallel.
+
+**Delegation ownership**: a subtask is owned by its creating call/phase; abort propagates bottom-up; foreground aborts with the turn, background is tracked and cleaned up. `delegate_subtask` returns an instruction only (the host executes).
+
 
 ---
 
-## 8. 更新履歴
+## 8. Change history
 
-| 日付 | 内容 |
+| Date | Content |
 |------|------|
-| 2026-10-26 | 対外ガイド初版（L0–L3・MCP ゲート・delegate） |
+| 2026-10-26 | First public guide (L0–L3, MCP gate, delegate) |
+| 2026-10-28 | Removed the static trigger table; resolution order = slash → learned (seeded) → upstream. Added `NAME.ja.md` Japanese version |

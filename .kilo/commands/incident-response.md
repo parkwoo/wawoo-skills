@@ -1,6 +1,7 @@
 ---
 description: Investigate and safely resolve an incident or urgent regression with evidence and follow-up.
 agent: delivery-lead
+replay: unsafe
 ---
 
 # Incident Response

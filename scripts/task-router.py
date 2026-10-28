@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""タスクルーター CLI — 意図解釈器の薄いラッパ。"""
+"""Task router CLI — a thin wrapper over the intent interpreter."""
 
 import json
 import sys

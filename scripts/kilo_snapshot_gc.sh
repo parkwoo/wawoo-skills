@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# kilo snapshot の stale な git index.lock を掃除し、auto GC する。
-# 既定は dry-run。--apply で実際に削除・GC する。
+# Clean stale git index.lock in kilo snapshots and run auto GC.
+# Default is dry-run. --apply actually deletes and GCs.
 #
-#   scripts/kilo_snapshot_gc.sh                 # dry-run（対象の表示のみ）
+#   scripts/kilo_snapshot_gc.sh                 # dry-run (list targets only)
 #   scripts/kilo_snapshot_gc.sh --apply         # 除去 + git gc --auto
 #   scripts/kilo_snapshot_gc.sh --dir DIR --min-age 60
 #
-# 背景: kilo の snapshot は <KILO_SNAPSHOT_DIR>/<projectID>/<dir> を git ディレクトリとして持つ。
-# 前回プロセス異常終了などで index.lock が残ると "failed to add snapshot files" (exitCode=128)
-# が発生する（run c956c7f2 の WARN 2 件）。
+# Background: a kilo snapshot keeps <KILO_SNAPSHOT_DIR>/<projectID>/<dir> as a git directory.
+# If index.lock remains after an abnormal termination, "failed to add snapshot files" (exitCode=128)
+# occurs (observed as a WARN in logs).
 set -euo pipefail
 
 SNAP_DIR="${KILO_SNAPSHOT_DIR:-$HOME/.local/share/kilo/snapshot}"
@@ -34,7 +34,7 @@ now=$(date +%s)
 removed=0; skipped=0; gced=0
 mode=DRY-RUN; [ "$APPLY" -eq 1 ] && mode=APPLY
 
-# 1) stale index.lock の走査
+# 1) scan for stale index.lock
 while IFS= read -r lock; do
   [ -n "$lock" ] || continue
   mtime=$(stat -c %Y "$lock" 2>/dev/null || echo "$now")
@@ -53,7 +53,7 @@ while IFS= read -r lock; do
   removed=$((removed + 1))
 done < <(find "$SNAP_DIR" -name index.lock -type f 2>/dev/null)
 
-# 2) git ディレクトリ（HEAD と objects を持つ）で auto GC
+# 2) auto GC on git directories (that have HEAD and objects)
 if [ "$APPLY" -eq 1 ]; then
   while IFS= read -r head; do
     [ -n "$head" ] || continue

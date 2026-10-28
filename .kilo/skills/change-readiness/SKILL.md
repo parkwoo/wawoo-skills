@@ -4,7 +4,7 @@ description: Perform an evidence-based pre-handoff review of a non-trivial softw
 license: MIT
 ---
 
-# Change Readiness（引渡し前レビュー）
+# Change Readiness (pre-handoff review)
 
 Prepare a review package that lets another engineer audit the change without rediscovering basic facts.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""docs/plans/CONTENT.md（長文・書籍・章単位）の目次表を検証。ACTIVE と同型の状態機械。"""
+"""Validate the contents table in docs/plans/CONTENT.md (long docs, books, per-chapter). Same state machine as ACTIVE."""
 from __future__ import annotations
 
 import argparse

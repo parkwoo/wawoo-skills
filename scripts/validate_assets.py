@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -38,9 +39,88 @@ def fm(path: Path) -> dict[str, str]:
 
 
 def documents_entry(command_path: Path, name: str) -> bool:
-    """command が「入口は command／手順は同名 skill」を明文化しているか（意図的な同名か）。"""
+    """Whether the command documents "entry is the command / procedure is the same-named skill" (an intentional name collision)."""
     text = command_path.read_text(encoding="utf-8", errors="ignore")
     return "**入口**" in text and name in text
+
+
+# Internal dev materials that must never be tracked in the public tree.
+INTERNAL_PUBLIC_PATTERNS = (
+    r"^internal/",
+    r"^data/.*\.(db|sqlite)$",
+    r"^docs/plans/ACTIVE\.md$",
+    r"^docs/plans/CONTENT\.md$",
+    r"^docs/plans/RETRO-.*\.md$",
+    r"^docs/plans/self-improve-.*\.md$",
+    r"^docs/plans/E2E-.*\.md$",
+    r"^docs/design/.*-AUDIT\.md$",
+    r"^docs/blog/",
+    r"^docs/memory/(?!(TEMPLATE|MEMORY-TOOLS|INDEX\.example)(\.ja)?\.md$).+\.md$",
+)
+
+
+
+# Context-budget check (AGENTS §5): entry SKILL.md should be 2-4KB.
+SKILL_BUDGET_BYTES = 4096
+SKILL_BUDGET_EXCEPTIONS = frozenset(
+    {"imagegen-frontend-mobile", "ask-matt", "wayfinder", "design-brief", "writing-for-agents", "teach"}
+)
+
+
+
+def command_replay_issues() -> list[str]:
+    """Every command must declare `replay: safe|unsafe` (replay-safety classification)."""
+    out: list[str] = []
+    for entry in sorted((ROOT / ".kilo" / "commands").glob("*.md")):
+        if entry.name == "README.md":
+            continue
+        meta = fm(entry)
+        if not meta.get("agent"):  # not a workflow command; skip auxiliary markdown
+            continue
+        val = (meta.get("replay") or "").strip()
+        if val not in ("safe", "unsafe"):
+            out.append(f"command {entry.stem}: missing or invalid replay (expected safe|unsafe)")
+    return out
+
+def skill_budget_warnings() -> list[str]:
+    """One summary warning for skills whose entry SKILL.md exceeds the 4KB budget."""
+    over: list[str] = []
+    for entry in sorted((ROOT / ".kilo" / "skills").glob("*/SKILL.md")):
+        name = entry.parent.name
+        if name in SKILL_BUDGET_EXCEPTIONS:
+            continue
+        try:
+            size = entry.stat().st_size
+        except OSError:
+            continue
+        if size > SKILL_BUDGET_BYTES:
+            over.append(f"{name} ({size / 1024:.1f}KB)")
+    if not over:
+        return []
+    return [f"{len(over)} skills over 4KB budget (see AGENTS §5): " + ", ".join(over)]
+
+def public_boundary_violations() -> list[str]:
+    """Tracked files that are internal dev materials (violate the public boundary).
+
+    Files already deleted in the working tree (a pending, uncommitted removal) are
+    skipped so the check reflects the intended (post-commit) index.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "ls-files"], cwd=ROOT, capture_output=True, text=True
+        )
+    except Exception:
+        return []
+    if out.returncode != 0:
+        return []
+    bad: list[str] = []
+    for path in out.stdout.splitlines():
+        path = path.strip()
+        if not path or not (ROOT / path).exists():
+            continue
+        if any(re.match(p, path) for p in INTERNAL_PUBLIC_PATTERNS):
+            bad.append(path)
+    return bad
 
 
 def main() -> int:
@@ -96,7 +176,7 @@ def main() -> int:
 
     # cross-kind duplicates: skill/agent share model-selectable namespace (error);
     # command is slash-namespaced, so collisions with commands are warnings —
-    # ただし command 側で「入口は command／手順は同名 skill」を明文化していれば意図的とみなし警告しない。
+    # But if the command documents "entry is the command / procedure is the same-named skill", treat it as intentional and do not warn.
     warnings: list[str] = []
     for n in sorted(set(skill_names) & agent_names):
         issues.append(f"name used as both skill and agent: {n}")
@@ -119,7 +199,7 @@ def main() -> int:
         except Exception:
             pass
 
-    # memory: 秘密パターン（MCP memory_save と同じ規則）
+    # memory: secret patterns (same rules as MCP memory_save)
     if MEMORY.is_dir():
         import importlib.util
 
@@ -131,6 +211,12 @@ def main() -> int:
             spec.loader.exec_module(mod)
             for line in mod.scan_memory_secrets(MEMORY):
                 issues.append(line)
+
+    for b in public_boundary_violations():
+        issues.append(f"internal dev material tracked in public tree: {b}")
+
+    issues.extend(command_replay_issues())
+    warnings.extend(skill_budget_warnings())
 
     for w in warnings:
         print("WARN:", w)

@@ -2,10 +2,52 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
+> 言語: 本 CHANGELOG は**プロジェクト記録（日本語）**として維持する（AGENTS §1）。現在版の正本は `VERSION`。
+> Language: this changelog is a project record kept in Japanese (AGENTS §1). The current version SSOT is `VERSION`.
+
+
 > **リリースタグについて**: 付与済みは `v0.1.0`・`v0.2.0`・`v0.3.0`・`v0.4.0`。
 > `0.4.1`〜`0.5.0` は本 CHANGELOG に記載があるが、**各版に対応するリリース commit が存在しない**
 > （見出しは後続 commit、主に `c6d07f4` で追記された）ため **タグを付与しない**（誤った出所を作らない）。
 > 以降は `v0.6.0` から連番でタグ付けする。
+
+## [Unreleased]
+
+### ドキュメント
+- **公開面の縮小（読む文書を README／USAGE／INTENT-ROUTING に限定）**: 設計・工程文書を公開ツリーから `internal/` へ移動（`docs/METHODOLOGY.md`・`docs/PROCESS-PHILOSOPHY.md`・`docs/PUBLICATION.md`・`docs/README.md`・`docs/design/INTENT-RECEIVER.md`、EN+JA）。公開文書の参照を `AGENTS.md` §3／`mcp/README.md` に張り替え、`scripts/e2e_flows.py` は `internal/` 不在時に該当検査をスキップ、`publication-boundary` skill と `README` のディレクトリ表記を更新。
+- **公開ドキュメントの可読性改善（ベストセラー著者視点の監査 F1–F11 対応）**: README の冒頭を「痛点→約束」に刷新（`Your agent has the skills. It just doesn't use them.`＋`Invocation by design`）、「2 分のビフォー/アフター」「向く人・向かない人」「最初の 10 分」を追加。`L0–L3` の二重定義（儀式レベル vs ルート層）を `METHODOLOGY`／`INTENT-ROUTING`／`AGENTS`／`USAGE`／`PROCESS-PHILOSOPHY` の各初出で注記。件数表記は生成カタログ `.kilo/CAPABILITIES.md` を正本化（README／AGENTS／USAGE の重複を除去）。`docs/PUBLICATION.md` の外部一覧を補完。EN 主＋JA 対訳を同期。
+- ランタイム前提を明記：`README.md`「前提条件（ランタイム）」＋`docs/USAGE.md`「0. 前提条件」（**Python 3・標準ライブラリのみ**／`PATH` に `python3`・Windows の導入手順）。TypeScript 化の代替＝選択肢 A。
+- **公開境界の見直し**：内部開発資料（監査記録・`RETRO-*`・`self-improve-*`・E2E 深さ対応表・出版たたき台）を `internal/` へ移動し公開ツリーから除去。公開文書内の内部参照（監査/RETRO リンク・run ID）を中和。`docs/PUBLICATION.md`・`.gitignore` を更新。
+- **SSOT・記憶の非公開化**：`docs/plans/ACTIVE.md` と `docs/memory/*` の実体を非公開（`git rm --cached` ＋ `.gitignore`）。公開テンプレート `docs/plans/ACTIVE.example.md`・`docs/memory/INDEX.example.md` を追加。CI（`scripts/e2e_flows.py`）は実ファイル非依存化（テンプレート／隔離 memory）。
+
+### 追加
+- **文章創作と `/writing`**：MIT の `writing-fragments`/`writing-beats`/`writing-shape`（explore→beats→shape）を吸収し、workflow `/writing` を追加。`/content-delivery-lite`（CONTENT.md・知識型長文）と並行利用可。skills 60・workflows 16。`ATTRIBUTION`/`README`/`AGENTS`/`USAGE`/Cursor ルールを更新。
+- **既定 agent 改名**：`wawoo-router` → **`wawoo-auto`**（`kilo.json` `default_agent`・`install_global.py` 既定・`CAPABILITIES`/`ATTRIBUTION`/`USAGE`/`AGENTS`）。
+- **session 永続の安全化**：resume は既定 off（`WAWOO_INTENT_RESUME=1` で有効。無効時は書込なし）。クライアント別 `WAWOO_INTENT_CLIENT` で `intent_session.<client>.json`。TTL/多重クライアント/resume-off のテスト追加。
+- **OpenCode 対応**：`docs/USAGE`（EN/JA）に `opencode.json` の MCP 設定例、E2E `opencode_stdio_contract`（MCP handshake＋`tools/list`）。Cursor ルールを最新化（`wawoo-auto`・MCP ツール・replay）。
+- **監査指摘の修正**：session 永続化を**最小フィールドのみ**（本文 `prompt`/`clean_text` を保存しない）に変更し、resume を **`WAWOO_INTENT_RESUME`（既定 off）** で明示化（無断 resume／クライアント混線を回避）。`validate_assets` の境界 regex を厳密化、`replay` 検査を workflow 限定、予算 WARN を集約、永続化失敗を stderr に記録。
+- **低優先の追補**：evidence ログ名を `wawoo-e2e-<UTC>.log` に統一。`CHANGELOG` 冒頭に言語（日本語のプロジェクト記録）と `VERSION` 正本を明記。
+- **モデル階層の方針**：機械的ステップ=高速/安価、計画・検証=推論モデル。`delegate_subtask` に `model_tier: fast|reasoning` を追加し委譲 payload に反映。
+- **PM / Delivery Lead の監督ループ**：`project-manager`・`delivery-lead` に各ステップ後の監督パス（Goal→Success（証拠）→Next→Consistency→Amend via `steer_task`）を明示化。PM=計画/順序、Delivery Lead=実行監督。
+- **動的タスク変更（steer/amend）**：MCP `steer_task` を追加。実行中計画を文脈に `amend`（`add`/`reorder`/`reprioritize`/`scope_change`/`abort`）を返し、`op` 無しはホスト LLM 向け `needs_classification`。計画ファイルは書かずステップ境界でホストが適用。ゲート中も許可。
+- **リプレイ安全性と冪等キー**：全 workflow に `replay: safe|unsafe` を付与（`incident-response`=unsafe、他は safe）。`validate_assets` が未指定/不正を検出。`delegate_subtask` に `idempotency_key?` を追加し委譲 payload に反映。`AGENTS §4.1`（EN/JA）に再実行規則を明文化。
+- **コンテキスト予算の可測化**：`CAPABILITIES.md` に skill の `size`（entry `SKILL.md` の KB）列を追加。`validate_assets.py` が 4KB 超の skill を WARN（予算例外は除外）。
+- **先回り圧縮とボードの差分モデルを明文化**：予算前に自然な区切りで compact し要点を handoff/memory に残す（履歴は検索可能なまま）。ボードは committed state＋差分で、後発参加者は現況→`since` 差分で追従（`AGENTS §4.1/§5` EN/JA）。
+- **委譲の所有権/abort 契約を明文化**：foreground/background の所有、abort の下→上伝播、`delegate_subtask` は指示のみでホストが実行・親が検証、background の追跡・後始末（`mcp/README`・`AGENTS §4.1`・`INTENT-ROUTING` の EN/JA）。
+- **意図セッションの永続化（resume）**：`intent_session` を `data/intent_session.json` へ保存し、MCP サーバ再起動後にアクティブ workflow とツールゲートを復元（TTL 12h・atomic write・corrupt 時は無視）。`WAWOO_INTENT_SESSION` でパス上書き。e2e は呼び出し毎に session を隔離。
+- **公開コードの英語化**：`mcp/`（コメント・docstring・メッセージ・workflow description・phase goal/exit_criteria）、`scripts/*.py`、shell のコメントを English 化。生成 `ROUTER.md` も英語。パーサ用キーワードと、JA テンプレに一致するテスト fixture は維持。
+- 新スキル `language-policy`（言語ポリシー 3 層）。`AGENTS.md` §1 を 3 層表に更新（コード=英語／工程ドキュメント・応答=日本語／説明ドキュメント=英語主＋日本語従）。`gen_router.py` の ROUTER に言語ポリシー行を追加。
+- `scripts/plan_l2_backlog.py`：バックログに **依存列（`depends`）** を追加し、**未知依存・循環・行順**を検証。`--apply` で**依存順に自動整列**（内容・証拠は不変）。順序の二重管理を排除。
+
+### 追加
+- 新スキル `publication-boundary`（公開境界のポリシー）。`scripts/validate_assets.py` に公開ツリーへの内部開発資料混入の検知（`public_boundary_violations()`）を追加。
+### 追加
+- **公開ドキュメントの英日 2 種化（英主日従）**：`README`・`AGENTS`・`docs/{USAGE,INTENT-ROUTING,VERSIONING,PUBLICATION,README,METHODOLOGY,PROCESS-PHILOSOPHY}`・`SECURITY`・`docs/plans/README`・`mcp/README`・`docs/design/INTENT-RECEIVER` を `NAME.md`(EN)＋`NAME.ja.md`(JA) に。memory テンプレは機構として EN のみ。
+
+### 変更
+- **日本語資産の英語化**：自作 skill 7（`memory`・`plan-md`・`compliance-legal`・`privacy-review`・`deployment`・`changelog`・`change-readiness`）、第三者 skill 9（`ask-matt`・`wayfinder`・`writing-for-agents`・`design-brief`・`reference-design-contract`・`web-design-guidelines`・`imagegen-frontend-mobile`・`screenshots-marketing`・`slides`）、agents 6、commands 15、`.cursor/rules` 3 を English 化（第三者 skill は原文準拠・追加分のみ英訳、上流 zh は残置）。語彙は言語ポリシー 3 層に従う。
+- **意図ルーティングの動的化**：静的 `TRIGGER_KEYWORDS`/`WEAK_TRIGGERS` と `classify_by_trigger` を撤去（後方互換 flag なし）。解決順を **L0 slash → L1 learned → L2 upstream** に。空の学習 DB は catalog（workflow id）から自動 seed（`mcp/intent_seed.py`）。旧語彙はローカル学習 DB へ移行（配布しない）。`ROUTER.md` の列を「用途/説明」に変更。
+- **テストの非公開化とソース分離**：pytest 単体（`test_server`・`test_memory_ops`・`test_intent`・`test_intent_session`・`conftest`）を `internal/tests/` へ移動（公開 clone には含めない）。公開 CI は `validate_assets` ＋ `e2e_flows` ＋ `cli_adapters_mock` を維持。`install_global.py` のスモークは内部テスト任意化。`e2e_with_evidence.sh` は `internal/scripts/e2e/` へ。公開ドキュメントは公開コマンドへ置換。
 
 ## [0.6.0] - 2026-10-28
 
@@ -15,7 +57,7 @@
 - 意図ルーティング: L0 slash／L1 学習 SQLite／L2 上流 JSON スコア、workflow `description` 付きカタログ。
 - MCP: `interpret_intent`・`route_task`・`workflow_clear`・`delegate_subtask`、確定後 `mcp_tools_allow` ゲート。
 - 対外ドキュメント: `docs/INTENT-ROUTING.md`、`mcp/README.md` 全面更新。
-- **kilo ログ分析（run `c956c7f2`）に基づく実行効率改善**（詳細: `docs/plans/RETRO-20261028-log-optimization.md`）:
+- **ログ分析に基づく実行効率改善**:
   - `scripts/kilo_snapshot_gc.sh`（既定 dry-run、`--apply` で stale `index.lock` 除去＋`git gc --auto`）。
   - `mcp/conftest.py`（pytest 収集時の学習ストア隔離）。
 - `install_global.py --memory-writable`: MCP 登録時に `WAWOO_MEMORY_READONLY=0` を指定して `memory_save` を有効化（既定は recall-only を維持）。`mcp/README.md`・`docs/USAGE.md` に反映。
@@ -32,7 +74,7 @@
 - 新規 agent `wawoo-router`（`mode: primary`）: 既定の入口として非自明な依頼で必ず MCP を先に呼び、その workflow を自ら実行する。`instructions` は絶対パス、`default_agent` 既定を `wawoo-router` に。
 - `install_global.py`: `ROUTER.md` 生成・`instructions` 絶対パス登録・`default_agent` 設定を追加（`--default-agent`／`--no-default-agent`／`--force-default-agent`）。
 - AGENTS §4.1「実行衛生・収束ゲート」を追加: 1 セッション 1 対象／workflow 逸脱の明示／失敗の収束／後始末／記憶 1 件／トークン衛生／ローカル検証。`wawoo-router`・`ROUTER.md`・`test-engineering`・`release-readiness` にも反映（プロジェクト非依存）。
-- **kilo ログ分析（run `c956c7f2`）に基づく実行効率改善**（変更点は上記 `追加`・下記 `修正` と本項の各 agent／契約更新。詳細: `docs/plans/RETRO-20261028-log-optimization.md`）。
+- **ログ分析に基づく実行効率改善**（変更点は上記 `追加`・下記 `修正` と本項の各 agent／契約更新）。
 - §4.1 に「サブエージェント委譲の効率」（skill 重複排除・read-only read 規律）を追加。
 - read-only subagent（security-reviewer / accessibility-reviewer / architect / performance-reviewer / product-owner / docs-localization-reviewer）に「実行効率（トークン衛生）」節を追加。
 - `security-reviewer`: `bash` を read-only サブセット許可へ（`git status/log/diff/show/rev-parse/ls-files`・`ls`・`rg`・`grep`・`find`。`*` は deny、`edit: deny` は維持）。

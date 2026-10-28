@@ -1,21 +1,23 @@
 ---
-description: 法務・プライバシー・セキュリティのゲート（compliance-legal → privacy-review → security-review → release-readiness）
+description: Legal / privacy / security gate (compliance-legal → privacy-review → security-review → release-readiness)
 agent: compliance-reviewer
+replay: safe
 ---
 
-# Compliance Review（法務・プライバシー・セキュリティ）
+# Compliance Review (legal / privacy / security)
 
-> **法的判断は人が行う。** 本ワークフローは**証拠とチェックリスト**を揃え、**人間の承認**を必須にする。
+> **A human makes the legal call.** This workflow assembles **evidence and checklists** and requires **human approval**.
 
-2. **`compliance-legal`**：
-   - OSS ライセンス（MIT/Apache-2.0 の LICENSE・NOTICE 帰属）と **SBOM**。
-   - 利用規約・プライバシーポリシー・DPA・AI 利用ポリシーのチェックリスト。
-3. **`privacy-review`**：PII の流れ・最小化・保持・マスキング・越境。
-4. **`security-review`**：境界（認証・SSRF・秘密・テナント分離）。
-5. **`release-readiness`**：版・法務ファイル・CHANGELOG・ロールバック。
-6. 出力：**該当/非該当/要確認**・証拠（パス/版/出典）・残存リスク・**必要な人間承認**。
-7. **承認なしに**公開・契約・規約変更・本番反映をしない。
+2. **`compliance-legal`**:
+   - OSS licenses (MIT/Apache-2.0 LICENSE and NOTICE attribution) and an **SBOM**.
+   - Checklists for ToS, privacy policy, DPA, and AI usage policy.
+3. **`privacy-review`**: PII flows, minimization, retention, masking, cross-border.
+4. **`security-review`**: boundaries (auth, SSRF, secrets, tenant isolation).
+5. **`release-readiness`**: version, legal files, CHANGELOG, rollback.
+6. Output: **applicable / not applicable / needs confirmation**, evidence (path/version/source), residual risk, and **required human approval**.
+7. Do **not** publish, contract, change terms, or ship to production **without approval**.
 
-## 既知の注意
-- 本プロジェクトは MIT/Apache-2.0 の資産を利用（`.kilo/skills/ATTRIBUTION.md`）。**Marketplace の business 系は第三者ソースで個別ライセンス未確認**。
-- 設計上の PII 方針：`docs/design/60-SECURITY-OPS.md` §7.4（既定で本文を保存しない）。
+## Known cautions
+
+- This project uses MIT/Apache-2.0 assets (`.kilo/skills/ATTRIBUTION.md`). **Marketplace "business" items come from a third-party source with unverified licenses.**
+- Design PII stance: `docs/design/60-SECURITY-OPS.md` §7.4 (do not store bodies by default).

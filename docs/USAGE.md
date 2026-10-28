@@ -1,90 +1,129 @@
-# 使い方（Kilo / Cursor / MCP）
+# Usage (Kilo / Cursor / MCP)
 
-## 1. 収録
-- Skills：`.kilo/skills/<name>/SKILL.md`（55）
-- Agents：`.kilo/agents/<name>.md`（21）
-- Workflows：`.kilo/commands/<name>.md`（15）
-- MCP：`mcp/server.py`
-- カタログ（自動生成）：`.kilo/CAPABILITIES.md`
+> Japanese version: [USAGE.ja.md](USAGE.ja.md)
 
-## 2. Kilo CLI / Kilo Code（https://kilo.ai ・ https://kilocode.ai）
-1. このディレクトリを開く（`.kilo/` を自動探索、`kilo.json` で MCP 有効）。
-2. ワークフロー：`/feature-delivery` など。
-3. スキル：モデルが `SKILL.md` を選択、または明示的に参照。
+## 0. Prerequisites
 
-### グローバル配置（全プロジェクトで使う・冪等）
-`.kilo/{skills,agents,commands}` を `~/.config/kilo/` へ同期し、MCP と適用範囲メモを冪等登録する（再実行可）。
+- **Python 3 (standard library only)** is required (MCP server, maintenance scripts). **No extra packages.**
+- `python3` (or `python` on Windows) must be on `PATH`. Check: `python3 --version`.
+  - macOS: `xcode-select --install` if missing. Linux: `apt install python3`, etc. Windows: enable "Add python.exe to PATH" at https://www.python.org/downloads/.
+- MCP launches with `python3` as the command (`kilo.json`, `.cursor/mcp.json`). If it has another name (`python` / `py`), align `command`.
+- Details: README "Prerequisites (runtime)".
+
+## 1. Contents
+
+- Skills: `.kilo/skills/<name>/SKILL.md`
+- Agents: `.kilo/agents/<name>.md`
+- Workflows: `.kilo/commands/<name>.md`
+- MCP: `mcp/server.py`
+- Catalog (generated) — **counts live here** (source of truth): `.kilo/CAPABILITIES.md`
+
+## 2. Kilo CLI / Kilo Code (https://kilo.ai · https://kilocode.ai)
+
+1. Open this directory (auto-discovers `.kilo/`; MCP enabled via `kilo.json`).
+2. Workflows: `/feature-delivery`, etc.
+3. Skills: the model selects a `SKILL.md`, or reference one explicitly.
+
+### Global install (use in all projects, idempotent)
+
+Mirror `.kilo/{skills,agents,commands}` into `~/.config/kilo/` and idempotently register MCP and an applicability note (re-runnable).
 ```bash
-python3 scripts/install_global.py --dry-run    # 変更内容の確認
-python3 scripts/install_global.py              # 適用（既定ミラー＝余剰を削除）
-python3 scripts/install_global.py --no-delete  # 余剰を残す
-KILO_GLOBAL_DIR=/path/to/config python3 scripts/install_global.py  # 別の配置先
+python3 scripts/install_global.py --dry-run    # preview changes
+python3 scripts/install_global.py              # apply (default mirror = delete extras)
+python3 scripts/install_global.py --no-delete  # keep extras
+KILO_GLOBAL_DIR=/path/to/config python3 scripts/install_global.py  # alternate target
 ```
-- MCP は絶対パス登録（`/usr/bin/python3` ＋ `WAWOO_SKILLS_ROOT`／`WAWOO_MEMORY_READONLY`）。既定は recall-only（`=1`）で、書込を有効化するには `--memory-writable`（`=0`）。詳細は `mcp/README.md`。
-- 併せて **`ROUTER.md` を生成**し、`instructions` に **絶対パス**で冪等登録、`default_agent` を `wawoo-router` に設定する（既定）。
-  - Kilo の `instructions` は**絶対パス必須**（相対 `ROUTER.md` は実行時コンテキストに注入されない）。
-  - 既定 agent `wawoo-router` が「最初のツール＝`workflow_get`／`interpret_intent`」を強制し、`code` 既定時のルーティング漏れを防ぐ。
-  - 変更は `--default-agent <name>`／`--no-default-agent`／`--force-default-agent` で制御。
-- **反映には Kilo の再起動が必要**（agent／command／instruction はサーバ起動時にキャッシュ。VS Code は Reload Window）。
-- キットの repo 相対 SSOT を前提とする手順は**キット内でのみ有効**。グローバル `AGENTS.md` にその旨を追記する。
-- `validate_assets`：同名 skill／command は **command 側で入口を明文化していれば警告しない**（`design-review`・`research` は対応済み）。未記載の衝突は `WARN` として出る（`scripts/validate_assets.py` の `documents_entry`）。
+- MCP registers absolute paths (`/usr/bin/python3` + `WAWOO_SKILLS_ROOT` / `WAWOO_MEMORY_READONLY`). The default is recall-only (`=1`); use `--memory-writable` (`=0`) to enable writes. See `mcp/README.md`.
+- It also **generates `ROUTER.md`**, registers it in `instructions` as an **absolute path** idempotently, and sets `default_agent` to `wawoo-auto` (default).
+  - Kilo `instructions` **require absolute paths** (a relative `ROUTER.md` is not injected into the runtime context).
+  - The default agent `wawoo-auto` enforces "first tool = `workflow_get` / `interpret_intent`", preventing routing gaps when `code` is the default.
+  - Control via `--default-agent <name>` / `--no-default-agent` / `--force-default-agent`.
+- **Kilo must be restarted to take effect** (agents/commands/instructions are cached at server start; VS Code: Reload Window).
+- Steps that assume the kit's repo-relative SSOT are **valid only inside the kit**. Note this in the global `AGENTS.md`.
+- `validate_assets`: a skill/command name collision **does not warn if the command documents its entry** (`design-review`, `research` are handled). An undocumented collision is a `WARN` (`documents_entry` in `scripts/validate_assets.py`).
 
-## 3. Cursor（https://cursor.com）
-1. このディレクトリを開く（`AGENTS.md` と `.cursor/rules` を読む）。
-2. **Settings → MCP** で `wawoo-skills` を有効化（`.cursor/mcp.json`）。
-3. ツール `capabilities`／`skill_search`／`skill_get` を利用。
+## 2.5 OpenCode (https://opencode.ai)
 
-**Cursor の制約**：
-- slash command（`/feature-delivery` 等）は**動かない**。
-- agent の切替は**無い**（役割は `@.kilo/agents/<role>.md` を読んで適用）。
-- `SKILL.md` の**自動発見・自動起動**は**無い**。
+OpenCode reads `AGENTS.md` and connects MCP servers over stdio. Add the kit as a local MCP server in `opencode.json`:
 
-**フォールバック（MCP 無し）**：
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "wawoo-skills": {
+      "type": "local",
+      "command": ["python3", "/abs/path/to/wawoo-skills/mcp/server.py"],
+      "enabled": true,
+      "environment": { "WAWOO_SKILLS_ROOT": "/abs/path/to/wawoo-skills" }
+    }
+  }
+}
 ```
-@.kilo/CAPABILITIES.md を見て候補を選び、必要な @.kilo/skills/<name>/SKILL.md を読んで従って。
-@.kilo/commands/<name>.md の手順を適用して。
+- OpenCode has no native slash / skill execution; use `AGENTS.md` + MCP (`interpret_intent` → `workflow_get` → `skill_get`).
+- Verified by the `opencode_stdio_contract` E2E (MCP handshake + `tools/list`).
+
+## 3. Cursor (https://cursor.com)
+
+1. Open this directory (it reads `AGENTS.md` and `.cursor/rules`).
+2. Enable `wawoo-skills` in **Settings → MCP** (`.cursor/mcp.json`).
+3. Use the tools `capabilities` / `skill_search` / `skill_get`.
+
+**Cursor limitations**:
+- Slash commands (`/feature-delivery`, etc.) **do not work**.
+- There is **no agent switching** (read `@.kilo/agents/<role>.md` and apply the role).
+- There is **no auto-discovery / auto-start of `SKILL.md`**.
+
+**Fallback (no MCP)**:
+```
+Look at @.kilo/CAPABILITIES.md, pick a candidate, read the needed @.kilo/skills/<name>/SKILL.md, and follow it.
+Apply the steps in @.kilo/commands/<name>.md.
 ```
 
-## 4. MCP（Model Context Protocol: https://modelcontextprotocol.io）
+## 4. MCP (Model Context Protocol: https://modelcontextprotocol.io)
+
 ```bash
-python3 mcp/server.py        # stdio（通常はクライアントが起動）
-python3 mcp/test_server.py   # スモークテスト
+python3 mcp/server.py        # stdio (the client usually launches it)
+python3 scripts/e2e_flows.py   # public smoke (contract/E2E)
 ```
-**カタログ系**: `capabilities`・`skill_search`・`skill_get`・`workflow_get`・`agent_get`・`memory_recall`・`memory_save`・`evidence_check`。
+**Catalog tools**: `capabilities`, `skill_search`, `skill_get`, `workflow_get`, `agent_get`, `memory_recall`, `memory_save`, `evidence_check`.
 
-**意図ルーティング**（任意だが推奨）: `interpret_intent` → `workflow_get` → … → `workflow_clear`。サブタスクは `delegate_subtask`。
+**Intent routing** (optional but recommended): `interpret_intent` → `workflow_get` → … → `workflow_clear`. Subtasks: `delegate_subtask`.
 
-- 対外ガイド：**[docs/INTENT-ROUTING.md](INTENT-ROUTING.md)**（L0–L3・スコア JSON・ツールゲート）
-- 実装・常駐：`mcp/README.md`・`docs/design/INTENT-RECEIVER.md`
+- Public guide: **[docs/INTENT-ROUTING.md](INTENT-ROUTING.md)** (L0–L3, score JSON, tool gate)
+- Implementation / resident receiver: `mcp/README.md`
 
-## 5. 呼び出しの順序
-1. **Workflow**（入口）を選ぶ。曖昧な依頼は MCP **`interpret_intent`** で 15 workflow から選ぶ（[INTENT-ROUTING.md](INTENT-ROUTING.md)）。明示できるときは **`/delivery-lite`**（`docs/plans/ACTIVE.md` が進捗 SSOT）。儀式レベルは `docs/METHODOLOGY.md` §5。
-2. **カタログ／MCP** で候補を選ぶ（全部読まない）。
-3. 必要な **Skill** だけ開く。
-4. Workflow の**出力スキーマ**と**ゲート**（承認・証拠）に従う。
-5. 作業前に `memory` を想起、決定後に保存（MCP `memory_save` は INDEX＋topic ファイル。`docs/memory/TEMPLATE.md`）。
+## 5. Call order
 
-### 記憶（memory）
+1. Choose the **Workflow** (entry). For ambiguous requests, use MCP **`interpret_intent`** to pick from the 16 workflows ([INTENT-ROUTING.md](INTENT-ROUTING.md)). When you can be explicit, use **`/delivery-lite`** (`docs/plans/ACTIVE.md` is the progress SSOT). Ceremony levels (L0–L3): see `AGENTS.md` §3 (distinct from the route layers `L0–L3` in `INTENT-ROUTING.md`).
+2. Select candidates via the **catalog / MCP** (do not read everything).
+3. Open only the **Skills** you need.
+4. Follow the workflow's **output schema** and **gates** (approval, evidence).
+5. Recall `memory` before work; save decisions after (`memory_save` writes INDEX + a topic file; `docs/memory/TEMPLATE.md`).
 
-- 正本: `docs/memory/`（`MEMORY-TOOLS.md` で Kilo／MCP の優先順）
-- 納品経路 `/feature-delivery` の入口・出口でも想起／保存
-- CI: `validate_assets.py` が memory 内の秘密らしき文字列を検出
-- E2E: `python3 scripts/e2e_flows.py`（**L0–L3**・MCP・workflow）。`python3 scripts/cli_adapters_mock.py`（**Kilo/Cursor 入口モック**）
-- 検証 CLI: `plan_active` / `plan_l2_backlog` / `plan_l3_record` / `plan_content`
+### Memory
 
-## 6. コンテキスト予算
-- 契約 ≤500tok／カタログ ≤1k／Workflow ≤1.5k／**Skill 1 個 ≤2〜4KB**／Memory top-5。
-- 段階的開示：全部を一度に渡さない。
-- 予算例外：入口 `SKILL.md` のみ先読み。詳細は各 skill の `references/`（例：`imagegen-frontend-mobile`・`ask-matt`・`wayfinder`・`design-brief`・`writing-for-agents`）。
+- SSOT: `docs/memory/` (priority order for Kilo / MCP in `MEMORY-TOOLS.md`)
+- Recall/save also at the entry and exit of `/feature-delivery`
+- CI: `validate_assets.py` detects secret-like strings in memory
+- E2E: `python3 scripts/e2e_flows.py` (**L0–L3**, MCP, workflow). `python3 scripts/cli_adapters_mock.py` (**Kilo/Cursor entry mock**)
+- Validation CLIs: `plan_active` / `plan_l2_backlog` / `plan_l3_record` / `plan_content`
 
-## 7. 前提が必要なスキル（3）
-`to-spec`・`to-tickets`・`triage` は issue tracker が必要。初回に `setup-matt-pocock-skills` を実行。
-`scripts/readiness.json` に記載。
+## 6. Context budget
 
-## 8. 保守
+- Contract ≤500tok / catalog ≤1k / Workflow ≤1.5k / **one skill ≤2–4KB** / memory top-5.
+- Progressive disclosure: do not hand everything at once.
+- Budget exceptions: read only the entry `SKILL.md`; details live in each skill's `references/` (e.g. `imagegen-frontend-mobile`, `ask-matt`, `wayfinder`, `design-brief`, `writing-for-agents`).
+
+## 7. Skills needing prerequisites (3)
+
+`to-spec`, `to-tickets`, `triage` need an issue tracker. Run `setup-matt-pocock-skills` once.
+Listed in `scripts/readiness.json`.
+
+## 8. Maintenance
+
 ```bash
 python3 scripts/validate_assets.py
 python3 scripts/gen_capabilities.py
-python3 mcp/test_server.py
+python3 scripts/e2e_flows.py
 ```
-版管理：`docs/VERSIONING.md`。
+Versioning: `docs/VERSIONING.md`.

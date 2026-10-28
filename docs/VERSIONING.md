@@ -1,43 +1,49 @@
-# バージョン管理
+# Versioning
 
-## 方式
-- **Semantic Versioning**：`MAJOR.MINOR.PATCH`（例 `1.4.2`）。
-- **`VERSION` が唯一の正本**（リポジトリ直下）。
-- 変更履歴は **`CHANGELOG.md`** に追記。
-- Git タグ：`v<MAJOR>.<MINOR>.<PATCH>`（例 `v0.1.0`）。
+> Japanese version: [VERSIONING.ja.md](VERSIONING.ja.md)
 
-## 何を上げるか
-| 変更 | 上げる桁 |
+## Scheme
+
+- **Semantic Versioning**: `MAJOR.MINOR.PATCH` (e.g. `1.4.2`).
+- **`VERSION` is the single SSOT** (repo root).
+- Append changes to **`CHANGELOG.md`**.
+- Git tag: `v<MAJOR>.<MINOR>.<PATCH>` (e.g. `v0.1.0`).
+
+## What to bump
+
+| Change | Digit |
 |---|---|
-| skill/agent/command の**削除・改名**、MCP ツールの入出力や名前の破壊的変更 | **MAJOR** |
-| skill/agent/command の**追加**、後方互換の機能追加 | **MINOR** |
-| 誤字修正・文言・内部リファクタ（互換維持） | **PATCH** |
+| **Deleting / renaming** a skill/agent/command, breaking MCP tool I/O or names | **MAJOR** |
+| **Adding** a skill/agent/command, backward-compatible feature additions | **MINOR** |
+| Typos, wording, internal refactors (compatible) | **PATCH** |
 
-## リリース手順
-1. `VERSION` を更新（例 `0.1.0` → `0.2.0`）。
-2. `CHANGELOG.md` の先頭に `## [0.2.0] - YYYY-MM-DD` を追加（Added/Changed/Fixed/Removed）。
-3. 検証：
+## Release steps
+
+1. Update `VERSION` (e.g. `0.1.0` → `0.2.0`).
+2. Prepend `## [0.2.0] - YYYY-MM-DD` to `CHANGELOG.md` (Added/Changed/Fixed/Removed).
+3. Verify:
    ```bash
    python3 scripts/validate_assets.py
    python3 scripts/gen_capabilities.py
-   python3 mcp/test_server.py
+   python3 scripts/e2e_flows.py
    ```
-4. コミット：
+4. Commit:
    ```bash
    git add -A
    git commit -m "release: v0.2.0"
    ```
-5. タグ：
+5. Tag:
    ```bash
    git tag -a v0.2.0 -m "v0.2.0"
    ```
-6. 公開（承認後のみ）：
+6. Publish (only after approval):
    ```bash
    git push origin master
    git push origin v0.2.0
    ```
 
-## 注意
-- カタログ `.kilo/CAPABILITIES.md` は**生成物**。手で編集せず、`gen_capabilities.py` で更新する。
-- 破壊的変更（改名・削除）は **CHANGELOG に明記**し、必要なら移行手順を書く。
-- ライセンスが不明な資産は追加しない（`ATTRIBUTION.md`）。
+## Cautions
+
+- The catalog `.kilo/CAPABILITIES.md` is a **generated artifact**. Do not hand-edit; regenerate with `gen_capabilities.py`.
+- State breaking changes (renames, deletions) **in the CHANGELOG**, and add migration steps if needed.
+- Do not add assets with unknown licenses (`ATTRIBUTION.md`).

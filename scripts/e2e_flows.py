@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""キット E2E（契約・ACTIVE 状態機械・MCP・workflow）。API キー不要。stdlib のみ。"""
+"""Kit E2E (contract, ACTIVE state machine, MCP, workflow). No API key needed. stdlib only."""
 from __future__ import annotations
 
 import importlib.util
@@ -45,6 +45,12 @@ def fm(path: Path) -> dict[str, str]:
     return out
 
 
+def internal_doc(*parts: str) -> str | None:
+    """Read a non-public doc if present. `internal/` is absent in public clones, so callers skip."""
+    p = ROOT.joinpath(*parts)
+    return p.read_text(encoding="utf-8") if p.exists() else None
+
+
 def rpc(proc, payload: dict) -> dict:
     proc.stdin.write(json.dumps(payload) + "\n")
     proc.stdin.flush()
@@ -54,32 +60,41 @@ def rpc(proc, payload: dict) -> dict:
     return json.loads(line)
 
 
-def mcp_call(name: str, arguments: dict) -> dict:
-    proc = subprocess.Popen(
-        [sys.executable, str(ROOT / "mcp" / "server.py")],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        cwd=str(ROOT),
-    )
+def mcp_call(name: str, arguments: dict, env: dict | None = None) -> dict:
+    # Isolate the persisted intent session per call so a gate never leaks across calls.
+    sess = tempfile.mkstemp(prefix="wawoo-sess-", suffix=".json")[1]
     try:
-        rpc(proc, {"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "e2e", "version": "0"}}})
-        return rpc(
-            proc,
-            {
-                "jsonrpc": "2.0",
-                "id": 1,
-                "method": "tools/call",
-                "params": {"name": name, "arguments": arguments},
-            },
+        proc = subprocess.Popen(
+            [sys.executable, str(ROOT / "mcp" / "server.py")],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=str(ROOT),
+            env={**os.environ, "WAWOO_INTENT_SESSION": sess, **(env or {})},
         )
+        try:
+            rpc(proc, {"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "e2e", "version": "0"}}})
+            return rpc(
+                proc,
+                {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {"name": name, "arguments": arguments},
+                },
+            )
+        finally:
+            try:
+                proc.stdin.close()
+            except Exception:
+                pass
+            proc.wait(timeout=30)
     finally:
         try:
-            proc.stdin.close()
-        except Exception:
+            os.unlink(sess)
+        except OSError:
             pass
-        proc.wait(timeout=30)
 
 
 class Runner:
@@ -102,7 +117,7 @@ class Runner:
 
 def test_repo_active_template(r: Runner) -> None:
     def _():
-        path = ROOT / "docs" / "plans" / "ACTIVE.md"
+        path = ROOT / "docs" / "plans" / "ACTIVE.example.md"
         assert path.is_file()
         tasks = parse_active(path)
         assert validate_tasks(tasks) == []
@@ -163,7 +178,7 @@ def test_active_happy_path_file(r: Runner) -> None:
 def test_contract_agents_ssot(r: Runner) -> None:
     def _():
         text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
-        assert "タスクと進捗の正本（SSOT）" in text
+        assert "Tasks and progress source of truth (SSOT)" in text
         assert "docs/plans/ACTIVE.md" in text
         assert "delivery-lite" in text
         assert "L0" in text or "L0–L3" in text
@@ -173,7 +188,9 @@ def test_contract_agents_ssot(r: Runner) -> None:
 
 def test_contract_methodology_levels(r: Runner) -> None:
     def _():
-        text = (ROOT / "docs" / "METHODOLOGY.md").read_text(encoding="utf-8")
+        text = internal_doc("internal", "docs", "design", "METHODOLOGY.md")
+        if text is None:
+            return  # METHODOLOGY is maintainer-internal; skip in public clones
         assert "L0" in text and "L3" in text
         assert "delivery-lite" in text
         assert "ACTIVE.md" in text
@@ -193,7 +210,7 @@ def test_workflow_delivery_lite(r: Runner) -> None:
             "memory_save",
             "plan_active",
             "Gₑ",
-            "明示したときのみ",
+            "explicitly asks",
         ):
             assert needle in body, f"missing {needle}"
 
@@ -269,7 +286,11 @@ def test_mcp_evidence_check(r: Runner) -> None:
 def test_plan_active_cli(r: Runner) -> None:
     def _():
         proc = subprocess.run(
-            [sys.executable, str(ROOT / "scripts" / "plan_active.py")],
+            [
+                sys.executable,
+                str(ROOT / "scripts" / "plan_active.py"),
+                str(ROOT / "docs" / "plans" / "ACTIVE.example.md"),
+            ],
             cwd=str(ROOT),
             capture_output=True,
             text=True,
@@ -298,10 +319,23 @@ def test_active_blocked_and_duplicate(r: Runner) -> None:
 
 def test_mcp_memory_recall_repo(r: Runner) -> None:
     def _():
-        res = mcp_call("memory_recall", {"query": "ACTIVE SSOT delivery", "top_k": 3})
-        text = res["result"]["content"][0]["text"]
-        assert text != "no memory matches", text
-        assert "ACTIVE" in text or "delivery" in text.lower() or "SSOT" in text
+        # The kit's own memory is non-public, so test recall against an isolated memory.
+        mem = load_memory_ops()
+        with tempfile.TemporaryDirectory() as td:
+            mem.save_memory(
+                Path(td),
+                "タスク進捗の正本は ACTIVE.md（SSOT）。delivery の既定入口は /delivery-lite。",
+                "decision,topic:e2e",
+                "scripts/e2e_flows.py",
+            )
+            res = mcp_call(
+                "memory_recall",
+                {"query": "ACTIVE SSOT delivery", "top_k": 3},
+                env={"WAWOO_MEMORY_ROOT": td},
+            )
+            text = res["result"]["content"][0]["text"]
+            assert text != "no memory matches", text
+            assert "ACTIVE" in text or "delivery" in text.lower() or "SSOT" in text
 
     r.run("mcp_memory_recall_repo", _)
 
@@ -319,16 +353,16 @@ def test_delivery_lite_level_l0_documented(r: Runner) -> None:
     def _():
         body = (KILO / "commands" / "delivery-lite.md").read_text(encoding="utf-8")
         assert "**L0**" in body
-        assert "ACTIVE を更新せず" in body or "更新せず" in body
+        assert "without updating ACTIVE" in body
 
     r.run("delivery_lite_level_l0_documented", _)
 
 
 def test_l0_simulated_flow(r: Runner) -> None:
-    """L0: ACTIVE を増やさず、プレースホルダのみで検証が通る（計画ファイル不要）。"""
+    """L0: validation passes with only placeholders, without growing ACTIVE (no plan file needed)."""
 
     def _():
-        # 実 ACTIVE.md に実タスクがあっても壊れないよう、合成のプレースホルダで検証する
+        # Validate with a synthetic placeholder so a real task in ACTIVE.md does not break it
         with tempfile.TemporaryDirectory() as td:
             path = Path(td) / "ACTIVE.md"
             path.write_text(
@@ -343,8 +377,8 @@ def test_l0_simulated_flow(r: Runner) -> None:
             assert len(tasks) == 0
         agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
         assert "L0" in agents
-        meth = (ROOT / "docs" / "METHODOLOGY.md").read_text(encoding="utf-8")
-        assert "git diff" in meth or "L0" in meth
+        meth = internal_doc("internal", "docs", "design", "METHODOLOGY.md")
+        assert meth is None or "git diff" in meth or "L0" in meth
         with tempfile.TemporaryDirectory() as td:
             work = Path(td) / "patch.txt"
             work.write_text("l0 evidence\n", encoding="utf-8")
@@ -369,7 +403,7 @@ def test_l2_backlog_state_rules(r: Runner) -> None:
 
 
 def test_l2_simulated_flow(r: Runner) -> None:
-    """L2: バックログ open → in_progress → done（証拠付き）。"""
+    """L2: backlog open → in_progress → done (with evidence)."""
 
     def _():
         template = (ROOT / "docs" / "plans" / "BACKLOG.example.md").read_text(encoding="utf-8")
@@ -407,7 +441,7 @@ def test_l2_simulated_flow(r: Runner) -> None:
 
 
 def test_l3_simulated_flow(r: Runner) -> None:
-    """L3: PDCA 記録ファイル + memory（学び）。ACTIVE に done を書かない。"""
+    """L3: PDCA record file + memory (learnings). Do not write done into ACTIVE."""
 
     def _():
         sample = (ROOT / "docs" / "plans" / "RETRO.example.md").read_text(encoding="utf-8")
@@ -447,10 +481,12 @@ def test_l3_simulated_flow(r: Runner) -> None:
 
 
 def test_ceremony_levels_matrix(r: Runner) -> None:
-    """METHODOLOGY §5 の L0–L3 が workflow・SSOT と対応している。"""
+    """The L0–L3 of METHODOLOGY §5 correspond to workflows and the SSOT."""
 
     def _():
-        text = (ROOT / "docs" / "METHODOLOGY.md").read_text(encoding="utf-8")
+        text = internal_doc("internal", "docs", "design", "METHODOLOGY.md")
+        if text is None:
+            return  # METHODOLOGY is maintainer-internal; skip in public clones
         assert "**L0**" in text and "**L3**" in text
         assert "/delivery-lite" in text
         assert "/sprint-plan" in text
@@ -462,10 +498,10 @@ def test_ceremony_levels_matrix(r: Runner) -> None:
 
 
 def test_l1_simulated_flow(r: Runner) -> None:
-    """L1: タスク追加 → doing → done（証拠付き）の一連操作をファイルで再現。"""
+    """L1: reproduce add task → doing → done (with evidence) as a file operation sequence."""
 
     def _():
-        template = (ROOT / "docs" / "plans" / "ACTIVE.md").read_text(encoding="utf-8")
+        template = (ROOT / "docs" / "plans" / "ACTIVE.example.md").read_text(encoding="utf-8")
         row_todo = "| E2E-1 | todo | e2e flow | validate passes | |\n"
         row_doing = "| E2E-1 | doing | e2e flow | validate passes | |\n"
         row_done = "| E2E-1 | done | e2e flow | validate passes | python3 scripts/e2e_flows.py |\n"
@@ -531,7 +567,7 @@ def test_content_simulated_flow(r: Runner) -> None:
 
 
 def test_agent_active_sandbox_dry(r: Runner) -> None:
-    """実機 E2E の dry: sandbox ACTIVE/CONTENT 更新 → plan_*（login 不要）。"""
+    """Real E2E dry run: sandbox ACTIVE/CONTENT update → plan_* (no login needed)."""
 
     def _():
         script = ROOT / "internal.example/scripts/e2e/agent-active-live.sh"
@@ -565,6 +601,37 @@ def test_cli_adapters_mock_subprocess(r: Runner) -> None:
     r.run("cli_adapters_mock_subprocess", _)
 
 
+
+def test_opencode_stdio_contract(r: Runner) -> None:
+    def _():
+        # OpenCode launches a local MCP server over stdio with this config shape.
+        cfg = {"mcp": {"wawoo-skills": {"type": "local", "command": [sys.executable, str(ROOT / "mcp" / "server.py")], "enabled": True}}}
+        assert cfg["mcp"]["wawoo-skills"]["type"] == "local"
+        sess = tempfile.mkstemp(prefix="wawoo-oc-", suffix=".json")[1]
+        proc = subprocess.Popen(
+            [sys.executable, str(ROOT / "mcp" / "server.py")],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, cwd=str(ROOT), env={**os.environ, "WAWOO_INTENT_SESSION": sess},
+        )
+        try:
+            init = rpc(proc, {"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "opencode", "version": "0"}}})
+            assert init["result"]["serverInfo"]
+            tl = rpc(proc, {"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}})
+            names = {x["name"] for x in tl["result"]["tools"]}
+            assert {"workflow_get", "skill_get", "interpret_intent", "steer_task", "delegate_subtask"} <= names
+        finally:
+            try:
+                proc.stdin.close()
+            except Exception:
+                pass
+            proc.wait(timeout=10)
+            try:
+                os.unlink(sess)
+            except OSError:
+                pass
+
+    r.run("opencode_stdio_contract", _)
+
 def main() -> int:
     r = Runner()
     tests = [
@@ -595,6 +662,7 @@ def main() -> int:
         test_content_simulated_flow,
         test_agent_active_sandbox_dry,
         test_cli_adapters_mock_subprocess,
+        test_opencode_stdio_contract,
     ]
     print("== e2e_flows ==")
     for t in tests:

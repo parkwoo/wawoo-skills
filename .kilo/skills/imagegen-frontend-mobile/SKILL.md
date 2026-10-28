@@ -1,7 +1,9 @@
 ---
 name: imagegen-frontend-mobile
 description: |
-  モバイルアプリ向けの高品質画像コンセプト用スキル。iOS/Android 向け画面・フローのプロンプトとビジュアル指針を提供する（コードは書かない）。詳細な英語プロンプト集は references に分離。
+  A skill for high-quality image concepts for mobile apps. Provides prompts and visual
+  direction for iOS/Android screens and flows (writes no code). The detailed English
+  prompt set lives under references.
 triggers:
   - "mobile app image"
   - "mobile UI concept"
@@ -27,27 +29,27 @@ od:
     Generate premium mobile app concept frames for this product brief, with readable app-native hierarchy and a consistent visual system across screens.
 ---
 
-> **実行**：画像生成は**利用可能な画像ツール**（OpenAI Images／fal／社内ツール等）で行う。本スキルは**モバイル UI のプロンプト／ビジュアル指針**を提供する。ツールが無い場合は**プロンプトのみ**納品する。
+> **Execution**: generate images with an **available image tool** (OpenAI Images / fal / an internal tool). This skill provides the **prompts / visual direction for mobile UI**. If no tool is available, deliver **prompts only**.
 
-## コンテキスト予算（例外）
+## Context budget (exception)
 
-本スキルは **通常の Skill 予算（2〜4KB）の例外**です。入口はこの `SKILL.md` のみ読む。詳細プロンプト・チェックリストは **必要時だけ** `references/mobile-image-direction.md` を開く（約 40KB・英語）。
+This skill is an **exception to the normal skill budget (2–4KB)**. Read only this `SKILL.md` at the entry. Open the detailed prompts and checklist in `references/mobile-image-direction.md` **only when needed** (~40KB, English).
 
-## 手順
+## Steps
 
-1. プロダクトブリーフ（画面数・プラットフォーム・ブランドトーン）を確認する。
-2. 画像ツールが使えるか確認する。無い場合は下記参照からプロンプトを組み立てて**テキスト納品**する。
-3. 複数画面は**同一ビジュアルシステム**（色・タイポ・角丸・余白）で揃える。
-4. 出力はアプリ UI 本体を主役にし、必要なら控えめな端末フレームで見せる。
-5. ウェブ LP・デスクトップ・実装コードは本スキルの対象外とする。
+1. Confirm the product brief (number of screens, platform, brand tone).
+2. Check whether an image tool is available. If not, assemble prompts from the reference below and **deliver text**.
+3. Keep multiple screens on **one visual system** (color, type, radius, spacing).
+4. Make the app UI itself the subject; if useful, show it in a restrained device frame.
+5. Web LPs, desktop, and implementation code are out of scope for this skill.
 
-## ゲート
+## Gates
 
-- 実在の商標・人物・著作物を無断で模倣しない（依頼者の権利確認）。
-- 個人情報や秘密をプロンプトに含めない。
-- 生成物の利用範囲（商用・学習利用等）は**依頼者／法務**が決める。本スキルは法的判断をしない。
+- Do not imitate real trademarks, people, or copyrighted works without permission (confirm the requester's rights).
+- Do not include personal data or secrets in prompts.
+- The scope of use of the output (commercial, training, etc.) is decided by the **requester / legal**. This skill makes no legal judgment.
 
-## 参照（段階的開示）
+## References (progressive disclosure)
 
-- 全文プロンプトガイド（英語）：[`references/mobile-image-direction.md`](references/mobile-image-direction.md)
-- ライセンス：同ディレクトリの `LICENSE`
+- Full prompt guide (English): [`references/mobile-image-direction.md`](references/mobile-image-direction.md)
+- License: `LICENSE` in the same directory

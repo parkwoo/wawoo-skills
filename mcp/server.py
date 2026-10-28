@@ -29,10 +29,10 @@ def _env_flag(name: str) -> bool:
     return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
 
 
-# グローバル配置では実体パスが変わりうるため、環境変数で上書き可能にする。
-# WAWOO_SKILLS_ROOT: キットのルート（.kilo/scripts/docs の基点）
-# WAWOO_MEMORY_ROOT: docs/memory の代替パス
-# WAWOO_MEMORY_READONLY: 1/true で memory_save を無効化（越境書き込み防止）
+# In a global install the real paths can change, so allow an env override.
+# WAWOO_SKILLS_ROOT: kit root (base for .kilo/scripts/docs)
+# WAWOO_MEMORY_ROOT: alternate path for docs/memory
+# WAWOO_MEMORY_READONLY: 1/true disables memory_save (prevents cross-boundary writes)
 ROOT = _env_path("WAWOO_SKILLS_ROOT", Path(__file__).resolve().parents[1])
 KILO = ROOT / ".kilo"
 MEMORY = _env_path("WAWOO_MEMORY_ROOT", ROOT / "docs" / "memory")
@@ -43,6 +43,7 @@ SERVER = {"name": "wawoo-skills-capabilities", "version": "0.4.0"}
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from intent_client import socket_path, submit_intent  # noqa: E402
 from intent_delegation import build_delegation_payload, format_delegation_text  # noqa: E402
+from intent_steer import build_steer_payload  # noqa: E402
 from intent_catalog import phase_dicts  # noqa: E402
 from intent_interpreter import (  # noqa: E402
     format_needs_scoring_text,
@@ -149,7 +150,7 @@ def do_capabilities(args: dict) -> dict:
     ready_only = bool(args.get("ready_only"))
     lines = []
     if MEMORY_READONLY:
-        # 越境書き込み防止モード。エージェントは memory_save を呼ばない（無効）。
+        # Cross-boundary-write prevention mode. The agent must not call memory_save (disabled).
         lines.append("! memory_save: disabled (WAWOO_MEMORY_READONLY) — recall-only; do not call memory_save")
     for r in CAT.rows():
         if ready_only and r["name"].lstrip("/") in NEEDS_SETUP:
@@ -249,7 +250,7 @@ def do_evidence_check(args: dict) -> dict:
 
 
 def do_interpret_intent(args: dict) -> dict:
-    """意図解釈 — 構造化 JSON。via_receiver=true かつ WAWOO_INTENT_SOCKET 時は常駐受信器へ。"""
+    """Intent interpretation — structured JSON. With via_receiver=true and WAWOO_INTENT_SOCKET set, routes to the resident receiver."""
     task = str(args.get("text", args.get("task", ""))).strip()
     if not task:
         return tool_result("text or task is required", True)
@@ -288,7 +289,7 @@ def do_workflow_clear(_args: dict) -> dict:
 
 
 def do_delegate_subtask(args: dict) -> dict:
-    """L3: 親 workflow セッション下で subagent 委譲指示を返す（実行は上流）。"""
+    """L3: return a subagent delegation instruction under the parent workflow session (executed upstream)."""
     parent = active_schedule()
     if not parent:
         return tool_result("no active workflow session: call interpret_intent with a resolved schedule first", True)
@@ -310,14 +311,33 @@ def do_delegate_subtask(args: dict) -> dict:
             label=str(args.get("label", "")).strip(),
             background=bool(args.get("background")),
             suggested_agent=suggested_agent,
+            idempotency_key=str(args.get("idempotency_key", "")).strip(),
+            model_tier=str(args.get("model_tier", "")).strip(),
         )
     except ValueError as exc:
         return tool_result(str(exc), True)
     return tool_result(format_delegation_text(payload))
 
 
+
+def do_steer_task(args: dict) -> dict:
+    """Amend a running plan: classify (or apply) an op against the plan context."""
+    text = str(args.get("text", "")).strip()
+    parent = active_schedule() or {}
+    try:
+        payload = build_steer_payload(
+            text=text,
+            root=ROOT,
+            active_workflow=str(parent.get("workflow", "")),
+            op=str(args.get("op", "")),
+            target=str(args.get("target", "")),
+        )
+    except ValueError as exc:
+        return tool_result(str(exc), True)
+    return tool_result(json.dumps(payload, ensure_ascii=False, indent=2))
+
 def do_route_task(args: dict) -> dict:
-    """task-router 互換の人間向けテキスト（needs_scoring 時は delivery-lite に落とさない）。"""
+    """task-router-compatible human-readable text (does not fall back to delivery-lite on needs_scoring)."""
     task = str(args.get("task", "")).strip()
     if not task:
         return tool_result("Task is required. Please provide a task description.", True)
@@ -407,7 +427,22 @@ TOOLS = [
                 "agent": {"type": "string"},
                 "background": {"type": "boolean"},
                 "phase": {"type": "string"},
+                "idempotency_key": {"type": "string"},
+                "model_tier": {"type": "string"},
             },
+        },
+    ),
+    (
+        "steer_task",
+        "Amend a running plan (add|reorder|reprioritize|scope_change|abort) using the plan as context. Without op, returns needs_classification for the host LLM.",
+        {
+            "type": "object",
+            "properties": {
+                "text": {"type": "string"},
+                "op": {"type": "string"},
+                "target": {"type": "string"},
+            },
+            "required": ["text"],
         },
     ),
 ]
@@ -425,6 +460,7 @@ HANDLERS = {
     "route_task": do_route_task,
     "workflow_clear": do_workflow_clear,
     "delegate_subtask": do_delegate_subtask,
+    "steer_task": do_steer_task,
 }
 
 

@@ -1,5 +1,7 @@
 # Security Policy
 
+> Japanese version: [SECURITY.ja.md](SECURITY.ja.md)
+
 ## Supported versions
 
 This kit is developed on `master`. Security fixes are applied to `master` and included in

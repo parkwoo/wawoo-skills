@@ -1,14 +1,14 @@
 ---
-description: wawoo-skills 契約（Kilo / Cursor 共通・必読）
+description: wawoo-skills contract (shared by Kilo / Cursor, required reading)
 alwaysApply: true
 ---
 
-# wawoo-skills 契約（要約）
+# wawoo-skills contract (summary)
 
-- 最初に必ず **`AGENTS.md`** を読むこと（本ルールはその要約）。Cursor は `AGENTS.md` をネイティブに読む。
-- このリポジトリは **skills／agents／workflows／MCP の汎用キット**。特定プロダクトに依存しない。
-- **Cursor の制約**：`.kilo/commands` の slash 実行・`.kilo/agents` の切替・`SKILL.md` の自動起動は**無い**。`@.kilo/commands/<name>.md`／`@.kilo/skills/<name>/SKILL.md` を開いて手順に従うか、**MCP** を使う。
-- **呼び出し**：Workflow（入口）→ カタログ/MCP で選定 → 必要分の Skill → 出力スキーマとゲート。
-- **予算**：契約 ≤500tok／カタログ ≤1k／Skill 1 個 ≤2〜4KB／Memory top-5。全部読まない。
-- **ガードレール**：秘密をコミットしない／破壊的変更・公開は承認／ライセンス未確認の第三者資産を再配布しない／証拠を残す。
-- **テスト**：`python3 scripts/validate_assets.py`・`python3 mcp/test_server.py`。
+- Always read **`AGENTS.md`** first (this rule is a summary). Cursor reads `AGENTS.md` natively.
+- This repository is a **generic kit of skills / agents / workflows / MCP**. It depends on no specific product.
+- **Cursor limitations**: no native slash execution of `.kilo/commands`, no `.kilo/agents` switching, no auto-start of `SKILL.md`. Open `@.kilo/commands/<name>.md` / `@.kilo/skills/<name>/SKILL.md` and follow the steps, or use **MCP**.
+- **Call order**: Workflow (entry) → select via catalog/MCP → the skills you need → output schema and gates.
+- **Budget**: contract ≤500tok / catalog ≤1k / one skill ≤2–4KB / memory top-5. Do not read everything.
+- **Guardrails**: never commit secrets / destructive changes and publishing need approval / do not redistribute unverified-license third-party assets / keep evidence.
+- **Tests**: `python3 scripts/validate_assets.py` · `python3 scripts/e2e_flows.py` (unit tests live in the internal `internal/tests/`).

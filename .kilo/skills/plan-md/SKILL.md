@@ -1,34 +1,38 @@
 ---
 name: plan-md
-description: 計画に関わる成果物（修正計画・実装計画・設計方針・レビュー対応など）を必ず Markdown ファイルとして保存する。計画を作る・計画を立てる・fix/implementation/design plan を作るタスクで使う。
+description: Always save planning deliverables (fix plans, implementation plans, design direction, review responses) as a Markdown file. Use for tasks that create a plan or a fix/implementation/design plan.
 ---
 
-# plan-md — 計画は必ず MD ファイルで
+# plan-md — a plan is always a Markdown file
 
-計画系の成果物（修正計画・実装計画・リファクタ計画・設計方針・レビュー対応計画・タスク分解）は、チャット回答だけで終わらせず、**必ず Markdown ファイルとして保存**する。
+Planning deliverables (fix plans, implementation plans, refactor plans, design direction, review-response plans, task breakdowns) must not end as a chat answer only: **always save them as a Markdown file**.
 
-## 保存先
-1. 対象リポジトリに `docs/` があれば `docs/`。
-2. サブディレクトリ配下なら、その直近の `docs/` または対象フォルダ直下。
-3. 曖昧なら作業ルート直下（例：`FIX-PLAN.md`、`IMPLEMENTATION-PLAN.md`）。
-4. 同内容の計画が既にあれば、新規より**既存ファイルの更新**を優先。
+## Where to save
 
-## 命名
-- 内容が分かる英数名 + `.md`（例：`FIX-PLAN.md`、`<feature>-design.md`）。
-- 保存パスを最終報告に含める。
+1. If the target repository has `docs/`, use `docs/`.
+2. If you are inside a subdirectory, use the nearest `docs/` or the target folder.
+3. If ambiguous, use the work root (e.g. `FIX-PLAN.md`, `IMPLEMENTATION-PLAN.md`).
+4. If an equivalent plan already exists, prefer **updating the existing file** over creating a new one.
 
-## 標準セクション（過不足は調整）
-- タイトル（#）とメタ情報（対象・前提・ステータス）
-- 背景 / 目的
-- 現状の問題一覧（#・重大度・場所(file:line)・説明）
-- 方針（変えないこと／変えること）
-- 実施ステップ（項番・対象ファイル・変更内容）を Phase に分ける
-- 検証方法・完了条件
-- リスク・ロールバック
-- 実施手順（レビュー→承認→実装→検証）
-- 更新履歴
+## Naming
 
-## 制約
-- 計画の生成はコード変更を伴わない（承認後に別タスクで実施）。
-- 秘密情報（API キー・トークン・パスワード・`.env` の中身）を書かない。
-- 説明文は**日本語**。コード・パス・コマンド・識別子は原文のまま。
+- A descriptive ASCII name + `.md` (e.g. `FIX-PLAN.md`, `<feature>-design.md`).
+- Include the saved path in the final report.
+
+## Standard sections (adjust as needed)
+
+- Title (`#`) and meta (scope, assumptions, status)
+- Background / goal
+- Current problem list (#, severity, location `file:line`, description)
+- Approach (what stays / what changes)
+- Steps (number, target file, change) grouped into phases
+- Verification and done criteria
+- Risks and rollback
+- Execution order (review → approval → implement → verify)
+- Change history
+
+## Constraints
+
+- Producing a plan does not change code (implement in a separate task after approval).
+- Never write secrets (API keys, tokens, passwords, `.env` contents).
+- Follow the project language policy (`AGENTS.md` §1): engineering records and responses use the working language; code, paths, commands, and identifiers stay verbatim.

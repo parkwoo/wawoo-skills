@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Kilo CLI / Cursor CLI の挙動を MCP でモック（実 TUI・agent login 不要）。stdlib のみ。"""
+"""Mock the behavior of Kilo CLI / Cursor CLI via MCP (no real TUI or agent login). stdlib only."""
 from __future__ import annotations
 
 import json
@@ -76,7 +76,7 @@ def mcp_workflow_get(name: str) -> str:
 
 
 class KiloCLIMock:
-    """Kilo: `/workflow-name` → workflow 本文（MCP workflow_get と同等）。"""
+    """Kilo: `/workflow-name` → the workflow body (equivalent to MCP workflow_get)."""
 
     native_slash: bool = True
 
@@ -90,12 +90,12 @@ class KiloCLIMock:
 
 
 class CursorCLIMock:
-    """Cursor: `@.kilo/commands/<name>.md` → 同一 workflow。slash はネイティブ非対応。"""
+    """Cursor: `@.kilo/commands/<name>.md` → the same workflow. Slash is not natively supported."""
 
     native_slash: bool = False
 
     def resolve_at_file(self, at_path: str) -> WorkflowPayload:
-        # @.kilo/commands/foo.md または .kilo/commands/foo.md
+        # @.kilo/commands/foo.md or .kilo/commands/foo.md
         clean = at_path.strip().lstrip("@")
         p = Path(clean)
         if not p.is_absolute():
@@ -113,7 +113,7 @@ class CursorCLIMock:
             raise NotImplementedError("Cursor has no native slash commands; use @.kilo/commands/...")
 
 
-# 交付物タイプごとに SSOT キーワードを期待（契約 E2E）
+# Expect SSOT keywords per deliverable type (contract E2E)
 DELIVERABLE_SSOT = {
     "delivery-lite": ("ACTIVE.md", "plan_active"),
     "content-delivery-lite": ("CONTENT.md", "plan_content"),
@@ -135,7 +135,7 @@ def assert_workflow_contract(payload: WorkflowPayload) -> list[str]:
 
 
 def run_parity_check(workflow_names: list[str]) -> list[str]:
-    """Kilo slash と Cursor @file で同一 workflow 本文が得られること。"""
+    """The same workflow body is obtained via Kilo slash and Cursor @file."""
     issues: list[str] = []
     kilo = KiloCLIMock()
     cursor = CursorCLIMock()

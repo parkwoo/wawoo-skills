@@ -5,19 +5,22 @@ description: Generate and maintain user-facing changelog/release notes from git 
 
 # Changelog / Version
 
-## 前提
-- `release-readiness` が版・法務ファイル・タグを確認する。本スキルは**変更履歴の生成**を担う。
-- **公開・タグ・push は承認後**（`/release-review`）。
+## Prerequisites
 
-## 手順
-1. 範囲を決める：`git log <base>..HEAD --oneline`（前回タグ〜HEAD）。
-2. **分類**（Conventional Commits を推奨）：
-   - `feat`（新機能）／`fix`（修正）／`perf`／`refactor`／`docs`／`chore`／`BREAKING CHANGE`。
-   - ユーザー向け文言に変換（技術的コミットをそのまま載せない）。
-3. `CHANGELOG.md` を更新（版・日付・セクション・PR リンク）。
-4. **版**：SemVer（`MAJOR.MINOR.PATCH`）。破壊的変更は MAJOR。
-5. **タグ/リリースノート**の下書きを作る（公開は承認後）。
-6. 証拠：範囲・コミット・分類・版の根拠を示す。
+- `release-readiness` verifies the version, legal files, and tags. This skill owns **generating the change history**.
+- **Publishing, tagging, and pushing happen after approval** (`/release-review`).
 
-## 注意
-- 秘密・個人情報・内部 URL を changelog に載せない。
+## Steps
+
+1. Choose the range: `git log <base>..HEAD --oneline` (previous tag → HEAD).
+2. **Classify** (Conventional Commits recommended):
+   - `feat` (new), `fix`, `perf`, `refactor`, `docs`, `chore`, `BREAKING CHANGE`.
+   - Rewrite into user-facing wording (do not paste raw technical commits).
+3. Update `CHANGELOG.md` (version, date, sections, PR links).
+4. **Version**: SemVer (`MAJOR.MINOR.PATCH`). Breaking changes are MAJOR.
+5. Draft the **tag / release notes** (publish after approval).
+6. Evidence: show the range, commits, classification, and version rationale.
+
+## Cautions
+
+- Never put secrets, personal data, or internal URLs in the changelog.

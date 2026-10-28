@@ -1,150 +1,165 @@
-# AGENTS.md — wawoo-skills エージェント契約
+# AGENTS.md — wawoo-skills agent contract
 
-このリポジトリは、AI コーディングエージェント向けの**再利用可能な skills／agents／workflows／MCP サーバ**を集めた**汎用キット**です。特定プロダクトには依存しません。
+> Japanese version: [AGENTS.ja.md](AGENTS.ja.md)
 
----
-
-## 1. 作業言語・基本
-
-- 応答・計画・文書は**日本語**（コード・パス・コマンド・識別子・引用は原文のまま）。
-- 変更前に**現状を確認**（`git status`・関連ファイル）。既存の未コミット変更を**勝手に破棄しない**。
-- **証拠に基づく**（推測と実測を区別する）。
-- **記憶**：作業前に `memory`（`docs/memory/INDEX.md`）を想起し、決定・落とし穴を保存する。
+This repository is a **generic kit** of **reusable skills / agents / workflows / MCP servers** for AI coding agents. It depends on no specific product.
 
 ---
 
-## 2. 構成
+## 1. Working language & basics
+
+**Language policy (three tiers)** (authoritative; details in `.kilo/skills/language-policy/SKILL.md`):
+
+| Target | Language |
+|------|------|
+| Code (comments, identifiers, strings, commit messages, config keys) | **English** |
+| **Engineering documents** (`plans/`, `ACTIVE.md`, `RETRO-*`, `evidence/`, `memory/`) and agent **responses** | **Japanese** (the project working language) |
+| **Explanatory documents** (`README.md`, `docs/USAGE.md`, etc.) | **Two versions: English (primary) + Japanese (secondary)** |
+
+- Check the current state before changing (`git status`, related files). **Do not discard existing uncommitted changes.**
+- **Evidence-based** (distinguish inference from measurement).
+- **Memory**: recall `memory` (`docs/memory/INDEX.md`) before work; save decisions and gotchas.
+
+---
+
+## 2. Layout
 
 ```
 .kilo/
-  skills/<name>/SKILL.md   … スキル（55）
-  agents/<name>.md         … エージェント（22）
-  commands/<name>.md       … ワークフロー（15）
-  CAPABILITIES.md          … 自動生成カタログ（手編集しない）
+  skills/<name>/SKILL.md   … skills
+  agents/<name>.md         … agents
+  commands/<name>.md       … workflows
+  CAPABILITIES.md          … generated catalog — counts live here (do not hand-edit)
 .cursor/
-  rules/*.mdc              … Cursor 用アダプタ
-  mcp.json                 … MCP 設定
-mcp/server.py              … 能力 MCP サーバ（stdio）
+  rules/*.mdc              … Cursor adapters
+  mcp.json                 … MCP config
+mcp/server.py              … capability MCP server (stdio)
 scripts/{gen_capabilities,validate_assets}.py
-docs/                      … 設計・運用手順・記憶
+docs/                      … design, runbooks, memory
 ```
 
 ---
 
-## 3. タスクと進捗の正本（SSOT）
+## 3. Tasks and progress source of truth (SSOT)
 
-**チャットで進捗を管理しない。** エージェントは次をデフォルトとする（利用者が毎回言わなくてよい）。
+**Do not manage progress in chat.** Agents default to the following (the user should not have to say it each time).
 
-| 用途 | 正本 | 更新タイミング |
+| Purpose | SSOT | When to update |
 |------|------|----------------|
-| **L1 進行中タスク（コード・UI・調査等）** | `docs/plans/ACTIVE.md` | 着手前に読む。`todo`→`doing`→`done` と証拠列のみエージェントが更新 |
-| **L1 長文・書籍・レポート** | `docs/plans/CONTENT.md` | `/content-delivery-lite`。`plan_content.py` で検証 |
-| **詳細計画** | `docs/plans/<id>.md`（`plan-md`） | 分解が大きいとき。ACTIVE の id とリンク |
-| **L2 複数タスク・同期** | issue tracker（設定時）または `docs/plans/BACKLOG*.md` | `to-tickets`／`plan_l2_backlog.py`。ACTIVE と二重管理しない |
-| **L3 プロセス改善** | `docs/plans/RETRO*.md` 等 + `memory` | `/self-improve`。`plan_l3_record.py` |
-| **横断の決定・制約** | `docs/memory/` | タスク完了ではなく、再発する知識のみ |
-| **監査（キット資産）** | CI／`validate_assets.py` | エージェントが口頭で「監査した」と言う代わりに実行 |
+| **L1 in-progress tasks (code, UI, research, etc.)** | `docs/plans/ACTIVE.md` | Read before starting. The agent updates only `todo`→`doing`→`done` and the evidence column |
+| **L1 long-form / books / reports** | `docs/plans/CONTENT.md` | `/content-delivery-lite`. Validated by `plan_content.py` |
+| **Detailed plan** | `docs/plans/<id>.md` (`plan-md`) | When the breakdown is large. Link from the ACTIVE id |
+| **L2 multiple tasks / sync** | issue tracker (if configured) or `docs/plans/BACKLOG*.md` | `to-tickets` / `plan_l2_backlog.py`. Do not double-manage with ACTIVE |
+| **L3 process improvement** | `docs/plans/RETRO*.md` etc. + `memory` | `/self-improve`. `plan_l3_record.py` |
+| **Cross-cutting decisions / constraints** | `docs/memory/` | Not for task completion — only recurring knowledge |
+| **Audit (kit assets)** | CI / `validate_assets.py` | Run it instead of saying "I audited" in words |
 
-**儀式レベル（L0–L3）**: `docs/METHODOLOGY.md` §5。迷ったら **L1＋`/delivery-lite`**。本番・法務・大規模は `/feature-delivery` または L2 へ。
+**Ceremony levels (L0–L3)**: the table above (a different axis from the **route layers** `L0–L3` in `docs/INTENT-ROUTING.md`). When unsure, **L1 + `/delivery-lite`**. Production, legal, and large work go to `/feature-delivery` or L2.
 
-**git commit**: 利用者が依頼したときのみ（タスク `done` と commit は別）。
-
----
-
-## 4. 呼び出しプロトコル（必須）
-
-理論・設計判断: `docs/METHODOLOGY.md`（Skill／Agent／ワークフローの分担と WARO）。
-
-**Kilo 実運用（強制・0 番）**: MCP `wawoo-skills` が接続されている環境では、コード変更・調査・設計・文書生成などの**非自明な依頼では、最初のツール呼び出しを `wawoo-skills_workflow_get`（判断不能なら `wawoo-skills_interpret_intent`）にする**。ネイティブ `skill` ツール（`plan-md` 等）や記憶で代替して作業を始めたら §4 違反として扱い、途中でも `workflow_get` に戻る。接続不能な場合のみネイティブを使い、その旨を報告する。
-
-1. **入口＝Workflow**：通常は **`/delivery-lite`**（儀式 L1）。大規模・ゲート多めは `/feature-delivery`。Kilo は `/name`、Cursor は `@.kilo/commands/<name>.md`。依頼が曖昧なときは MCP **`interpret_intent`** → `schedule.workflow`（`docs/INTENT-ROUTING.md`）。`interpret_intent` が `needs_scoring` を返したら `scoring` を付けて再呼び出しする。
-2. **候補選定＝カタログ／MCP**：`.kilo/CAPABILITIES.md` または MCP `capabilities`／`skill_search`。**全部読まない**。`interpret_intent` 後は **`mcp_tools_allow` 外のツールを呼ばない**（終了時 `workflow_clear`）。
-3. **手順＝Skill**：Workflow が挙げた skill を**必要分だけ** `skill_get`／`@.kilo/skills/<name>/SKILL.md` で開く。phase があるときは `workflow_get {name, phase:<id>}` で goal／agent／skills／`exit_criteria` を取得し、`implement` を持たない workflow（監査系）では実装に進まず**切替を宣言**する。
-4. **出力＝スキーマ**：Workflow の出力形に従う。ゲート（承認・証拠・失敗観察）を飛ばさない。
-5. **記憶**：作業前に `memory_recall`（または `docs/memory/INDEX.md`）、決定・制約・落とし穴は `memory_save`（INDEX＋`docs/memory/<topic>.md`）。優先順は `docs/memory/MEMORY-TOOLS.md`。
-6. **検証**：`python3 scripts/validate_assets.py` ＋ lint/テスト。
-
-### 4.1 実行衛生・収束ゲート（キット共通・プロジェクト非依存）
-
-対象は**この kit 自体**と、kit の規約を採用する各プロジェクト（特定プロダクトには依存しない）。
-
-- **1 セッション = 1 対象／1 成果物**：独立した複数プロジェクトや複数成果物を 1 セッションに混在させない。混在しそうなら `Task`（subagent）で対象ごとに分割委譲する。**指標: payload < 600KB、cache_read を半減**。
-- **Workflow 逸脱の明示**：途中で workflow を切り替えるときは、**切替理由と新 workflow を 1 行で宣言**し、成果物を分離する（例: 監査と実装を混在させない）。`plan-md`／ACTIVE に記録。**指標: 1 セッション 1 成果物**。
-- **失敗の収束ゲート**：テスト失敗は「**修正する**」か「**既知の失敗として明示＋追跡**（チケット／ACTIVE 行）」のいずれかを必須。未収束の `FAILED` を残したまま完了報告しない。**指標: 未収束 FAILED = 0**。
-- **クリーンアップ固定**：テスト・起動の後にコンテナ／プロセスを停止し、残留を確認する（例: `docker compose ... down -v` と `docker ps`）。**指標: 残留 0**。
-- **記憶の保存**：決定・制約・落とし穴は完了時に記録する（キット内は `memory_save`、他プロジェクトはその既定の記録先へ）**最低 1 件**。タスク完了ログは SSOT 側のみ。
-- **トークン衛生**：巨大 `cat`・全件ループを避け、`grep -n`/`head`/`sed -n` で必要行だけ読む。長セッションは `/compact`。**指標: 1 step のツール出力 < 4KB**。
-- **サブエージェント委譲の効率**：`Task` で監査等を委譲するときは、必要な skill の要点を**タスク文に内联**し、子に同じ skill を `skill_get` で**再取得させない**。read-only subagent は `read` を行範囲に絞り（≤200 行）、`background_process` を使わない（短命令は shell 1 回）。**指標: 1 委譲チェーンの `skill_get` 重複 0、p95 read < 4KB**。
-- **ローカル検証の担保**：PR／公開の前に `python3 scripts/validate_assets.py` と（該当時）`python3 scripts/e2e_flows.py` を**ローカルで実行し結果を残す**（CI が停止・課金等で使えない場合の代替）。
+**git commit**: only when the user asks (a task being `done` and a commit are separate).
 
 ---
 
-## 5. コンテキスト予算（モデルへの渡し方）
+## 4. Invocation protocol (required)
 
-- 契約 ≤500tok／カタログ ≤1k／Workflow ≤1.5k／**Skill 1 個 ≤2〜4KB**（例外あり）／Memory top-5。
-- **予算の目安（§4.1）**：1 step のツール出力 **< 4KB**、1 セッションの payload **< 600KB**。超えそうなら対象分割・`/compact`・`grep -n`/`head` へ切替。
-- **段階的開示**：全部を一度に渡さない。Reference は必要時のみ。
-- **予算例外**（入口 `SKILL.md` のみ先読み、詳細は `references/`）：`imagegen-frontend-mobile`・`ask-matt`・`wayfinder`・`design-brief`・`writing-for-agents`。
-- 大きいツール結果は**要約＋ID**。矛盾を置かない（SSOT 1 つ）。
+Theory and design decisions: the required contract is in this file; extended design notes (Skill/Agent/Workflow division, WARO) are maintainer-internal (`internal/`, not in public clones).
 
----
+**Kilo practice (mandatory, rule 0)**: In an environment with the MCP `wawoo-skills` connected, for **non-trivial requests** (code change, research, design, document generation), **make the first tool call `wawoo-skills_workflow_get`** (or `wawoo-skills_interpret_intent` if undecidable). If you started work using the native `skill` tool (e.g. `plan-md`) or memory instead, treat it as a §4 violation and return to `workflow_get` even mid-task. Use native tools only when MCP is unavailable, and report that.
 
-## 6. ツール別
+1. **Entry = Workflow**: usually **`/delivery-lite`** (ceremony L1). For large, gate-heavy work, `/feature-delivery`. Kilo uses `/name`; Cursor uses `@.kilo/commands/<name>.md`. When the request is ambiguous, use MCP **`interpret_intent`** → `schedule.workflow` (`docs/INTENT-ROUTING.md`). If `interpret_intent` returns `needs_scoring`, re-call it with `scoring`.
+2. **Candidate selection = catalog / MCP**: `.kilo/CAPABILITIES.md` or MCP `capabilities` / `skill_search`. **Do not read everything.** After `interpret_intent`, **do not call tools outside `mcp_tools_allow`** (`workflow_clear` at the end).
+3. **Steps = Skill**: open only the skills the workflow names, via `skill_get` / `@.kilo/skills/<name>/SKILL.md`. When phases exist, get goal/agent/skills/`exit_criteria` via `workflow_get {name, phase:<id>}`; for a workflow without `implement` (audit-type), do not proceed to implementation — **declare the switch**.
+4. **Output = schema**: follow the workflow's output shape. Do not skip gates (approval, evidence, observed failure).
+5. **Memory**: before work, `memory_recall` (or `docs/memory/INDEX.md`); save decisions, constraints, and gotchas with `memory_save` (INDEX + `docs/memory/<topic>.md`). Priority: `docs/memory/MEMORY-TOOLS.md`.
+6. **Verify**: `python3 scripts/validate_assets.py` + lint/tests.
 
-- **Kilo**：`.kilo/` を自動探索（skills/agents/commands）＋ `kilo.json`。**ネイティブ起動可**。
-- **Cursor**：`AGENTS.md`＋`.cursor/rules`＋**MCP**＋`@file`。**slash command／agent／SKILL のネイティブ実行は無い**。
-- 詳細：`docs/USAGE.md`。
+### 4.1 Execution hygiene and convergence gates (kit-wide, product-independent)
 
----
+These apply to **this kit itself** and to any project adopting the kit's conventions (independent of any product).
 
-## 7. 実行可能性（Readiness）
-
-- 外部前提：`scripts/readiness.json` に記載（例：issue tracker）。
-- `to-spec`/`to-tickets`/`triage` は issue tracker 設定が必要。未設定は標準フローに載せない。MCP `capabilities {ready_only:true}` で除外可能。
-- 詳細：`scripts/readiness.json`。
-
----
-
-## 8. スキルの追加・更新
-
-- 追加時：`.kilo/skills/<name>/SKILL.md` に `name`／`description` を必須。
-- カタログ再生成：`python3 scripts/gen_capabilities.py`（**手編集禁止**）。
-- 検証：`python3 scripts/validate_assets.py`（name=dir・参照・重複・JSON）。
-- エージェントとコマンドの参照（`agent:`）を壊さない。
+- **1 session = 1 target / 1 artifact**: do not mix independent projects or multiple artifacts in one session. If they would mix, split by target with `Task` (subagent). **Metric: payload < 600KB, halve cache_read.**
+- **Declare workflow deviation**: when switching workflows mid-way, **declare the reason and the new workflow in one line** and separate the artifacts (e.g. do not mix audit and implementation). Record it in `plan-md` / ACTIVE. **Metric: 1 session, 1 artifact.**
+- **Failure convergence gate**: a failed test must be either **fixed** or **recorded explicitly as a known failure + tracked** (ticket / ACTIVE row). Do not report completion with an unconverged `FAILED`. **Metric: unconverged FAILED = 0.**
+- **Fixed cleanup**: after tests or a run, stop containers/processes and confirm none remain (e.g. `docker compose ... down -v` and `docker ps`). **Metric: leftovers = 0.**
+- **Save memory**: record decisions, constraints, and gotchas at completion (in the kit, `memory_save`; otherwise the project's store) — **at least one**. Task-completion logs go only to the SSOT.
+- **Token hygiene**: avoid huge `cat` and full loops; read only the needed lines with `grep -n`/`head`/`sed -n`. `/compact` long sessions. **Metric: one step's tool output < 4KB.**
+- **Subagent delegation efficiency**: when delegating an audit via `Task`, **inline the key points of the needed skills in the task text** and do not let the child re-fetch the same skill with `skill_get`. A read-only subagent restricts `read` to a line range (≤200 lines) and does not use `background_process` (a one-off command is a single shell call). **Metric: 0 duplicate `skill_get` per delegation chain, p95 read < 4KB.**
+- **Delegation ownership & abort**: a delegated subtask is owned by its creating call/phase; foreground aborts with the turn, background outlives it (track + clean up); abort propagates bottom-up; `delegate_subtask` returns an instruction only (the host executes), and the parent verifies the result before continuing.
+- **Local verification**: before a PR / publish, run `python3 scripts/validate_assets.py` and (when applicable) `python3 scripts/e2e_flows.py` **locally and keep the results** (a fallback when CI is unavailable).
+- **Board as a multiplayer view**: the board is committed state + deltas. A late joiner reads the current view first, then uses `since` cursors for deltas; post only material updates (not routine progress).
+- **Replay safety**: each command declares `replay: safe|unsafe`. For `unsafe` steps (irreversible or external effects: deploy/publish/production/delete), pass an `idempotency_key` to `delegate_subtask` (and steering) so a retry after interruption does not duplicate the effect; re-run only `safe` steps automatically.
+- **Model tiers**: route mechanical steps to a fast/cheap model and planning/verification to a reasoning model; pass `model_tier: fast|reasoning` to `delegate_subtask` when delegating. Do not spend a reasoning model on mechanical edits.
 
 ---
 
-## 9. ガードレール
+## 5. Context budget (how to hand things to the model)
 
-- 秘密（API キー・トークン）を**コミットしない**。`memory_save` は秘密を拒否。
-- 破壊的変更・本番・外部送信・公開は**承認必須**。
-- ライセンス：同梱の `LICENSES/` と `.kilo/skills/ATTRIBUTION.md` を尊重。**ライセンス未確認の第三者資産**を再配布しない。
-- 証拠（コマンド・結果）を残し、未検証を明示する。
-
----
-
-## 10. バージョン管理
-
-- **`VERSION`**（リポジトリ直下）が唯一の正本。**SemVer**（`MAJOR.MINOR.PATCH`）。
-- 変更時は **`CHANGELOG.md`** を更新し、`VERSION` を上げる。
-  - 削除・改名・MCP ツールの破壊的変更 = **MAJOR**
-  - skill/agent/command の追加・後方互換の追加 = **MINOR**
-  - 誤字・文言・内部リファクタ = **PATCH**
-- リリース時は `v<version>` タグを付ける（例 `v0.1.0`）。
-- 詳細：`docs/VERSIONING.md`。
+- Contract ≤500tok / catalog ≤1k / Workflow ≤1.5k / **one skill ≤2–4KB** (exceptions exist) / memory top-5.
+- **Budget guide (§4.1)**: one step's tool output **< 4KB**; one session's payload **< 600KB**. If you would exceed it, split the target / `/compact` / switch to `grep -n`/`head`.
+- **Progressive disclosure**: do not hand everything at once. Read references only when needed.
+- **Budget exceptions** (read only the entry `SKILL.md`; details in `references/`): `imagegen-frontend-mobile`, `ask-matt`, `wayfinder`, `design-brief`, `writing-for-agents`, `teach`.
+- Large tool results: **summary + ID**. Do not leave contradictions (one SSOT).
+- **Proactive compaction**: compact at a natural boundary before the budget forces it; write a handoff/memory note so the summary is durable, and keep prior history searchable (do not rely on deleting it).
 
 ---
 
-## 11. 更新履歴
+## 6. Per tool
 
-| 日付 | 内容 |
+- **Kilo**: auto-discovers `.kilo/` (skills/agents/commands) + `kilo.json`. **Native launch available.**
+- **Cursor**: `AGENTS.md` + `.cursor/rules` + **MCP** + `@file`. **No native execution of slash command / agent / SKILL.**
+- Details: `docs/USAGE.md`.
+
+---
+
+## 7. Readiness
+
+- External prerequisites: listed in `scripts/readiness.json` (e.g. issue tracker).
+- `to-spec`/`to-tickets`/`triage` need an issue tracker. If unset, keep them off the standard flow. Excludable via MCP `capabilities {ready_only:true}`.
+- Details: `scripts/readiness.json`.
+
+---
+
+## 8. Adding and updating skills
+
+- When adding: require `name` / `description` in `.kilo/skills/<name>/SKILL.md`.
+- Regenerate the catalog: `python3 scripts/gen_capabilities.py` (**do not hand-edit**).
+- Validate: `python3 scripts/validate_assets.py` (name=dir, refs, dup, JSON).
+- Do not break agent and command references (`agent:`).
+
+---
+
+## 9. Guardrails
+
+- **Do not commit** secrets (API keys, tokens). `memory_save` rejects secrets.
+- Destructive changes, production, external transmission, and publishing **require approval**.
+- Licenses: respect the bundled `LICENSES/` and `.kilo/skills/ATTRIBUTION.md`. Do not redistribute **unverified-license third-party assets**.
+- Keep evidence (commands, results) and state what is unverified.
+
+---
+
+## 10. Versioning
+
+- **`VERSION`** (repo root) is the single SSOT. **SemVer** (`MAJOR.MINOR.PATCH`).
+- On change, update **`CHANGELOG.md`** and bump `VERSION`.
+  - Deletions, renames, breaking MCP tool changes = **MAJOR**
+  - Adding skills/agents/commands, backward-compatible additions = **MINOR**
+  - Typos, wording, internal refactors = **PATCH**
+- Tag `v<version>` at release (e.g. `v0.1.0`).
+- Details: `docs/VERSIONING.md`.
+
+---
+
+## 11. Change history
+
+| Date | Content |
 |---|---|
-| 2026-10-25 | 汎用キットとして初版（既存プロジェクトから抽出・一般化） |
-| 2026-10-25 | §3 SSOT（ACTIVE・L0–L3）、既定入口 `/delivery-lite` |
-| 2026-10-26 | §4 `interpret_intent`・ツールゲート・`docs/INTENT-ROUTING.md` |
-| 2026-10-27 | §4 に MCP 先呼びを強制（`workflow_get`／`interpret_intent`）。Kilo の `instructions` は絶対パス必須（相対 `ROUTER.md` は注入されない）と判明し修正 |
-| 2026-10-27 | 全 agent 定義（21）に `## Routing (MCP first)` を追加（subagent でネイティブ `skill` が先行する事象への対応） |
-| 2026-10-27 | 既定 agent `wawoo-router` を新設（`default_agent` 既定）。`install_global.py` が `ROUTER.md` 生成・`instructions` 絶対パス登録・`default_agent` 設定を冪等に実施 |
-| 2026-10-28 | §4.1「実行衛生・収束ゲート」を追加（セッション分割・workflow 逸脱の明示・失敗の収束・後始末・記憶・トークン衛生・ローカル検証） |
-| 2026-10-28 | 意図ルーティングに **L1 トリガ分類器**を追加（ROUTER 発火語と同一正本・曖昧時は `needs_scoring`）。workflow を **phases** に分解し、`workflow_get {phase}`／`delegate_subtask {phase}` と監査系の `implement` 不在で逸脱を構造的に防止 |
-| 2026-10-28 | kilo ログ分析（run `c956c7f2`）に基づく改善: §4.1 にサブエージェント委譲の効率（skill 重複排除・read-only read 規律）、read-only subagent へ実行効率節、`security-reviewer` に read-only bash サブセット、`memory_save` 可否を `capabilities` で明示、`self-improve` トリガ語追加、`scripts/kilo_snapshot_gc.sh` |
+| 2026-10-25 | First version as a generic kit (extracted and generalized from an existing project) |
+| 2026-10-25 | §3 SSOT (ACTIVE, L0–L3), default entry `/delivery-lite` |
+| 2026-10-26 | §4 `interpret_intent`, tool gate, `docs/INTENT-ROUTING.md` |
+| 2026-10-27 | §4 mandates MCP-first (`workflow_get` / `interpret_intent`). Fixed: Kilo `instructions` require absolute paths (a relative `ROUTER.md` is not injected) |
+| 2026-10-27 | Added `## Routing (MCP first)` to all agent definitions (21) |
+| 2026-10-27 | New default agent `wawoo-auto` (`default_agent`). `install_global.py` idempotently generates `ROUTER.md`, registers absolute `instructions`, and sets `default_agent` |
+| 2026-10-28 | Added §4.1 "execution hygiene and convergence gates" |
+| 2026-10-28 | Added an **L1 trigger classifier** to intent routing; decomposed workflows into **phases** |
+| 2026-10-28 | Log-analysis improvements (§4.1 subagent delegation efficiency, read-only subagent efficiency, `security-reviewer` read-only bash subset, `memory_save` availability in `capabilities`, `self-improve` triggers, `scripts/kilo_snapshot_gc.sh`) |
+| 2026-10-28 | 3-tier language policy (§1); removed static routing triggers → learned + upstream; publication boundary as a skill + check; tests moved to non-public `internal/tests/`; public assets Englishized |

@@ -1,11 +1,12 @@
 ---
 description: Deliver a feature through discovery, design, implementation, testing, review, and approval gates.
 agent: delivery-lead
+replay: safe
 ---
 
 # Feature Delivery
 
-L1 の通常依頼は `/delivery-lite` と `docs/plans/ACTIVE.md` を先に検討。本 workflow はゲート・探索・UI/セキュリティ境界が厚いとき。
+For an ordinary L1 request, consider `/delivery-lite` and `docs/plans/ACTIVE.md` first. Use this workflow when gates, discovery, and UI/security boundaries are heavy.
 
 1. Read project instructions and inspect repository status; preserve unrelated changes.
 2. **Memory (entry)**: `memory_recall` or read `docs/memory/INDEX.md` for prior decisions, constraints, and gotchas (`memory` skill).

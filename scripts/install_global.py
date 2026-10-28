@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""wawoo-skills を Kilo グローバル設定へ配置する（冪等・再実行可能）。
+"""Install wawoo-skills into the Kilo global config (idempotent, re-runnable).
 
 配置先: $KILO_GLOBAL_DIR（既定 ~/.config/kilo）
-  - .kilo/{skills,agents,commands} を同期（既定でミラー＝キット外の余剰を削除）
-  - kilo.jsonc（無ければ kilo.json）の mcp に `wawoo-skills` を冪等登録
+  - Sync .kilo/{skills,agents,commands} (default mirror = delete extras outside the kit)
+  - Idempotently register `wawoo-skills` in the mcp of kilo.jsonc (or kilo.json if absent)
     （絶対 python3 ＋ WAWOO_SKILLS_ROOT／WAWOO_MEMORY_READONLY）
-  - AGENTS.md にキット適用範囲の節を冪等追記
-  - 最後に validate_assets と MCP スモークを実行
+  - Idempotently append a kit-scope section to AGENTS.md
+  - Finally run validate_assets and the MCP smoke
 
-使い方:
-  python3 scripts/install_global.py             # ミラー（完全置換）
-  python3 scripts/install_global.py --no-delete # 余剰を残す
-  python3 scripts/install_global.py --memory-writable  # memory_save を有効化（既定は recall-only）
-  python3 scripts/install_global.py --dry-run   # 変更内容のみ表示
+Usage:
+  python3 scripts/install_global.py             # mirror (full replace)
+  python3 scripts/install_global.py --no-delete # keep extras
+  python3 scripts/install_global.py --memory-writable  # enable memory_save (default is recall-only)
+  python3 scripts/install_global.py --dry-run   # preview changes only
 """
 from __future__ import annotations
 
@@ -139,7 +139,7 @@ def ensure_agents(dry: bool) -> str:
 
 
 def generate_router(dry: bool) -> str:
-    """ROUTER.md をグローバル設定ディレクトリへ生成する（gen_router.py に委譲）。"""
+    """Generate ROUTER.md into the global config directory (delegates to gen_router.py)."""
     out = GLOBAL_DIR / "ROUTER.md"
     if dry:
         return f"would generate {out}"
@@ -153,7 +153,7 @@ def generate_router(dry: bool) -> str:
 
 
 def ensure_instructions(path: Path, dry: bool) -> str:
-    """config.instructions に ROUTER.md の**絶対パス**を冪等登録（相対は注入されない）。"""
+    """Idempotently register the **absolute path** of ROUTER.md in config.instructions (relative paths are not injected)."""
     target = str(GLOBAL_DIR / "ROUTER.md")
     if not path.exists():
         return f"skip (no config file: {path})"
@@ -182,7 +182,7 @@ def ensure_instructions(path: Path, dry: bool) -> str:
 
 
 def ensure_json_field(path: Path, field: str, literal: str, replace: bool, dry: bool) -> str:
-    """トップレベルの JSON フィールドを冪等に設定する（既定では既存値を尊重）。"""
+    """Idempotently set top-level JSON fields (respect existing values by default)."""
     if not path.exists():
         return f"skip (no config file: {path})"
     text = path.read_text(encoding="utf-8")
@@ -218,17 +218,21 @@ def verify() -> bool:
     except Exception as exc:
         log(False, f"validate_assets failed to run: {exc}")
         ok = False
-    try:
-        s = subprocess.run(
-            [sys.executable, str(ROOT / "mcp" / "test_server.py")],
-            cwd=str(ROOT), capture_output=True, text=True, timeout=120,
-        )
-        tail = (s.stdout + s.stderr).strip().splitlines()[-1:] or [""]
-        log(s.returncode == 0, f"mcp smoke: {tail[0]}")
-        ok = ok and s.returncode == 0
-    except Exception as exc:
-        log(False, f"mcp smoke failed to run: {exc}")
-        ok = False
+    smoke = ROOT / "internal" / "tests" / "test_server.py"
+    if smoke.is_file():
+        try:
+            s = subprocess.run(
+                [sys.executable, str(smoke)],
+                cwd=str(ROOT), capture_output=True, text=True, timeout=120,
+            )
+            tail = (s.stdout + s.stderr).strip().splitlines()[-1:] or [""]
+            log(s.returncode == 0, f"mcp smoke: {tail[0]}")
+            ok = ok and s.returncode == 0
+        except Exception as exc:
+            log(False, f"mcp smoke failed to run: {exc}")
+            ok = False
+    else:
+        log(True, "mcp smoke: skipped (internal/tests not present)")
     return ok
 
 
@@ -236,7 +240,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Install wawoo-skills into the global Kilo config (idempotent).")
     ap.add_argument("--no-delete", action="store_true", help="keep extra files in target asset dirs (default: mirror)")
     ap.add_argument("--dry-run", action="store_true", help="show actions without writing")
-    ap.add_argument("--default-agent", default="wawoo-router", help="default_agent to register (default: wawoo-router)")
+    ap.add_argument("--default-agent", default="wawoo-auto", help="default_agent to register (default: wawoo-auto)")
     ap.add_argument("--no-default-agent", action="store_true", help="do not touch default_agent")
     ap.add_argument("--force-default-agent", action="store_true", help="overwrite an existing default_agent")
     ap.add_argument(

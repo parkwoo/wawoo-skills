@@ -1,29 +1,29 @@
-# 計画・進捗（plans）
+# Plans / progress (plans)
 
-エージェント向けの**タスク状態の正本（SSOT）**を置くディレクトリ。
+> Japanese version: [README.ja.md](README.ja.md)
 
-| ファイル | 役割 |
+A directory holding the **task-state source of truth (SSOT)** for agents.
+
+| File | Role |
 |----------|------|
-| **`ACTIVE.md`** | **L1** 進行中タスク（状態機械） |
-| **`BACKLOG.example.md`** | **L2** バックログ表の例（issue tracker のローカル写し） |
-| **`RETRO.example.md`** | **L3** 振り返り・PDCA 記録の例 |
-| **`CONTENT.example.md`** | **L1 知識** 章・節の進捗（`/content-delivery-lite`） |
-| `<feature>.md` | 必要なときだけ `plan-md` による詳細計画（ACTIVE の id とリンク） |
+| **`ACTIVE.example.md`** → copy to **`ACTIVE.md`** | **L1** in-progress tasks (state machine). The real `ACTIVE.md` is **non-public** (created per project) |
+| **`BACKLOG.example.md`** | **L2** backlog table example (a local copy of an issue tracker) |
+| **`RETRO.example.md`** | **L3** retro / PDCA record example |
+| **`CONTENT.example.md`** | **L1 knowledge** chapter/section progress (`/content-delivery-lite`) |
+| `<feature>.md` | A detailed plan via `plan-md` only when needed (linked from the ACTIVE id) |
 
-チャット内の「1,2,3 やった」は**証拠にならない**。`ACTIVE.md` の `status` と `証拠` 列を更新する。
+A chat "1,2,3 done" is **not evidence**. Update the `status` and the evidence column in `ACTIVE.md`.
 
-儀式の厚み（L0–L3）: `docs/METHODOLOGY.md` §5。
+Ceremony weight (L0–L3): `AGENTS.md` §3.
 
-## 検証（Gₑ）
+## Validation (Gₑ)
 
 ```bash
 python3 scripts/plan_active.py docs/plans/ACTIVE.md
 python3 scripts/plan_l2_backlog.py docs/plans/BACKLOG.example.md
 python3 scripts/plan_l3_record.py docs/plans/RETRO.example.md
 python3 scripts/plan_content.py docs/plans/CONTENT.example.md
-python3 scripts/e2e_flows.py   # L0–L3 シミュレーション含む（CI 同様）
-python3 scripts/cli_adapters_mock.py   # Kilo slash と Cursor @file の parity モック
-./scripts/e2e_with_evidence.sh         # 上記一式 + ログを docs/plans/evidence/ に保存
-
-ワークフローごとの E2E の深さ: [E2E-WORKFLOW-COVERAGE.md](./E2E-WORKFLOW-COVERAGE.md)
+python3 scripts/e2e_flows.py   # includes the L0–L3 simulation (same as CI)
+python3 scripts/cli_adapters_mock.py   # Kilo slash vs Cursor @file parity mock
+# Evidence logs (`internal/scripts/e2e/e2e_with_evidence.sh` → `docs/plans/evidence/`) are internal, maintainers only
 ```

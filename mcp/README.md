@@ -1,60 +1,70 @@
 # wawoo-skills Capability MCP Server
 
-skill／agent／workflow／memory／evidence と **意図ルーティング**を MCP ツールで提供します。エージェントが散文だけで進めず、**ツール呼び出しで入口と権限を固定**するためのサーバです（Kilo / Cursor 共通）。
+> Japanese version: [README.ja.md](README.ja.md)
 
-- 実装：`mcp/server.py`（**stdlib のみ**）
-- トランスポート：**stdio / JSON-RPC 2.0**（改行区切り）
-- 対外ガイド（意図ルーティング）：**[docs/INTENT-ROUTING.md](../docs/INTENT-ROUTING.md)**
+Provides skills / agents / workflows / memory / evidence and **intent routing** as MCP tools. A server so the agent does not proceed in prose only but **fixes the entry and permissions through tool calls** (shared by Kilo / Cursor).
+
+- Implementation: `mcp/server.py` (**stdlib only**)
+- Transport: **stdio / JSON-RPC 2.0** (newline-delimited)
+- Public guide (intent routing): **[docs/INTENT-ROUTING.md](../docs/INTENT-ROUTING.md)**
 
 ## Tools
 
-### カタログ・手順
+### Catalog & procedures
 
-| Tool | 入力 | 出力 |
+| Tool | Input | Output |
 |------|------|------|
-| `capabilities` | `ready_only?` | skill / agent / workflow の 1 行一覧 |
-| `skill_search` | `query`, `limit?` | 候補（name / desc / path） |
-| `skill_get` | `name` | `SKILL.md` 全文 |
-| `workflow_get` | `name` | `.kilo/commands/<name>.md` 全文 |
-| `agent_get` | `name` | agent 定義 |
-| `memory_recall` | `query`, `top_k?` | `docs/memory/` チャンク想起 |
-| `memory_save` | `text`, `tags?`, `source?` | INDEX + topic 追記（**秘密拒否**） |
-| `evidence_check` | `scope: assets` | `validate_assets.py` 結果 |
+| `capabilities` | `ready_only?` | One-line list of skills / agents / workflows |
+| `skill_search` | `query`, `limit?` | Candidates (name / desc / path) |
+| `skill_get` | `name` | Full `SKILL.md` |
+| `workflow_get` | `name` | Full `.kilo/commands/<name>.md` |
+| `agent_get` | `name` | Agent definition |
+| `memory_recall` | `query`, `top_k?` | Chunked recall from `docs/memory/` |
+| `memory_save` | `text`, `tags?`, `source?` | Append to INDEX + topic (**rejects secrets**) |
+| `evidence_check` | `scope: assets` | `validate_assets.py` result |
 
-### 意図ルーティング（L0–L2）
+### Intent routing (L0–L2)
 
-| Tool | 入力 | 出力 |
+| Tool | Input | Output |
 |------|------|------|
-| `interpret_intent` | `text`, `scoring?`, `learn?`, `via_receiver?` | JSON（`schedule` または `needs_scoring`） |
-| `route_task` | `task` | 人間向けテキスト（スコア待ち時は `NEEDS SCORING`） |
+| `interpret_intent` | `text`, `scoring?`, `learn?`, `via_receiver?` | JSON (`schedule` or `needs_scoring`) |
+| `route_task` | `task` | Human-readable text (`NEEDS SCORING` when awaiting a score) |
 
-`schedule` が確定すると **MCP ツールゲート**が有効になり、`mcp_tools_allow` 以外のツールは拒否されます（`interpret_intent` / `route_task` / `workflow_clear` / `delegate_subtask` は常に可）。
+Once a `schedule` is fixed, the **MCP tool gate** activates and tools outside `mcp_tools_allow` are rejected (`interpret_intent` / `route_task` / `workflow_clear` / `delegate_subtask` / `steer_task` are always allowed).
 
-### セッション・委譲（L3）
+### Session & delegation (L3)
 
-| Tool | 入力 | 出力 |
+| Tool | Input | Output |
 |------|------|------|
-| `workflow_clear` | — | ゲート解除 |
-| `delegate_subtask` | `subtask`, `label?`, `background?`, `agent?` | L3 委譲 JSON（**子セッションは作らない**。IDE の Task / subagent が実行） |
+| `workflow_clear` | — | Release the gate |
+| `delegate_subtask` | `subtask`, `label?`, `background?`, `agent?`, `idempotency_key?`, `model_tier?` | L3 delegation JSON (**creates no child session**; the IDE Task / subagent runs it) |
+| `steer_task` | `text`, `op?`, `target?` | Amend the running plan (`add`/`reorder`/`reprioritize`/`scope_change`/`abort`). Without `op`, returns `needs_classification` for the host LLM |
 
-## 推奨フロー
+### Delegation ownership & abort (L3)
 
-1. `interpret_intent` で workflow を決める（必要なら L2 で JSON スコアを返して再呼び出し）。
-2. `workflow_get` → 必要な `skill_get` のみ。
-3. サブタスク分割 → `delegate_subtask` → 上流で並列実行。
-4. 終了 → `workflow_clear`。
+- **Ownership**: a delegated subtask is owned by the call/phase that created it. A **foreground** delegation belongs to the current turn and aborts with it; a **background** delegation (`background: true`) outlives the turn and must be tracked (e.g. board/ACTIVE) and cleaned up.
+- **Abort propagation**: aborting the parent aborts its children **bottom-up** (children first). On abort, do not retry side effects unless classified safe; mark partial results **aborted**, not done.
+- **Execution**: `delegate_subtask` returns an instruction JSON only; MCP creates no child session. The host (IDE Task) executes it, and the parent **verifies the result** before continuing.
+- **Cleanup**: after background work, confirm no orphan processes and record status in ACTIVE/board.
 
-詳細は [docs/INTENT-ROUTING.md](../docs/INTENT-ROUTING.md)。
+## Recommended flow
 
-## 設定
+1. Decide the workflow with `interpret_intent` (if needed, return a JSON score at L2 and re-call).
+2. `workflow_get` → only the `skill_get` you need.
+3. Split subtasks → `delegate_subtask` → run in parallel upstream.
+4. Finish → `workflow_clear`.
 
-**Kilo（プロジェクト）**
+Details: [docs/INTENT-ROUTING.md](../docs/INTENT-ROUTING.md).
+
+## Configuration
+
+**Kilo (project)**
 
 ```json
 {"mcp":{"wawoo-skills":{"type":"local","command":["python3","mcp/server.py"],"enabled":true}}}
 ```
 
-**Kilo（グローバル）** — 絶対パス推奨
+**Kilo (global)** — absolute paths recommended
 
 ```json
 {"mcp":{"wawoo-skills":{
@@ -70,44 +80,42 @@ skill／agent／workflow／memory／evidence と **意図ルーティング**を
 {"mcpServers":{"wawoo-skills":{"command":"python3","args":["/abs/path/wawoo-skills/mcp/server.py"],"env":{"WAWOO_SKILLS_ROOT":"/abs/path/wawoo-skills"}}}}
 ```
 
-## 環境変数
+## Environment variables
 
-| 変数 | 既定 | 用途 |
+| Variable | Default | Purpose |
 |------|------|------|
-| `WAWOO_SKILLS_ROOT` | `server.py` の親の親 | `.kilo` / `scripts` / `docs` の基点 |
-| `WAWOO_MEMORY_ROOT` | `<root>/docs/memory` | memory ツールの対象 |
-| `WAWOO_MEMORY_READONLY` | 無効 | `1` で `memory_save` 拒否（recall-only）。`install_global.py --memory-writable` は `0` を登録して書込を許可 |
-| `WAWOO_INTENT_LEARN_DB` | `data/intent_learned.db` | 学習 trigger |
-| `WAWOO_INTENT_SOCKET` | 空 | 常駐 `intent_receiver.py`（任意） |
+| `WAWOO_SKILLS_ROOT` | `server.py`'s grandparent | Base for `.kilo` / `scripts` / `docs` |
+| `WAWOO_MEMORY_ROOT` | `<root>/docs/memory` | Target of the memory tools |
+| `WAWOO_MEMORY_READONLY` | disabled | `1` rejects `memory_save` (recall-only). `install_global.py --memory-writable` registers `0` to allow writes |
+| `WAWOO_INTENT_LEARN_DB` | `data/intent_learned.db` | Learned trigger DB |
+| `WAWOO_INTENT_SOCKET` | empty | Resident `intent_receiver.py` (optional) |
+| `WAWOO_INTENT_SESSION` | `<root>/data/intent_session.json` | Persisted session file (minimal gate fields; no prompt text) |
+| `WAWOO_INTENT_RESUME` | off | `1`/`true` enables resume of the persisted gate after restart (the session file is written only when enabled) |
+| `WAWOO_INTENT_CLIENT` | empty | Client name for a per-client file (`intent_session.<client>.json`); avoids cross-client gate bleed |
 
-## 実行・テスト
+## Run & test
 
 ```bash
 python3 mcp/server.py
-python3 mcp/test_server.py
-python3 mcp/test_memory_ops.py
-python3 mcp/test_intent.py
-python3 mcp/test_intent_session.py
+python3 scripts/e2e_flows.py   # public MCP contract/E2E (unit tests are in internal/tests, non-public)
 ```
 
-常駐受信器: [docs/design/INTENT-RECEIVER.md](../docs/design/INTENT-RECEIVER.md)
+## Security
 
-## セキュリティ
+- `skill_get` / `workflow_get` / `agent_get` are **limited to `.kilo`**.
+- `memory_save` is append-only, rejects secret patterns, and can be disabled via `WAWOO_MEMORY_READONLY` (`install_global.py` defaults to `1` = recall-only; `--memory-writable` sets `0`).
+- `evidence_check` is `scope=assets` only (no arbitrary shell).
+- The workflow gate limits tool damage on a misroute (e.g. an audit workflow cannot `memory_save`).
 
-- `skill_get` / `workflow_get` / `agent_get` は **`.kilo` 配下のみ**。
-- `memory_save` は追記のみ・秘密パターン拒否・`WAWOO_MEMORY_READONLY` で無効化可（`install_global.py` の既定は `1`＝recall-only。`--memory-writable` で `0`）。
-- `evidence_check` は `scope=assets` のみ（任意シェル不可）。
-- workflow ゲートで誤ルート時のツール被害を抑止（例: 監査 workflow で `memory_save` 不可）。
+## Module layout (intent)
 
-## モジュール構成（意図）
-
-| ファイル | 役割 |
+| File | Role |
 |----------|------|
-| `intent_catalog.py` | workflow 台帳・description・`mcp_tools_allow` |
-| `intent_commands.py` | L0 slash と command パス |
-| `intent_interpreter.py` | L0–L2 オーケストレーション |
-| `intent_upstream.py` | 上流 JSON プロンプト |
-| `intent_learned_store.py` / `intent_learn_queue.py` | L1 学習（非同期書込） |
-| `intent_session.py` | B3 MCP ゲート |
-| `intent_delegation.py` | L3 ペイロード |
-| `intent_receiver.py` / `intent_client.py` | 常駐 NDJSON（任意） |
+| `intent_catalog.py` | Workflow ledger, descriptions, `mcp_tools_allow` |
+| `intent_commands.py` | L0 slash and command paths |
+| `intent_interpreter.py` | L0–L2 orchestration |
+| `intent_upstream.py` | Upstream JSON prompt |
+| `intent_learned_store.py` / `intent_learn_queue.py` | L1 learning (async writes) |
+| `intent_session.py` | B3 MCP gate |
+| `intent_delegation.py` | L3 payload |
+| `intent_receiver.py` / `intent_client.py` | Resident NDJSON (optional) |

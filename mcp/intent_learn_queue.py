@@ -1,4 +1,4 @@
-"""学習 DB 書き込みを非同期化（応答をブロックしない）。"""
+"""Make learned-DB writes async (do not block the response)."""
 from __future__ import annotations
 
 import os
@@ -61,12 +61,12 @@ def enqueue_hit(store: IntentLearnedStore, route_id: int) -> None:
 
 
 def reset_learn_queue() -> None:
-    """テスト用: 未処理ジョブを捌いたあと呼ぶ（worker スレッドは維持）。"""
+    """For tests: call after draining pending jobs (the worker thread is kept)."""
     return
 
 
 def flush(store: IntentLearnedStore, timeout: float = 5.0) -> None:
-    """未処理キューを同期的に捌く。"""
+    """Drain the pending queue synchronously."""
     if _queue is None:
         return
     import time

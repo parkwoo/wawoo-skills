@@ -77,32 +77,34 @@ def main() -> None:
     lines = [
         "# CAPABILITIES（自動生成）",
         "",
-        "> `python3 scripts/gen_capabilities.py` で再生成。手で編集しない。",
-        "> まず本カタログで候補を選び、必要なものだけ `SKILL.md` を開く（段階的開示）。",
-        "> `⚠️` は外部セットアップが必要（`scripts/readiness.json`）。標準フローでは使わない。",
+        "> Regenerate with `python3 scripts/gen_capabilities.py`. Do not edit by hand.",
+        "> Pick candidates from this catalog first and open only the `SKILL.md` you need (progressive disclosure).",
+        "> `⚠️` marks items needing external setup (`scripts/readiness.json`). Not used in the standard flow.",
         "",
         f"## Skills（{len(skills)}）",
         "",
-        "| name | ready | 説明 | path |",
-        "|---|---|---|---|",
+        "| name | ready | size | description | path |",
+        "|---|---|---|---|---|",
     ]
     for n, r, note, d, p in skills:
         mark = r if r else f"⚠️ {note}"
-        lines.append(f"| `{n}` | {mark} | {d} | `{p}` |")
+        kb = (ROOT / p).stat().st_size / 1024
+        lines.append(f"| `{n}` | {mark} | {kb:.1f}KB | {d} | `{p}` |")
+    lines += ["", "> `size` = entry `SKILL.md` size (budget 2–4KB; see `AGENTS.md` §5)."]
 
-    lines += ["", f"## Agents（{len(agents)}）", "", "| name | 説明 | path |", "|---|---|---|"]
+    lines += ["", f"## Agents（{len(agents)}）", "", "| name | description | path |", "|---|---|---|"]
     for n, r, note, d, p in agents:
         lines.append(f"| `{n}` | {d} | `{p}` |")
 
-    lines += ["", f"## Workflows（{len(commands)}）", "", "| name | 説明 | path |", "|---|---|---|"]
+    lines += ["", f"## Workflows（{len(commands)}）", "", "| name | description | path |", "|---|---|---|"]
     for n, r, note, d, p in commands:
         lines.append(f"| `/{n}` | {d} | `{p}` |")
 
     lines += [
         "",
-        "## 呼び出し規約",
-        "1. Workflow（入口）を選ぶ。2. その本文の skill を**必要分だけ**開く。3. 出力スキーマとゲートに従う。",
-        "詳細：`docs/USAGE.md`。",
+        "## Invocation rules",
+        "1. Choose the Workflow (entry). 2. Open only the skills named in its body, as needed. 3. Follow the output schema and gates.",
+        "Details: `docs/USAGE.md`.",
         "",
     ]
     out = KILO / "CAPABILITIES.md"

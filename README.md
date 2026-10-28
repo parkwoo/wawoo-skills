@@ -1,133 +1,169 @@
 # wawoo-skills
 
-AI コーディングエージェント向けの**再利用可能な skills／agents／workflows／MCP サーバ**の汎用キット。
+**Your agent has the skills. It just doesn't use them.**
 
-## なぜこのキットか
+> **Invocation by design.** A generic kit of reusable **skills / agents / workflows / MCP servers** for AI coding agents — so the same request takes the same steps, every time.
 
-エージェントに skill や役割（agent）定義を置いても、実際の対話では**散文だけで進め、手順を読まない・選ばない・飛ばす**ことがよく起きます。結果として、同じタスクでも品質がぶれ、レビュー・法務・テストなどの**ゲートが形骸化**し、チームが用意した知識が使われません。
+> Japanese version: [README.ja.md](README.ja.md)
 
-wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に対し、次のように**呼び出しを設計**します。
+## Why this kit
 
-| 層 | 役割 |
+Even with skill and role (agent) definitions available, agents often **proceed in prose only — not reading, choosing, or following the steps**. Quality then varies for the same task, gates (review, legal, tests) become hollow, and the knowledge a team prepared goes unused.
+
+wawoo-skills addresses this "**the capability exists but is never invoked**" problem by **designing the invocation**:
+
+| Layer | Role |
 |---|---|
-| **契約**（`AGENTS.md`・Cursor rules） | 何を先に読み、何を勝手に省略しないかを固定 |
-| **ワークフロー**（`.kilo/commands`） | プロセスの入口。どの skill をどの順で使うかを明示 |
-| **カタログ／MCP** | 55 件を一度に渡さず、候補選定→必要分だけ取得（段階的開示） |
-| **意図ルーティング** | `interpret_intent` で workflow 選定・学習 trigger・ツール権限ゲート（[docs/INTENT-ROUTING.md](docs/INTENT-ROUTING.md)） |
-| **ゲート** | 承認・証拠・失敗観察。推測だけで「完了」にしない |
+| **Contract** (`AGENTS.md`, Cursor rules) | Fix what to read first and what may not be skipped |
+| **Workflows** (`.kilo/commands`) | Process entry points. State which skills to use, in what order |
+| **Catalog / MCP** | Never pass every skill at once; select candidates → fetch only what you need (progressive disclosure) |
+| **Intent routing** | Select the workflow with `interpret_intent`, learn triggers, gate tool permissions ([docs/INTENT-ROUTING.md](docs/INTENT-ROUTING.md)) |
+| **Gates** | Approval, evidence, observed failure. Never call it "done" on inference alone |
 
-エージェントの創造性を奪うのではなく、**再現可能な手順とツール呼び出し**のレールを敷くためのキットです。
+It lays **rails of reproducible steps and tool calls** — it does not take away the agent's creativity.
 
-- 構造（Skill・Agent・ワークフロー）: **[docs/METHODOLOGY.md](docs/METHODOLOGY.md)**
-- 工程（納品ライフサイクル・ゲート・学習）: **[docs/PROCESS-PHILOSOPHY.md](docs/PROCESS-PHILOSOPHY.md)**
+## What changes (2 minutes)
 
-## 対応環境
+**Before — no routing.** You say "fix this bug". The agent improvises, skips the gates, and the next identical request takes a different path.
 
-- **Kilo CLI / Kilo Code**：`.kilo/` の探索、slash ワークフロー（`/feature-delivery` 等）、`kilo.json` の MCP。
-- **Cursor**：`AGENTS.md`・`.cursor/rules`・MCP、および `@.kilo/commands`／`@.kilo/skills` の参照（slash／ネイティブ agent 切替は非対応。手順は同等に適用）。
+**After — routed.** The request enters `/self-review`; the agent opens `test-engineering`, reaches the evidence gate (Gₑ) with a reproduction, and the next identical request follows the same chain.
 
-## 対応ツール（公式）
+## Who this is for
 
-| ツール | 正式名 | 公式 URL |
+| This is for you if… | This is **not** for you if… |
+|---|---|
+| You use Kilo / Cursor and have skills + agents, but they are **never invoked** | You only want one-off code generation |
+| You want the same request to take the same steps every time | You value free improvisation over process |
+| Your team needs review / legal / test **gates** you can actually run | You don't need gates or evidence |
+| You want team knowledge **used by the agent**, not parked in a wiki | — |
+
+## Supported environments
+
+- **Kilo CLI / Kilo Code**: discovery of `.kilo/`, slash workflows (`/feature-delivery`, etc.), MCP via `kilo.json`.
+- **Cursor**: `AGENTS.md`, `.cursor/rules`, MCP, and references via `@.kilo/commands` / `@.kilo/skills` (no slash or native agent switching; the same steps apply).
+
+### Prerequisites (runtime)
+
+The kit's **MCP server and maintenance scripts run on Python 3 (standard library only)**. No extra packages are needed, but a **`python3` on `PATH` (or `python` on Windows) is required**.
+
+| OS | Extra step |
+|---|---|
+| macOS | Usually none (otherwise `xcode-select --install`, or https://www.python.org/downloads/) |
+| Linux | Usually none (otherwise `apt install python3`, etc.) |
+| Windows | Install from https://www.python.org/downloads/ and enable **"Add python.exe to PATH"** (Microsoft Store version works too) |
+
+- Check: `python3 --version` (Windows: `python --version`) returns `3.x` → OK.
+- MCP launches with `python3` as the command (`kilo.json`, `.cursor/mcp.json`). If `python3` has another name, set each config's `command` to the real binary (`python` / `py`, etc.; a global install registers an **absolute path** via `install_global.py`).
+- No extra dependencies, network, or `.env` are needed (`stdio` only).
+
+## Supported tools (official)
+
+| Tool | Official name | Official URL |
 |---|---|---|
-| Kilo CLI | Kilo（CLI） | https://kilo.ai |
-| Kilo Code | Kilo Code（VS Code 拡張） | https://kilocode.ai |
+| Kilo CLI | Kilo (CLI) | https://kilo.ai |
+| Kilo Code | Kilo Code (VS Code extension) | https://kilocode.ai |
 | Cursor | Cursor | https://cursor.com |
 | MCP | Model Context Protocol | https://modelcontextprotocol.io |
 | AGENTS.md | AGENTS.md | https://agents.md |
 
-## 収録
+## Contents
 
-| 種別 | 件数 | 場所 |
-|---|---|---|
-| Skills | **55** | `.kilo/skills/<name>/SKILL.md` |
-| Agents | **21** | `.kilo/agents/<name>.md` |
-| Workflows | **15** | `.kilo/commands/<name>.md`（コード L1: `/delivery-lite`、知識 L1: `/content-delivery-lite`） |
-| MCP サーバ | 1 | `mcp/server.py`（stdio・stdlib のみ） |
-| Cursor ルール | 3 | `.cursor/rules/*.mdc` |
+| Kind | Location |
+|---|---|
+| Skills | `.kilo/skills/<name>/SKILL.md` |
+| Agents | `.kilo/agents/<name>.md` |
+| Workflows | `.kilo/commands/<name>.md` (code L1: `/delivery-lite`, knowledge L1: `/content-delivery-lite`) |
+| MCP server | `mcp/server.py` (stdio, stdlib only) |
+| Cursor rules | `.cursor/rules/*.mdc` |
 
-- カタログ（自動生成）：`.kilo/CAPABILITIES.md`
-- Readiness（外部前提）：`scripts/readiness.json`
-- 呼び出し・コンテキスト設計：`docs/USAGE.md`
-- 意図ルーティング（対外）：`docs/INTENT-ROUTING.md`
+- Catalog (generated) — **counts live here** (source of truth): `.kilo/CAPABILITIES.md`
+- Readiness (external prerequisites): `scripts/readiness.json`
+- Invocation & context design: `docs/USAGE.md`
+- Intent routing (public): `docs/INTENT-ROUTING.md`
 
-## クイックスタート
+## Quick start
 
 ### Kilo
 ```bash
-# このディレクトリを開く（.kilo/ を自動探索、kilo.json で MCP 有効）
+# Open this directory (it discovers .kilo/; MCP is enabled by kilo.json)
 ```
-- ワークフロー：`/feature-delivery` など
-- スキル：`/` やモデルが `SKILL.md` を選択
+- Workflows: `/feature-delivery`, etc.
+- Skills: `/` or the model selects a `SKILL.md`
+
+**First 10 minutes** (a small win up front):
+1. Send one sentence to `interpret_intent` and read the workflow it returns.
+2. Run `/delivery-lite` once — `docs/plans/ACTIVE.md` advances one row.
+3. `python3 scripts/validate_assets.py` → `OK: skills=… agents=… commands=…` means you're set.
 
 ### Cursor
-1. このディレクトリを開く（`AGENTS.md` と `.cursor/rules` を読む）
-2. **Settings → MCP** で `wawoo-skills` を有効化（`.cursor/mcp.json`）
-3. MCP で `interpret_intent`（入口選定）→ `workflow_get`／`skill_get` 等（[INTENT-ROUTING.md](docs/INTENT-ROUTING.md)）
-- **slash command／agent は非対応**。手順は `@.kilo/commands/<name>.md` を開いて適用。
-- 詳細：`docs/USAGE.md`
+1. Open this directory (it reads `AGENTS.md` and `.cursor/rules`)
+2. Enable `wawoo-skills` in **Settings → MCP** (`.cursor/mcp.json`)
+3. Use MCP `interpret_intent` (entry selection) → `workflow_get` / `skill_get`, etc. ([INTENT-ROUTING.md](docs/INTENT-ROUTING.md))
+- **No slash command / agent support.** Open `@.kilo/commands/<name>.md` and apply the steps.
+- Details: `docs/USAGE.md`
 
 ### MCP
 ```bash
-python3 mcp/server.py        # stdio（通常はクライアントが起動）
-python3 mcp/test_server.py   # スモークテスト
+python3 mcp/server.py        # stdio (the client usually launches it)
+python3 scripts/e2e_flows.py   # public smoke (contract/E2E)
 ```
 
-## 保守
+## Maintenance
 
 ```bash
-python3 scripts/validate_assets.py   # 資産検証（name=dir・参照・重複・JSON）
-python3 scripts/gen_capabilities.py  # カタログ再生成（手編集しない）
-python3 mcp/test_server.py           # MCP スモーク
+python3 scripts/validate_assets.py   # asset validation (name=dir, refs, dup, JSON)
+python3 scripts/gen_capabilities.py  # regenerate the catalog (do not hand-edit)
+python3 scripts/e2e_flows.py           # MCP contract smoke
 ```
 
-## ディレクトリ
+## Directory
 
 ```
 .kilo/{skills,agents,commands,CAPABILITIES.md}
 .cursor/{rules,mcp.json}
-mcp/{server.py,intent_*.py,test_*.py,README.md}
+mcp/{server.py,intent_*.py,README.md}
 scripts/{gen_capabilities.py,validate_assets.py,readiness.json,bootstrap-internal.sh}
-docs/{USAGE.md,INTENT-ROUTING.md,VERSIONING.md,PUBLICATION.md,memory,plans,design}
-internal.example/   … メンテナ用テンプレ（実体は internal/・git 外）
+docs/{USAGE.md,INTENT-ROUTING.md,VERSIONING.md,memory,plans}
+internal.example/   … maintainer templates (the real `internal/` is outside git)
 LICENSES/
 AGENTS.md
 kilo.json
 ```
 
-## ライセンスと帰属（かんたん説明）
+## License and attribution (plain explanation)
 
-このリポジトリには、**自分で書いたもの**と、**他の人が公開しているもの**が混ざっています。
+This repository mixes **what we wrote** with **what others published**.
 
-| 種類 | ライセンス | 場所 |
+| Kind | License | Location |
 |---|---|---|
-| このリポジトリで新しく書いた skill／agent／command／MCP | **MIT**（自由に使える。著作権表示を残す） | `LICENSE` |
-| Skills For Real Engineers 由来の skill（21 件） | **MIT** | `LICENSES/skills-for-real-engineers-MIT.txt` |
-| OpenDesign 由来の skill（10 件） | **Apache-2.0**（著作権表示と NOTICE を残す） | `LICENSES/open-design-Apache-2.0.txt` |
-| Kilo Marketplace 由来の agent（6 件） | **Apache-2.0** | `LICENSES/kilo-marketplace-*` |
-| その他（Kilo 組み込み skill 等） | 各ファイルの frontmatter／MIT | `.kilo/skills/ATTRIBUTION.md` |
+| Skills / agents / commands / MCP newly written here | **MIT** (free to use; keep the copyright notice) | `LICENSE` |
+| Skills derived from Skills For Real Engineers (25) | **MIT** | `LICENSES/skills-for-real-engineers-MIT.txt` |
+| Skills derived from OpenDesign (10) | **Apache-2.0** (keep the copyright notice and NOTICE) | `LICENSES/open-design-Apache-2.0.txt` |
+| Agents derived from Kilo Marketplace (6) | **Apache-2.0** | `LICENSES/kilo-marketplace-*` |
+| Others (Kilo built-in skills, etc.) | Per-file frontmatter / MIT | `.kilo/skills/ATTRIBUTION.md` |
 
-- どのファイルがどこ由来かは `.kilo/skills/ATTRIBUTION.md` に一覧があります。
-- **ライセンスが確認できないものは入れていません**（Marketplace の business 3 件と `fal-gen` は除外）。
-- 保証はありません（**AS IS**）。使う前に、必要なら各ライセンスを確認してください。
+- `.kilo/skills/ATTRIBUTION.md` lists which file comes from where.
+- **We exclude anything whose license is unverified** (the 3 Marketplace "business" items and `fal-gen` are excluded).
+- No warranty (**AS IS**). Verify each license as needed before use.
 
-### 収録元（公式）
-| 収録元 | 公式 URL |
+### Sources (official)
+
+| Source | Official URL |
 |---|---|
-| Skills For Real Engineers（Matt Pocock） | https://github.com/mattpocock/skills ・ https://skills.sh/mattpocock/skills |
-| OpenDesign | https://open-design.ai ・ https://github.com/nexu-io/open-design |
-| Kilo Marketplace（Kilo エコシステム） | https://kilo.ai |
+| Skills For Real Engineers (Matt Pocock) | https://github.com/mattpocock/skills · https://skills.sh/mattpocock/skills |
+| OpenDesign | https://open-design.ai · https://github.com/nexu-io/open-design |
+| Kilo Marketplace (Kilo ecosystem) | https://kilo.ai |
 | Semantic Versioning | https://semver.org |
 
-## 注意（最初に読む）
+## Cautions (read first)
 
-- **画像生成は付属していません**：`imagegen-frontend-mobile` は「どんな画像を作るか」の**指示文（プロンプト）だけ**です。実際の生成は OpenAI Images／fal／社内ツール等を別途使います。無い場合は**プロンプトのみ**納品します。
-- **3 つの skill は issue tracker が必要**：`to-spec`・`to-tickets`・`triage` は GitHub Issues 等の tracker を前提にしています。初回に `setup-matt-pocock-skills` を実行して設定してください。
-- **秘密を書かない**：API キー・トークン・`.env` の中身をコミットしないでください。`memory_save` は秘密を拒否します。
-- **Cursor は slash command／agent 非対応**：`AGENTS.md`＋`.cursor/rules`＋MCP＋`@file` で使います（`docs/USAGE.md`）。
+- **Image generation is not bundled**: `imagegen-frontend-mobile` provides **prompts only** (what to generate). Actual generation uses OpenAI Images / fal / an internal tool separately. If none is available, deliver **prompts only**.
+- **3 skills need an issue tracker**: `to-spec`, `to-tickets`, `triage` assume a tracker such as GitHub Issues. Run `setup-matt-pocock-skills` once to configure it.
+- **Never write secrets**: do not commit API keys, tokens, or `.env` contents. `memory_save` rejects secrets.
+- **Cursor has no slash command / agent support**: use `AGENTS.md` + `.cursor/rules` + MCP + `@file` (`docs/USAGE.md`).
 
-## バージョン
+## Version
 
-- 現在：**0.5.0**（`VERSION`）
-- 変更履歴：`CHANGELOG.md`
-- 版の付け方・リリース手順：`docs/VERSIONING.md`
+- Current: **0.6.0** (`VERSION`)
+- Change history: `CHANGELOG.md` (**a Japanese project record**, per the language policy in `AGENTS.md` §1)
+- Versioning and release steps: `docs/VERSIONING.md`

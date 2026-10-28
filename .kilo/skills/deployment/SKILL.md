@@ -5,21 +5,24 @@ description: Plan, execute, and verify a deployment or release (Docker Compose, 
 
 # Deployment
 
-## 前提
-- 秘密は `.env` のみ。**コミットしない**。
-- 対象環境・バックアップ・**ロールバック手順**を先に確認する。
+## Prerequisites
 
-## 手順
-1. **事前確認**：`git status`（意図した変更のみ）、`docker compose config`（環境）、バックアップ。
-2. **ビルド**：`docker compose build`。イメージに**不変タグ**を付ける（ロールバック用）。
-3. **マイグレーション**（ある場合）：バックアップ → 前進 → 戻し手順を用意。
-4. **起動**：`docker compose up -d`。
-5. **ヘルス**：`curl -s http://127.0.0.1:8080/health` 等。
-6. **スモーク**：主要エンドポイント（認証・非stream/SSE 等）。
-7. **負荷の確認**（任意）：代表的な同時接続でスモーク。
-8. **ロールバック**：前イメージタグへ戻す。DB は復元手順に従う。
-9. **証拠**：実行コマンド・結果・未検証項目を記録。
+- Secrets live only in `.env`. **Never commit them.**
+- Confirm the target environment, backups, and **rollback procedure** first.
 
-## 禁止
-- 秘密・鍵をログや文書に残さない。
-- 承認なしの本番反映・破壊的 DB 操作。
+## Steps
+
+1. **Pre-checks**: `git status` (only intended changes), `docker compose config` (environment), backup.
+2. **Build**: `docker compose build`. Tag the image with an **immutable tag** (for rollback).
+3. **Migrations** (if any): back up → forward → prepare a revert path.
+4. **Start**: `docker compose up -d`.
+5. **Health**: `curl -s http://127.0.0.1:8080/health`, etc.
+6. **Smoke**: key endpoints (auth, non-stream/SSE, etc.).
+7. **Load check** (optional): smoke with representative concurrency.
+8. **Rollback**: revert to the previous image tag; for the DB, follow the restore procedure.
+9. **Evidence**: record the commands run, results, and unverified items.
+
+## Prohibited
+
+- Never leave secrets or keys in logs or documents.
+- No production changes or destructive DB operations without approval.

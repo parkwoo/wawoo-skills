@@ -1,4 +1,4 @@
-"""`.kilo/commands/*.md` — L0 slash command（固定テンプレ + workflow id）。"""
+"""`.kilo/commands/*.md` — L0 slash command (a fixed template + workflow id)."""
 from __future__ import annotations
 
 import os
@@ -75,7 +75,7 @@ class SlashCommandMatch:
 
 
 def match_slash_route(text: str, root: Path | None = None) -> SlashCommandMatch | None:
-    """L0: `/workflow` または commands 台帳に載る slash。"""
+    """L0: a `/workflow` slash, or one listed in the commands ledger."""
     raw = (text or "").strip()
     m = _SLASH_CMD_RE.match(raw)
     if not m:

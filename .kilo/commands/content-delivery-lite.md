@@ -1,36 +1,40 @@
 ---
 description: L1 knowledge delivery — books, long docs, reports via CONTENT.md state machine (not code implement).
 agent: docs-specialist
+replay: safe
 ---
 
-# Content Delivery Lite（知識・長文納品）
+# Content Delivery Lite (knowledge / long-form delivery)
 
-**目的**: 調査レポート・事業計画書・書籍章など**コード以外**の納品を `docs/plans/CONTENT.md` で管理する。`/delivery-lite` の知識向け変種。
+**Goal**: manage **non-code** deliverables (research reports, business plans, book chapters) in `docs/plans/CONTENT.md`. The knowledge variant of `/delivery-lite`.
 
-## 適用
 
-- **L1（既定）**: 本 workflow + `CONTENT.md`
-- **L0**: 単節・メモ → SSOT 更新省略可（利用者が「L0」）
-- **戦略・市場**: 大きい場合は `/market-plan` または `/research` を入口にし、成果を `plan-md` + CONTENT 行でリンク
-- **L2/L3**: `/sprint-plan`・`/self-improve`（工程のみ）
+> **Creative prose in parallel**: for fiction, essays, or scripts, pair this with `/writing` (explore → beats → shape). `CONTENT.md` tracks chapters/progress; `/writing` handles prose craft. The two can run together on the same piece.
 
-## 手順
+## Applicability
 
-1. `AGENTS.md` §3 と `docs/plans/CONTENT.md`（無ければ `CONTENT.example.md` をコピー）を読む。
-2. **Memory（入口）**: 制約に触れるときだけ `memory_recall` または `docs/memory/INDEX.md`。
-3. **目次**: 章・節を CONTENT 表に `todo` で追記。構成は `plan-md` で `docs/plans/<id>-outline.md` にも可。
-4. **執筆**: `doing` を 1 件にし、`writing-for-agents`／`documentation-localization` を必要分だけ。
-5. **検証**: `python3 scripts/plan_content.py docs/plans/CONTENT.md`。キット変更時は `python3 scripts/e2e_flows.py`。
-6. **完了**: `done` + 証拠（稿のパス、字数、レビュー日）。memory は**決定・文体ルール**のみ。
-7. **コミット**: 利用者が明示したときのみ。
+- **L1 (default)**: this workflow + `CONTENT.md`
+- **L0**: single section or memo → SSOT update may be skipped (user says "L0")
+- **Strategy / market**: for larger work, enter via `/market-plan` or `/research` and link results with `plan-md` + a CONTENT row
+- **L2/L3**: `/sprint-plan`, `/self-improve` (process only)
 
-## 出力
+## Steps
 
-- 更新された `CONTENT.md` と原稿ファイル
-- チャットは要約のみ
+1. Read `AGENTS.md` §3 and `docs/plans/CONTENT.md` (if absent, copy `CONTENT.example.md`).
+2. **Memory (entry)**: only when touching constraints, use `memory_recall` or `docs/memory/INDEX.md`.
+3. **Outline**: add chapters/sections to the CONTENT table as `todo`. Structure can also live in `docs/plans/<id>-outline.md` via `plan-md`.
+4. **Write**: keep exactly one `doing`; use `writing-for-agents` / `documentation-localization` as needed.
+5. **Verify**: `python3 scripts/plan_content.py docs/plans/CONTENT.md`. For kit changes, `python3 scripts/e2e_flows.py`.
+6. **Complete**: `done` + evidence (draft path, word count, review date). Memory holds **decisions and style rules** only.
+7. **Commit**: only when the user explicitly asks.
 
-## ゲート
+## Output
 
-- **Gₐ**: 公開・契約・第三者素材の権利は承認。
-- **Gₑ**: 証拠なし `done` 禁止（`plan_content.py`）。
-- **Gₒ**: 事実と推測を分離（調査系は `/research` と同様）。
+- Updated `CONTENT.md` and draft files
+- Chat carries the summary only
+
+## Gates
+
+- **Gₐ**: get approval for publishing, contracts, or third-party asset rights.
+- **Gₑ**: no `done` without evidence (`plan_content.py`).
+- **Gₒ**: separate fact from inference (same as `/research` for research work).

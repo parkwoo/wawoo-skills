@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""docs/plans/ACTIVE.md のタスク表を解析・検証（stdlib のみ）。"""
+"""Parse and validate the task table in docs/plans/ACTIVE.md (stdlib only)."""
 from __future__ import annotations
 
 import argparse

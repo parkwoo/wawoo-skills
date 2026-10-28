@@ -11,6 +11,7 @@
 使い方:
   python3 scripts/install_global.py             # ミラー（完全置換）
   python3 scripts/install_global.py --no-delete # 余剰を残す
+  python3 scripts/install_global.py --memory-writable  # memory_save を有効化（既定は recall-only）
   python3 scripts/install_global.py --dry-run   # 変更内容のみ表示
 """
 from __future__ import annotations
@@ -42,7 +43,7 @@ AGENTS_NOTE = f"""
 - Those paths are valid **only in the wawoo-skills repository** (or a project that adopts the same layout). In any other project:
   - If a path does not exist, **skip** that step; do not create `docs/plans/` or `docs/memory/` implicitly.
   - Kit entry commands/skills may still be used, but re-map SSOT steps to the project's existing planning/tracking.
-- Globally, MCP `memory_save` is disabled (recall only). Persist durable memory only inside the wawoo-skills repository.
+- Globally, MCP `memory_save` is disabled (recall only) unless installed with `--memory-writable`. Persist durable memory only inside the wawoo-skills repository.
 """
 
 
@@ -64,28 +65,29 @@ def valid_jsonc(text: str) -> bool:
         return False
 
 
-def mcp_entry() -> str:
+def mcp_entry(memory_readonly: bool = True) -> str:
     py = sys.executable or "/usr/bin/python3"
+    ro = "1" if memory_readonly else "0"
     return (
         '    "wawoo-skills": {\n'
         '      "type": "local",\n'
         f'      "command": ["{py}", "{SERVER}"],\n'
         '      "environment": {\n'
         f'        "WAWOO_SKILLS_ROOT": "{ROOT}",\n'
-        '        "WAWOO_MEMORY_READONLY": "1"\n'
+        f'        "WAWOO_MEMORY_READONLY": "{ro}"\n'
         "      },\n"
         '      "enabled": true\n'
         "    }"
     )
 
 
-def ensure_mcp(path: Path, dry: bool) -> str:
+def ensure_mcp(path: Path, dry: bool, memory_readonly: bool = True) -> str:
     if not path.exists():
         return f"skip (no config file: {path})"
     text = path.read_text(encoding="utf-8")
     if '"wawoo-skills"' in text:
         return "already registered"
-    entry = mcp_entry()
+    entry = mcp_entry(memory_readonly)
     m = re.search(r'"mcp"\s*:\s*\{', text)
     if m:
         new = text[: m.end()] + "\n" + entry + ",\n" + text[m.end() :]
@@ -237,6 +239,11 @@ def main() -> int:
     ap.add_argument("--default-agent", default="wawoo-router", help="default_agent to register (default: wawoo-router)")
     ap.add_argument("--no-default-agent", action="store_true", help="do not touch default_agent")
     ap.add_argument("--force-default-agent", action="store_true", help="overwrite an existing default_agent")
+    ap.add_argument(
+        "--memory-writable",
+        action="store_true",
+        help="register MCP with memory_save enabled (WAWOO_MEMORY_READONLY=0). Default keeps recall-only.",
+    )
     args = ap.parse_args()
 
     if not SERVER.exists():
@@ -248,7 +255,7 @@ def main() -> int:
     print(f"mirror    : {not args.no_delete}")
     print("---")
     sync_assets(args.dry_run, not args.no_delete)
-    log(True, f"mcp: {ensure_mcp(config_path(), args.dry_run)}")
+    log(True, f"mcp: {ensure_mcp(config_path(), args.dry_run, memory_readonly=not args.memory_writable)}")
     log(True, f"agents: {ensure_agents(args.dry_run)}")
     log(True, f"router: {generate_router(args.dry_run)}")
     cfg = config_path()

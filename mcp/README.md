@@ -76,7 +76,7 @@ skill／agent／workflow／memory／evidence と **意図ルーティング**を
 |------|------|------|
 | `WAWOO_SKILLS_ROOT` | `server.py` の親の親 | `.kilo` / `scripts` / `docs` の基点 |
 | `WAWOO_MEMORY_ROOT` | `<root>/docs/memory` | memory ツールの対象 |
-| `WAWOO_MEMORY_READONLY` | 無効 | `1` で `memory_save` 拒否 |
+| `WAWOO_MEMORY_READONLY` | 無効 | `1` で `memory_save` 拒否（recall-only）。`install_global.py --memory-writable` は `0` を登録して書込を許可 |
 | `WAWOO_INTENT_LEARN_DB` | `data/intent_learned.db` | 学習 trigger |
 | `WAWOO_INTENT_SOCKET` | 空 | 常駐 `intent_receiver.py`（任意） |
 
@@ -95,7 +95,7 @@ python3 mcp/test_intent_session.py
 ## セキュリティ
 
 - `skill_get` / `workflow_get` / `agent_get` は **`.kilo` 配下のみ**。
-- `memory_save` は追記のみ・秘密パターン拒否・`WAWOO_MEMORY_READONLY` で無効化可。
+- `memory_save` は追記のみ・秘密パターン拒否・`WAWOO_MEMORY_READONLY` で無効化可（`install_global.py` の既定は `1`＝recall-only。`--memory-writable` で `0`）。
 - `evidence_check` は `scope=assets` のみ（任意シェル不可）。
 - workflow ゲートで誤ルート時のツール被害を抑止（例: 監査 workflow で `memory_save` 不可）。
 

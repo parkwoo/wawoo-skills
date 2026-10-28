@@ -21,26 +21,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "mcp"))
 
-from intent_catalog import WORKFLOWS  # noqa: E402
+from intent_catalog import TRIGGER_KEYWORDS, WORKFLOW_PHASES, WORKFLOWS  # noqa: E402
 
-# workflow → 発火語（人間の依頼に現れる言い方）。分類はこの語で行う。
-TRIGGERS: dict[str, str] = {
-    "delivery-lite": "単機能の実装・小さな修正 / 改 bug、单个功能",
-    "content-delivery-lite": "書籍・長文・レポート・記事 / 长文、书稿、报告",
-    "feature-delivery": "複数コンポーネントの機能・設計込み / 跨模块新功能、要设计",
-    "ui-delivery": "画面・コンポーネント・スタイル / 界面、组件、样式",
-    "design-review": "UI の評価・指摘のみ / UI 评审",
-    "research": "調査・技術比較・意思決定 / 调研、技术选型",
-    "market-plan": "市場・競合・事業計画 / 市场、竞品、商业计划",
-    "deck": "プレゼン・提案資料 / 幻灯片、提案材料",
-    "compliance-review": "ライセンス・法務・プライバシー / 法务、合规、隐私",
-    "release-review": "リリース前チェック / 发布前检查",
-    "incident-response": "障害・本番エラー / 线上事故、生产报错",
-    "sprint-plan": "スプリント計画・バックログ / 迭代计划、排期",
-    "status-report": "進捗報告 / 进度汇报",
-    "self-review": "変更の自己レビュー / 自我代码审查",
-    "self-improve": "プロセス・キット自身の改善 / 流程改进、kit 改进",
-}
+
+def triggers_for(workflow_id: str, limit: int = 3) -> str:
+    """発火語の表示（正本は intent_catalog.TRIGGER_KEYWORDS＝L1 分類器と同一）。"""
+    words = TRIGGER_KEYWORDS.get(workflow_id) or ()
+    return " / ".join(words[:limit]) or "—"
 
 
 def command_description(stem: str) -> str:
@@ -83,7 +70,7 @@ def render() -> str:
     ]
     for wid in sorted(WORKFLOWS):
         spec = WORKFLOWS[wid]
-        trig = TRIGGERS.get(wid, "")
+        trig = triggers_for(wid)
         desc = command_description(wid) or spec.description
         in_table = desc.replace("|", "/")
         cells = (trig, in_table)
@@ -93,6 +80,32 @@ def render() -> str:
             padded.append(head + "…" if len(cell) > 60 else head)
         lines.append(f"| `{wid}` | {spec.agent} | {padded[0]} | {padded[1]} |")
     lines += [
+        "",
+        "## フェーズ（分解・要点）",
+        "",
+        "`workflow_get {name, phase:<id>}` で phase の goal／agent／skills／`mcp_tools_allow`／`exit_criteria` を取得。",
+        "監査系（`design-review`・`compliance-review`・`release-review`・`self-review`）に `implement` は無い → 実装が必要なら**切替を宣言**する。",
+        "",
+    ]
+    grouped: dict[tuple[str, ...], list[str]] = {}
+    for wid in sorted(WORKFLOWS):
+        ids = WORKFLOW_PHASES.get(wid, ())
+        if ids:
+            grouped.setdefault(tuple(ids), []).append(wid)
+    for seq, wids in sorted(grouped.items(), key=lambda kv: (-len(kv[0]), kv[0])):
+        arrow = " → ".join(f"`{i}`" for i in seq)
+        lines.append(f"- {arrow}: {', '.join('`'+w+'`' for w in wids)}")
+    lines += [
+        "",
+        "## 運用ゲート（衛生）",
+        "",
+        "- **1 セッション = 1 対象／1 成果物**。独立した複数対象は Task（subagent）で分割。目標: payload < 600KB。",
+        "- **workflow 切替は 1 行で宣言**（理由＋新 workflow）し、成果物を分離する（監査と実装を混在させない）。",
+        "- **失敗は収束**: 修正するか、既知失敗として明示＋追跡（チケット／ACTIVE）。未収束 `FAILED` を残さない。",
+        "- **後始末**: テスト／起動後に `docker compose ... down -v` 等で停止し、`docker ps` で残留 0 を確認。",
+        "- **記憶**: 決定・制約・落とし穴を完了時に最低 1 件記録（キット内は `memory_save`）。",
+        "- **トークン衛生**: `grep -n`/`head`/`sed -n` を使い、長セッションは `/compact`。1 step の出力 < 4KB。",
+        "- **ローカル検証**: PR／公開前に `validate_assets.py`（＋該当時 `e2e_flows.py`）を実行し結果を残す。",
         "",
         "## 制約",
         "",

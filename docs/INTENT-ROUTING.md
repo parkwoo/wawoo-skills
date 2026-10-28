@@ -93,6 +93,33 @@ interpret_intent(text)
 
 ---
 
+## 3.1 L1 トリガ分類器（決定論・無料）
+
+`interpret_intent` は **L0 slash → L1 学習 → L1 トリガ → L2 上流スコア** の順で解決する。
+
+- **トリガ表**（`mcp/intent_catalog.py: TRIGGER_KEYWORDS`）は `ROUTER.md` の発火語と**同一の正本**。長い（具体的な）語ほど高スコア。
+- 閾値（既定 `0.85`）以上、かつ 2 位と十分差があるときだけ採用。曖昧なら `needs_scoring` にフォールバック（誤ルートを避ける）。
+- 長い語に内包される短い語（例: 「市場調査」の中の「調査」）は競合として数えない。
+- 採用時は `source: "trigger"` / `route_layer: "L1"`。高スコア（≥0.85）は学習 DB に**非同期昇格**され、次回は L1 学習として即答になる。
+- 一般語（「実装」「修正」等）は `WEAK_TRIGGERS` としてスコアを下げ、単独では採用しない（誤爆防止）。
+
+## 3.2 フェーズ（workflow の分解）
+
+各 workflow は **phase** に分解され、`schedule.phases` と `workflow_get {name, phase:<id>}` で取得できる。
+
+```json
+{"id":"audit","goal":"読み取り専用の審査","agent":"security-reviewer",
+ "skills":["security-review"],"mcp_tools_allow":["skill_get","memory_recall","…"],
+ "exit_criteria":["所見と証跡（重要度付き）"],"parallel_group":"readonly-parallel"}
+```
+
+- **P2: phase 単位の道具立て** — `audit`/`research`/`verify` は `readonly-parallel`（並列可・読み取り中心）。実装系の workflow だけが `implement` を持つ。
+- **監査系に `implement` は無い** — `design-review`・`compliance-review`・`release-review`・`self-review` では `schedule.gate` が非空になり、実装が必要なら **workflow 切替を宣言**する。
+- **P3: 並列委譲** — 独立した対象は `delegate_subtask {subtask, phase}` で phase の `exit_criteria` を添えて subagent に渡す（MCP は子セッションを作らない）。
+- **P4: 完了条件** — `exit_criteria` を満たすまで phase を閉じない（例: `verify` は「未収束 FAILED 0／残留コンテナ 0」）。
+
+---
+
 ## 4. 常駐受信器（任意）
 
 MCP を都度起動する代わりに、ソケットで常駐させる場合:

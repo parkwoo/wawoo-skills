@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,14 +60,24 @@ def test_delegation_payload() -> None:
 
 
 def test_mcp_gate_stdio() -> None:
-    proc = subprocess.Popen(
-        [sys.executable, str(SERVER)],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        cwd=str(ROOT),
-    )
+    env = dict(os.environ)
+    with tempfile.TemporaryDirectory() as td:
+        # テストが実リポジトリの docs/memory を汚さないよう隔離する
+        env["WAWOO_MEMORY_ROOT"] = td
+        env["WAWOO_INTENT_LEARN_DB"] = str(Path(td) / "learned.db")
+        proc = subprocess.Popen(
+            [sys.executable, str(SERVER)],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=str(ROOT),
+            env=env,
+        )
+        _run_gate_scenario(proc)
+
+
+def _run_gate_scenario(proc) -> None:
     try:
         rpc(proc, {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "t", "version": "0"}}})
         rpc(proc, {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "interpret_intent", "arguments": {"text": "/compliance-review ポリシー確認"}}})

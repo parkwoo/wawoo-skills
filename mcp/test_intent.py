@@ -202,18 +202,104 @@ def test_receiver_socket() -> None:
             proc.wait(timeout=5)
 
 
+def test_trigger_classifier_ja() -> None:
+    p = interpret_intent_payload("市場調査と競合分析をお願いします")
+    assert p["needs_scoring"] is False
+    assert p["schedule"]["source"] == "trigger"
+    assert p["schedule"]["route_layer"] == "L1"
+    assert p["schedule"]["workflow"] == "market-plan"
+
+
+def test_trigger_classifier_en() -> None:
+    p = interpret_intent_payload("production readiness review before launch")
+    assert p["needs_scoring"] is False
+    assert p["schedule"]["workflow"] == "release-review"
+
+
+def test_trigger_weak_is_ambiguous() -> None:
+    p = interpret_intent_payload("実装と機能の相談")
+    assert p["needs_scoring"] is True
+
+
+def test_phases_in_schedule() -> None:
+    p = interpret_intent_payload("/feature-delivery 新しい API を追加する")
+    sched = p["schedule"]
+    assert [x["id"] for x in sched["phases"]] == ["discover", "design", "implement", "verify", "report"]
+    assert sched["implement_allowed"] is True
+    impl = next(x for x in sched["phases"] if x["id"] == "implement")
+    assert impl["mcp_tools_allow"] and impl["exit_criteria"]
+
+
+def test_audit_workflow_declares_gate() -> None:
+    p = interpret_intent_payload("/release-review 本番前チェック")
+    assert p["schedule"]["implement_allowed"] is False
+    assert p["schedule"]["gate"]
+
+
+def test_trigger_learns() -> None:
+    prev = os.environ.get("WAWOO_INTENT_LEARN_DB")
+    db = _test_db()
+    os.environ["WAWOO_INTENT_LEARN_DB"] = str(db)
+    reset_intent_store()
+    try:
+        p1 = interpret_intent_payload("競合分析をして")
+        assert p1["schedule"]["source"] == "trigger"
+        flush_learn_writes()
+        p2 = interpret_intent_payload("競合分析をして")
+        assert p2["schedule"]["source"] in {"learned", "trigger"}
+        assert p2["schedule"]["workflow"] == p1["schedule"]["workflow"]
+    finally:
+        flush_learn_writes()
+        reset_intent_store()
+        if prev is None:
+            os.environ.pop("WAWOO_INTENT_LEARN_DB", None)
+        else:
+            os.environ["WAWOO_INTENT_LEARN_DB"] = prev
+        if db.exists():
+            db.unlink()
+
+
+def _isolated_run_db() -> Path:
+    db = ROOT / "data" / "test-intent-isolated.db"
+    db.parent.mkdir(parents=True, exist_ok=True)
+    if db.exists():
+        db.unlink()
+    return db
+
+
 def main() -> int:
-    test_explicit_workflow()
-    test_catalog_in_upstream_prompt()
-    test_route_layer_learned()
-    test_learned_route()
-    test_upstream_async_learn()
-    test_promote_rejects_bad_workflow()
-    test_needs_scoring()
-    test_needs_scoring_route_text()
-    test_scoring_apply()
-    test_receiver_ndjson()
-    test_receiver_socket()
+    # テストは本番 DB を汚さない: 実行全体を隔離 DB で行い、各テスト前に env を戻す
+    iso = _isolated_run_db()
+    tests = [
+        test_explicit_workflow,
+        test_catalog_in_upstream_prompt,
+        test_route_layer_learned,
+        test_learned_route,
+        test_upstream_async_learn,
+        test_promote_rejects_bad_workflow,
+        test_trigger_classifier_ja,
+        test_trigger_classifier_en,
+        test_trigger_weak_is_ambiguous,
+        test_phases_in_schedule,
+        test_audit_workflow_declares_gate,
+        test_trigger_learns,
+        test_needs_scoring,
+        test_needs_scoring_route_text,
+        test_scoring_apply,
+        test_receiver_ndjson,
+        test_receiver_socket,
+    ]
+    try:
+        for t in tests:
+            os.environ["WAWOO_INTENT_LEARN_DB"] = str(iso)
+            reset_intent_store()
+            t()
+    finally:
+        flush_learn_writes()
+        reset_intent_store()
+        os.environ.pop("WAWOO_INTENT_LEARN_DB", None)
+        if iso.exists():
+            iso.unlink()
     print("intent tests: OK")
     return 0
 

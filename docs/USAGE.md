@@ -20,7 +20,7 @@ python3 scripts/install_global.py              # 適用（既定ミラー＝余�
 python3 scripts/install_global.py --no-delete  # 余剰を残す
 KILO_GLOBAL_DIR=/path/to/config python3 scripts/install_global.py  # 別の配置先
 ```
-- MCP は絶対パス登録（`/usr/bin/python3` ＋ `WAWOO_SKILLS_ROOT`／`WAWOO_MEMORY_READONLY`）。詳細は `mcp/README.md`。
+- MCP は絶対パス登録（`/usr/bin/python3` ＋ `WAWOO_SKILLS_ROOT`／`WAWOO_MEMORY_READONLY`）。既定は recall-only（`=1`）で、書込を有効化するには `--memory-writable`（`=0`）。詳細は `mcp/README.md`。
 - 併せて **`ROUTER.md` を生成**し、`instructions` に **絶対パス**で冪等登録、`default_agent` を `wawoo-router` に設定する（既定）。
   - Kilo の `instructions` は**絶対パス必須**（相対 `ROUTER.md` は実行時コンテキストに注入されない）。
   - 既定 agent `wawoo-router` が「最初のツール＝`workflow_get`／`interpret_intent`」を強制し、`code` 既定時のルーティング漏れを防ぐ。

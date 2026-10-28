@@ -43,6 +43,7 @@ SERVER = {"name": "wawoo-skills-capabilities", "version": "0.4.0"}
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from intent_client import socket_path, submit_intent  # noqa: E402
 from intent_delegation import build_delegation_payload, format_delegation_text  # noqa: E402
+from intent_catalog import phase_dicts  # noqa: E402
 from intent_interpreter import (  # noqa: E402
     format_needs_scoring_text,
     format_route_task_text,
@@ -147,6 +148,9 @@ def safe_read(path: Path) -> str:
 def do_capabilities(args: dict) -> dict:
     ready_only = bool(args.get("ready_only"))
     lines = []
+    if MEMORY_READONLY:
+        # 越境書き込み防止モード。エージェントは memory_save を呼ばない（無効）。
+        lines.append("! memory_save: disabled (WAWOO_MEMORY_READONLY) — recall-only; do not call memory_save")
     for r in CAT.rows():
         if ready_only and r["name"].lstrip("/") in NEEDS_SETUP:
             continue
@@ -184,6 +188,13 @@ def do_workflow_get(args: dict) -> dict:
     p = CAT.commands.get(name)
     if not p:
         return tool_result(f"unknown workflow: {name}", True)
+    phase_id = str(args.get("phase", "")).strip()
+    if phase_id:
+        match = next((ph for ph in phase_dicts(name) if ph["id"] == phase_id), None)
+        if not match:
+            ids = ",".join(ph["id"] for ph in phase_dicts(name))
+            return tool_result(f"unknown phase '{phase_id}' for workflow '{name}' (phases: {ids})", True)
+        return tool_result(json.dumps(match, ensure_ascii=False, indent=2))
     return tool_result(safe_read(p))
 
 
@@ -282,13 +293,23 @@ def do_delegate_subtask(args: dict) -> dict:
     if not parent:
         return tool_result("no active workflow session: call interpret_intent with a resolved schedule first", True)
     subtask = str(args.get("subtask", args.get("prompt", ""))).strip()
+    phase_id = str(args.get("phase", "")).strip()
+    suggested_agent = str(args.get("agent", "")).strip()
+    if phase_id:
+        ph = next((x for x in phase_dicts(str(parent.get("workflow", ""))) if x["id"] == phase_id), None)
+        if not ph:
+            ids = ",".join(x["id"] for x in phase_dicts(str(parent.get("workflow", ""))))
+            return tool_result(f"unknown phase '{phase_id}' for workflow '{parent.get('workflow', '?')}' (phases: {ids})", True)
+        criteria = "; ".join(str(c) for c in ph.get("exit_criteria", []))
+        subtask = f"[phase:{phase_id}] {ph.get('goal', '')}\nsubtask: {subtask}\nexit_criteria: {criteria}"
+        suggested_agent = suggested_agent or str(ph.get("agent", ""))
     try:
         payload = build_delegation_payload(
             parent,
             subtask=subtask,
             label=str(args.get("label", "")).strip(),
             background=bool(args.get("background")),
-            suggested_agent=str(args.get("agent", "")).strip(),
+            suggested_agent=suggested_agent,
         )
     except ValueError as exc:
         return tool_result(str(exc), True)
@@ -316,7 +337,7 @@ TOOLS = [
     ("capabilities", "List skills/agents/workflows with one-line descriptions.", {"type": "object", "properties": {"ready_only": {"type": "boolean"}}}),
     ("skill_search", "Search skills/agents/workflows by query.", {"type": "object", "properties": {"query": {"type": "string"}, "limit": {"type": "integer"}}, "required": ["query"]}),
     ("skill_get", "Get the full SKILL.md for a skill name.", {"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
-    ("workflow_get", "Get the full command/workflow by name.", {"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
+    ("workflow_get", "Get the full command/workflow by name. Pass phase=<id> to get one phase (goal, agent, skills, mcp_tools_allow, exit_criteria).", {"type": "object", "properties": {"name": {"type": "string"}, "phase": {"type": "string"}}, "required": ["name"]}),
     ("agent_get", "Get an agent definition by name.", {"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
     ("memory_recall", "Recall relevant memory entries from docs/memory.", {"type": "object", "properties": {"query": {"type": "string"}, "top_k": {"type": "integer"}}, "required": ["query"]}),
     (
@@ -385,6 +406,7 @@ TOOLS = [
                 "label": {"type": "string"},
                 "agent": {"type": "string"},
                 "background": {"type": "boolean"},
+                "phase": {"type": "string"},
             },
         },
     ),

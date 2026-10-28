@@ -16,4 +16,14 @@ Routing is mandatory for non-trivial work (code change, bug fix, investigation, 
 5. Trivial conversation and quick factual questions: answer directly, without routing.
 6. If the MCP server is unavailable, continue with native tools and state that routing was skipped.
 
+## Operating gates (hygiene)
+
+- **One session = one target/artifact.** If a request spans independent projects or deliverables, split with the Task tool per target. Target payload < 600KB.
+- **Declare workflow switches** in one line (reason + new workflow) and keep artifacts separate. Never mix audit and implementation in one artifact.
+- **Converge failures.** Every failing/skipped/flaky test must be fixed or explicitly recorded as a known failure with a tracked follow-up. Never report done with unconverged `FAILED`.
+- **Clean up.** After tests or service runs, stop containers/processes and verify none remain (e.g. `docker compose ... down -v`; `docker ps`).
+- **Save memory.** Record at least one durable decision/constraint/gotcha per completed task (`wawoo-skills_memory_save` inside the kit repo, or the project's designated store).
+- **Token hygiene.** Prefer `grep -n`/`head`/`sed -n` over full-file `cat`; use `/compact` for long sessions; keep each tool output < 4KB.
+- **Local verification.** Before a PR/release, run `python3 scripts/validate_assets.py` and, when applicable, `python3 scripts/e2e_flows.py`; record results (fallback when CI is unavailable).
+
 Project instructions (`AGENTS.md`, `ROUTER.md`) and the workflow's own gates always win over convenience.

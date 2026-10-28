@@ -6,7 +6,15 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
-from intent_catalog import WORKFLOW_AGENTS, catalog_for_upstream, mcp_tools_allow, workflow_spec
+from intent_catalog import (
+    WORKFLOW_AGENTS,
+    catalog_for_upstream,
+    classify_by_trigger,
+    implement_allowed,
+    mcp_tools_allow,
+    phase_dicts,
+    workflow_spec,
+)
 from intent_commands import match_slash_route
 from intent_learn_queue import enqueue_hit, enqueue_promote, flush, reset_learn_queue
 from intent_learned_store import IntentLearnedStore, default_db_path
@@ -20,7 +28,7 @@ from intent_upstream import (
 UpstreamClassification = UpstreamScoring
 
 Confidence = Literal["high", "medium", "low"]
-Source = Literal["explicit", "learned", "upstream", "pending", "fallback"]
+Source = Literal["explicit", "learned", "trigger", "upstream", "pending", "fallback"]
 RouteLayer = Literal["L0", "L1", "L2"]
 
 _store: IntentLearnedStore | None = None
@@ -80,6 +88,9 @@ class IntentSchedule:
     command_path: str = ""
     mcp_tools_allow: list[str] = field(default_factory=list)
     delegation_hint: str = ""
+    phases: list[dict[str, Any]] = field(default_factory=list)
+    gate: str = ""
+    implement_allowed: bool = True
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -93,6 +104,10 @@ def _enrich_workflow_meta(schedule: IntentSchedule) -> IntentSchedule:
         schedule.delegation_hint = spec.delegation
     else:
         schedule.mcp_tools_allow = mcp_tools_allow(schedule.workflow)
+    schedule.phases = phase_dicts(schedule.workflow)
+    schedule.implement_allowed = implement_allowed(schedule.workflow)
+    if schedule.phases and not schedule.implement_allowed:
+        schedule.gate = "この workflow は読み取り専用フェーズのみ。実装が必要なら理由と新 workflow（例: feature-delivery）を宣言して切替える。"
     return schedule
 
 
@@ -226,7 +241,7 @@ def interpret_intent_payload(
             explicit=True,
             command_path=slash.command_path,
         )
-        return {"ok": True, "needs_upstream": False, "route_layer": "L0", "schedule": sched.to_dict()}
+        return {"ok": True, "needs_upstream": False, "needs_scoring": False, "route_layer": "L0", "schedule": sched.to_dict()}
 
     store = _get_store()
     learned_route = store.find_match(raw)
@@ -244,7 +259,35 @@ def interpret_intent_payload(
             score=learned_route.confidence,
             trace=[f"L1:learned:{learned_route.trigger}"],
         )
-        return {"ok": True, "needs_upstream": False, "route_layer": "L1", "schedule": sched.to_dict()}
+        return {"ok": True, "needs_upstream": False, "needs_scoring": False, "route_layer": "L1", "schedule": sched.to_dict()}
+
+    match = classify_by_trigger(raw)
+    if match:
+        learn_queued = match.score >= _LEARN_MIN_SCORE
+        if learn_queued:
+            enqueue_promote(
+                store,
+                trigger=match.trigger,
+                workflow=match.workflow,
+                confidence=match.score,
+            )
+        trace = [f"L1:trigger:{match.trigger}:{match.score:.2f}"]
+        if learn_queued:
+            trace.append("learn:queued")
+        sched = _schedule_from_workflow(
+            raw,
+            match.workflow,
+            intent_id=intent_id or f"trigger-{match.trigger}",
+            task_type="trigger",
+            confidence=_score_to_confidence(match.score),
+            source="trigger",
+            route_layer="L1",
+            route_subsource="trigger_table",
+            score=match.score,
+            trace=trace,
+            learn_queued=learn_queued,
+        )
+        return {"ok": True, "needs_upstream": False, "needs_scoring": False, "route_layer": "L1", "schedule": sched.to_dict()}
 
     prompt = upstream_score_prompt(raw)
     return {

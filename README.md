@@ -122,9 +122,8 @@ python3 scripts/e2e_flows.py           # MCP contract smoke
 .kilo/{skills,agents,commands,CAPABILITIES.md}
 .cursor/{rules,mcp.json}
 mcp/{server.py,intent_*.py,README.md}
-scripts/{gen_capabilities.py,validate_assets.py,readiness.json,bootstrap-internal.sh}
+scripts/{gen_capabilities.py,validate_assets.py,readiness.json,…}
 docs/{USAGE.md,INTENT-ROUTING.md,VERSIONING.md,memory,plans}
-internal.example/   … maintainer templates (the real `internal/` is outside git)
 LICENSES/
 AGENTS.md
 kilo.json

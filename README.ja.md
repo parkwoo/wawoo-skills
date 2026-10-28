@@ -120,9 +120,8 @@ python3 scripts/e2e_flows.py           # MCP 契約スモーク
 .kilo/{skills,agents,commands,CAPABILITIES.md}
 .cursor/{rules,mcp.json}
 mcp/{server.py,intent_*.py,test_*.py,README.md}
-scripts/{gen_capabilities.py,validate_assets.py,readiness.json,bootstrap-internal.sh}
+scripts/{gen_capabilities.py,validate_assets.py,readiness.json,…}
 docs/{USAGE.md,INTENT-ROUTING.md,VERSIONING.md,memory,plans}
-internal.example/   … メンテナ用テンプレ（実体は internal/・git 外）
 LICENSES/
 AGENTS.md
 kilo.json

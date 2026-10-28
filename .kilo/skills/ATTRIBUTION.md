@@ -1,6 +1,6 @@
 # スキル・エージェントの出典とライセンス
 
-`.kilo/skills`（55）・`.kilo/agents`（21）の由来。**流用・再配布時は各ライセンスを保持**する。
+`.kilo/skills`（55）・`.kilo/agents`（22）の由来。**流用・再配布時は各ライセンスを保持**する。
 ライセンス全文：`LICENSES/`。
 
 ## Skills
@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **Kilo Marketplace** | 6 | **Apache-2.0**（NOTICE） | `frontend-specialist`・`docs-specialist`・`data`・`code-reviewer`・`code-skeptic`・`code-simplifier` |
 | **wawoo（本ブランド）** | 12 | 本リポジトリ（MIT） | delivery-lead 等 |
-| **本リポジトリ** | 3 | **MIT** | `market-researcher`・`compliance-reviewer`・`project-manager` |
+| **本リポジトリ** | 4 | **MIT** | `market-researcher`・`compliance-reviewer`・`project-manager`・`wawoo-router` |
 
 ## 同梱していないもの
 - **Marketplace business 3 件**（`competitive-ads-extractor`・`lead-research-assistant`・`content-research-writer`）… `license: NOASSERTION`

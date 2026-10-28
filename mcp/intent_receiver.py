@@ -99,7 +99,16 @@ def run_socket(path: str) -> None:
         sock_path.unlink()
     sock_path.parent.mkdir(parents=True, exist_ok=True)
     server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    server.bind(str(sock_path))
+    # 権限を絞る（/tmp 等の緩い umask でも他ユーザから投函されないように）
+    old_umask = os.umask(0o177)
+    try:
+        server.bind(str(sock_path))
+    finally:
+        os.umask(old_umask)
+    try:
+        os.chmod(sock_path, 0o600)
+    except OSError:
+        pass
     server.listen(8)
     sys.stderr.write(f"wawoo intent receiver listening on {sock_path}\n")
     sys.stderr.flush()

@@ -328,10 +328,19 @@ def test_l0_simulated_flow(r: Runner) -> None:
     """L0: ACTIVE を増やさず、プレースホルダのみで検証が通る（計画ファイル不要）。"""
 
     def _():
-        path = ROOT / "docs" / "plans" / "ACTIVE.md"
-        tasks = parse_active(path)
-        assert validate_tasks(tasks) == []
-        assert len(tasks) == 0
+        # 実 ACTIVE.md に実タスクがあっても壊れないよう、合成のプレースホルダで検証する
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "ACTIVE.md"
+            path.write_text(
+                "# ACTIVE\n\n## タスク\n\n"
+                "| id | status | 内容 | 完了条件 | 証拠 |\n"
+                "|----|--------|------|----------|------|\n"
+                "| — | — | （新規依頼時にエージェントが行を追加） | | |\n",
+                encoding="utf-8",
+            )
+            tasks = parse_active(path)
+            assert validate_tasks(tasks) == []
+            assert len(tasks) == 0
         agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
         assert "L0" in agents
         meth = (ROOT / "docs" / "METHODOLOGY.md").read_text(encoding="utf-8")

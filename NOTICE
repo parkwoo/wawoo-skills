@@ -1,0 +1,23 @@
+wawoo-skills
+Copyright (c) 2026 wawoo
+
+This product includes third-party components. The Apache-2.0 components below require
+retention of their notices. A full provenance/attribution matrix is in
+`.kilo/skills/ATTRIBUTION.md`; the license texts are in `LICENSES/`.
+
+## Apache-2.0 components
+
+Kilo Marketplace (agents: frontend-specialist, docs-specialist, data, code-reviewer,
+code-skeptic, code-simplifier) — a fork of Awesome Claude Skills.
+  Kilo Code — Copyright 2025- Kilo Code LLC
+  Original work — Copyright 2025 ComposioHQ
+  See: LICENSES/kilo-marketplace-NOTICE.txt, LICENSES/kilo-marketplace-Apache-2.0.txt
+
+OpenDesign skills (e.g. design-review, web-experience-design, slides, ...).
+  See: LICENSES/open-design-Apache-2.0.txt and each `.kilo/skills/<name>/NOTICE.txt`.
+
+## MIT components
+
+- Skills For Real Engineers (Matt Pocock) — LICENSES/skills-for-real-engineers-MIT.txt
+- Kilo built-in skills — MIT (as declared in each SKILL.md frontmatter)
+- Skills and agents authored in this repository — MIT (see LICENSE)

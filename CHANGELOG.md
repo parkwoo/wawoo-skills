@@ -2,7 +2,12 @@
 
 本プロジェクトの notable な変更を記録する。形式は [Semantic Versioning](https://semver.org/) に準拠。
 
-## [Unreleased]
+> **リリースタグについて**: 付与済みは `v0.1.0`・`v0.2.0`・`v0.3.0`・`v0.4.0`。
+> `0.4.1`〜`0.5.0` は本 CHANGELOG に記載があるが、**各版に対応するリリース commit が存在しない**
+> （見出しは後続 commit、主に `c6d07f4` で追記された）ため **タグを付与しない**（誤った出所を作らない）。
+> 以降は `v0.6.0` から連番でタグ付けする。
+
+## [0.6.0] - 2026-10-28
 
 ### 追加
 - **L1 トリガ分類器（決定論・無料）**: `intent_catalog.TRIGGER_KEYWORDS` を正本に、`interpret_intent` が `L0 slash → L1 学習 → L1 トリガ → L2 上流` の順で解決。閾値未満・競合時は `needs_scoring` にフォールバックし、採用時は学習 DB へ非同期昇格。
@@ -14,6 +19,7 @@
   - `scripts/kilo_snapshot_gc.sh`（既定 dry-run、`--apply` で stale `index.lock` 除去＋`git gc --auto`）。
   - `mcp/conftest.py`（pytest 収集時の学習ストア隔離）。
 - `install_global.py --memory-writable`: MCP 登録時に `WAWOO_MEMORY_READONLY=0` を指定して `memory_save` を有効化（既定は recall-only を維持）。`mcp/README.md`・`docs/USAGE.md` に反映。
+- 配布物: 顶层 `NOTICE`（Apache-2.0 帰属の集約）と `SECURITY.md`（脆弱性報告窓口）を追加。
 
 ### 変更
 - MCP server バージョン表記 `0.4.0`（意図ツール・ゲート）。
@@ -33,9 +39,13 @@
 - `mcp/server.py`: `capabilities` が read-only（`WAWOO_MEMORY_READONLY`）時に `memory_save` 無効を明示。
 - `mcp/intent_catalog.py`: `self-improve` トリガ語に log／呼び出し状況の語を追加（`日志分析`・`调用状况`・`调用排查`・`invocation status` 等）。`ROUTER.md` を再生成。
 - `/release-review`: 監査委譲時の skill 要点の内联と read-only 規律を明記。
+- `.kilo/skills/ATTRIBUTION.md` を実体に一致（agents 22・新規 `wawoo-router` を登記）。
 
 ### 修正
 - pytest 収集時に既定の学習ストア（`data/intent_learned.db`）を参照し、`test_trigger_classifier_ja` が `source=trigger` を期待しても `learned` になる非決定性を修正（`mcp/conftest.py`）。
+- `mcp/server.py`: `safe_read` のパス判定を文字列接頭辞から `Path.is_relative_to` に変更（兄弟ディレクトリの接頭辞一致を遮断）。
+- `mcp/intent_receiver.py`: Unix socket を生成後に `chmod 0o600` し、`XDG_RUNTIME_DIR` を優先（`/tmp` 既定の緩い権限を回避）。
+- `scripts/e2e_flows.py`: `l0_simulated_flow` が実 `ACTIVE.md` の空を要求していた不具合を修正（合成ファイルで検証）。
 
 ## [0.5.0] - 2026-10-25
 

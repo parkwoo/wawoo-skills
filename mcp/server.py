@@ -140,7 +140,7 @@ def tool_result(text: str, is_error: bool = False) -> dict:
 
 def safe_read(path: Path) -> str:
     rp = path.resolve()
-    if not str(rp).startswith(str(KILO.resolve())):
+    if not rp.is_relative_to(KILO.resolve()):
         raise ValueError("path outside .kilo")
     return rp.read_text(encoding="utf-8", errors="ignore")
 

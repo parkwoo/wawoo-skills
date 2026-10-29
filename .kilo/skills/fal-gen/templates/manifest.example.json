@@ -1,0 +1,37 @@
+{
+  "output_dir": "generated",
+  "defaults": {
+    "model": "fal-ai/flux/schnell",
+    "image_size": "square_hd",
+    "output_format": "png",
+    "num_inference_steps": 4,
+    "negative_prompt": "text, watermark, logo, blurry, deformed hands, extra fingers"
+  },
+  "images": [
+    {
+      "id": "doctor-avatar",
+      "image_size": "square",
+      "prompt": "Professional headshot portrait of a friendly Japanese male gastroenterologist in his 50s, white coat, stethoscope, soft studio lighting, neutral light gray background, photorealistic, calm trustworthy expression, shoulders up"
+    },
+    {
+      "id": "patient-avatar",
+      "image_size": "square",
+      "prompt": "Friendly portrait of a Chinese man in his early 40s, casual blue sweater, soft studio lighting, neutral light background, photorealistic, calm approachable expression, shoulders up"
+    },
+    {
+      "id": "esophagus-illustration",
+      "image_size": "portrait_4_3",
+      "prompt": "Minimal flat medical illustration of human esophagus and stomach cross-section, gentle teal and mint color palette on white background, clean vector style, no text, no labels, soft rounded shapes, clinical textbook diagram"
+    },
+    {
+      "id": "empty-hero",
+      "image_size": "square_hd",
+      "prompt": "Abstract soft gradient background, teal to mint to pale lavender, gentle blurred medical cross watermark, clean minimal, light, no text, app onboarding hero art"
+    },
+    {
+      "id": "membership-texture",
+      "image_size": "landscape_16_9",
+      "prompt": "Subtle dark teal card surface texture with faint geometric line pattern, premium membership card background, minimal, no text, low contrast"
+    }
+  ]
+}

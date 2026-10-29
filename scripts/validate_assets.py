@@ -100,39 +100,6 @@ def skill_budget_warnings() -> list[str]:
     return [f"{len(over)} skills over 4KB budget (see AGENTS §5): " + ", ".join(over)]
 
 
-# Simplified-Chinese-only characters that do not occur in standard Japanese.
-CN_ONLY = "这们图个时过请让说对从无还经现发开么专业务动为应关见长门问题单双认识语记计论谢谁边银网线"
-
-
-def japanese_consistency_warnings() -> list[str]:
-    """Warn when *.ja.md or skill text contains simplified-Chinese-only characters (see ja-proofread)."""
-    pat = re.compile("[" + CN_ONLY + "]")
-    targets: list[Path] = []
-    for base, pattern in (
-        (ROOT, "*.ja.md"),
-        (ROOT / "docs", "*.ja.md"),
-        (ROOT / ".kilo" / "skills", "**/*.md"),
-    ):
-        if base.is_dir():
-            targets.extend(sorted(base.glob(pattern)))
-    bad: list[str] = []
-    for p in targets:
-        if "ja-proofread" in p.parts:  # the checker's own doc lists the CN-only character set
-            continue
-        try:
-            text = p.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
-            continue
-        if pat.search(text):
-            bad.append(str(p.relative_to(ROOT)))
-    if not bad:
-        return []
-    return [
-        f"{len(bad)} file(s) contain simplified-Chinese characters (proofread with `ja-proofread`): "
-        + ", ".join(bad)
-    ]
-
-
 def public_boundary_violations() -> list[str]:
     """Boundary check for the source -> publish model.
 
@@ -249,7 +216,6 @@ def main() -> int:
 
     issues.extend(command_replay_issues())
     warnings.extend(skill_budget_warnings())
-    warnings.extend(japanese_consistency_warnings())
 
     for w in warnings:
         print("WARN:", w)

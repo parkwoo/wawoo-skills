@@ -165,7 +165,7 @@ kilo.json
 
 ## 注意（最初に読む）
 
-- **画像生成は付属していません**：`imagegen-frontend-mobile` は「どんな画像を作るか」の**指示文（プロンプト）だけ**です。実際の生成は OpenAI Images／fal／社内ツール等を別途使います。無い場合は**プロンプトのみ**納品します。
+- **画像生成**：`imagegen-frontend-mobile` は「どんな画像を作るか」の**指示文（プロンプト）だけ**です。実際の生成は同梱の **`fal-gen`** skill（fal.ai。`FAL_KEY` が必要。`SKILL.md` 参照）を使います。キーが無い場合は**プロンプトのみ**納品します。
 - **3 つの skill は issue tracker が必要**：`to-spec`・`to-tickets`・`triage` は GitHub Issues 等の tracker を前提にしています。初回に `setup-matt-pocock-skills` を実行して設定してください。
 - **秘密を書かない**：API キー・トークン・`.env` の中身をコミットしないでください。`memory_save` は秘密を拒否します。
 - **Cursor は slash command／agent 非対応**：`AGENTS.md`＋`.cursor/rules`＋MCP＋`@file` で使います（`docs/USAGE.md`）。

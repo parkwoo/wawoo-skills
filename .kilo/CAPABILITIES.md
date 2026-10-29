@@ -28,6 +28,7 @@
 | `documentation-localization` | ✅ | 1.7KB | Write, review, and synchronize technical documentation and localized content for factual accuracy, usable instructions, links, me… | `.kilo/skills/documentation-localization/SKILL.md` |
 | `domain-modeling` | ✅ | 3.3KB | Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing a GLOSSARY.md, or record… | `.kilo/skills/domain-modeling/SKILL.md` |
 | `engineering-quality` | ✅ | 1.9KB | Plan and implement software changes with explicit scope, evidence-based verification, safe migrations, and rollback readiness. Us… | `.kilo/skills/engineering-quality/SKILL.md` |
+| `fal-gen` | ✅ | 2.9KB | Batch-generate design images (avatars / illustrations / backgrounds / textures) with fal.ai. Use when a task needs generated or f… | `.kilo/skills/fal-gen/SKILL.md` |
 | `frontend-design` | ✅ | 5.1KB | Create distinctive, production-grade frontend interfaces with strong visual direction, polished typography, considered layout, an… | `.kilo/skills/frontend-design/SKILL.md` |
 | `grill-with-docs` | ✅ | 0.2KB | A relentless interview to sharpen a plan or design, which also creates docs (ADR's and glossary) as we go. | `.kilo/skills/grill-with-docs/SKILL.md` |
 | `grilling` | ✅ | 2.0KB | Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any '… | `.kilo/skills/grilling/SKILL.md` |
@@ -36,7 +37,6 @@
 | `implement` | ✅ | 0.6KB | "Implement a piece of work based on a spec or set of tickets." | `.kilo/skills/implement/SKILL.md` |
 | `implement-spec` | ✅ | 2.7KB | "Implement the result of /to-spec and /to-tickets in code." | `.kilo/skills/implement-spec/SKILL.md` |
 | `incident-debugging` | ✅ | 1.1KB | Diagnose a software incident or high-impact defect through reproduction, evidence collection, fault isolation, mitigation, verifi… | `.kilo/skills/incident-debugging/SKILL.md` |
-| `ja-proofread` | ✅ | 3.1KB | Proofread Japanese text — docs (`*.ja.md`) and skill content — for non-Japanese wording mixed in: simplified-Chinese-only charact… | `.kilo/skills/ja-proofread/SKILL.md` |
 | `language-policy` | ✅ | 1.9KB | Decide and enforce the writing language for code, engineering records, and explanatory docs via a three-tier policy (code = Engli… | `.kilo/skills/language-policy/SKILL.md` |
 | `marketing-psychology` | ✅ | 1.2KB | Apply psychological principles and behavioral science to copy and design. Useful for tightening hooks, framing, and pricing prese… | `.kilo/skills/marketing-psychology/SKILL.md` |
 | `memory` | ✅ | 1.8KB | Persist and recall durable project knowledge (decisions, constraints, gotchas, recurring fixes) across sessions. Use before start… | `.kilo/skills/memory/SKILL.md` |

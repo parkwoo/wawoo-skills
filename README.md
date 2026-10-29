@@ -168,7 +168,7 @@ This repository mixes **what we wrote** with **what others published**.
 
 ## Cautions (read first)
 
-- **Image generation is not bundled**: `imagegen-frontend-mobile` provides **prompts only** (what to generate). Actual generation uses OpenAI Images / fal / an internal tool separately. If none is available, deliver **prompts only**.
+- **Image generation**: `imagegen-frontend-mobile` provides **prompts only**. To generate actual images, use the bundled **`fal-gen`** skill (fal.ai; requires `FAL_KEY`, see its `SKILL.md`). If no key is available, deliver **prompts only**.
 - **3 skills need an issue tracker**: `to-spec`, `to-tickets`, `triage` assume a tracker such as GitHub Issues. Run `setup-matt-pocock-skills` once to configure it.
 - **Never write secrets**: do not commit API keys, tokens, or `.env` contents. `memory_save` rejects secrets.
 - **Cursor has no slash command / agent support**: use `AGENTS.md` + `.cursor/rules` + MCP + `@file` (`docs/USAGE.md`).

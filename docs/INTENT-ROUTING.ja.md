@@ -180,3 +180,4 @@ python3 scripts/e2e_flows.py   # 公開 E2E（interpret/route・ツールゲー�
 | 日付 | 内容 |
 |------|------|
 | 2026-10-26 | 対外ガイド初版（L0–L3・MCP ゲート・delegate） |
+| 2026-10-28 | 静的 trigger 表を撤去し、解決順を slash → 学習（seed）→ 上流 に変更。`NAME.ja.md`（日本語版）を追加 |

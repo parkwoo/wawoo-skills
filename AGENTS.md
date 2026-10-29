@@ -33,9 +33,10 @@ This repository is a **generic kit** of **reusable skills / agents / workflows /
 .cursor/
   rules/*.mdc              … Cursor adapters
   mcp.json                 … MCP config
+  cli.json.example         … Cursor CLI example
 mcp/server.py              … capability MCP server (stdio)
 scripts/{gen_capabilities,validate_assets}.py
-docs/                      … design, runbooks, memory
+docs/                      … USAGE, INTENT-ROUTING, VERSIONING, plans, memory
 ```
 
 ---
@@ -163,3 +164,4 @@ These apply to **this kit itself** and to any project adopting the kit's convent
 | 2026-10-28 | Added an **L1 trigger classifier** to intent routing; decomposed workflows into **phases** |
 | 2026-10-28 | Log-analysis improvements (§4.1 subagent delegation efficiency, read-only subagent efficiency, `security-reviewer` read-only bash subset, `memory_save` availability in `capabilities`, `self-improve` triggers, `scripts/kilo_snapshot_gc.sh`) |
 | 2026-10-28 | 3-tier language policy (§1); removed static routing triggers → learned + upstream; publication boundary as a skill + check; tests moved to non-public `internal/tests/`; public assets Englishized |
+| 2026-10-29 | Reduced the public surface (process/design docs → non-public); source of truth = a private repo that generates the public repo via a publish allowlist. Docs re-synced to code (layout, change history) |

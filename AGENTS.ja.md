@@ -31,9 +31,10 @@
 .cursor/
   rules/*.mdc              … Cursor 用アダプタ
   mcp.json                 … MCP 設定
+  cli.json.example         … Cursor CLI 例
 mcp/server.py              … 能力 MCP サーバ（stdio）
 scripts/{gen_capabilities,validate_assets}.py
-docs/                      … 設計・運用手順・記憶
+docs/                      … 使い方・意図ルーティング・版管理・計画・記憶
 ```
 
 ---
@@ -159,3 +160,5 @@ docs/                      … 設計・運用手順・記憶
 | 2026-10-28 | §4.1「実行衛生・収束ゲート」を追加（セッション分割・workflow 逸脱の明示・失敗の収束・後始末・記憶・トークン衛生・ローカル検証） |
 | 2026-10-28 | 意図ルーティングに **L1 トリガ分類器**を追加（ROUTER 発火語と同一正本・曖昧時は `needs_scoring`）。workflow を **phases** に分解し、`workflow_get {phase}`／`delegate_subtask {phase}` と監査系の `implement` 不在で逸脱を構造的に防止 |
 | 2026-10-28 | ログ分析に基づく改善: §4.1 にサブエージェント委譲の効率（skill 重複排除・read-only read 規律）、read-only subagent へ実行効率節、`security-reviewer` に read-only bash サブセット、`memory_save` 可否を `capabilities` で明示、`self-improve` トリガ語追加、`scripts/kilo_snapshot_gc.sh` |
+| 2026-10-28 | 3 層言語ポリシー（§1）。静的ルーティング trigger を撤去し学習＋上流へ。公開境界を skill＋検査として実装。テストを非公開 `internal/tests/` へ。公開資産を英語化 |
+| 2026-10-29 | 公開面を縮小（設計・工程文書を非公開化）。正本を非公開リポジトリ＋生成した公開リポジトリ（publish allowlist）に分離。文書をコードに同期（レイアウト・更新履歴） |

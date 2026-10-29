@@ -1,0 +1,2 @@
+# Docs site build deps (all permissive licenses: MkDocs BSD, Material for MkDocs MIT).
+mkdocs-material>=9.5

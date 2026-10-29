@@ -105,6 +105,7 @@ docs/                      … 使い方・意図ルーティング・版管理�
 
 - **Kilo**：`.kilo/` を自動探索（skills/agents/commands）＋ `kilo.json`。**ネイティブ起動可**。
 - **Cursor**：`AGENTS.md`＋`.cursor/rules`＋**MCP**＋`@file`。**slash command／agent／SKILL のネイティブ実行は無い**。
+- **OpenCode**：`AGENTS.md`＋**MCP**（`opencode.json`）。**slash／SKILL のネイティブ実行は無い**（`interpret_intent` → `workflow_get` → `skill_get`）。
 - 詳細：`docs/USAGE.md`。
 
 ---

@@ -1,0 +1,35 @@
+site_name: wawoo-skills
+site_description: >-
+  Invocation by design — a reusable kit of skills / agents / workflows / MCP
+  servers for AI coding agents, so the same request takes the same steps.
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+
+plugins:
+  - search
+
+# Keep only the user-facing pages (templates stay out of the site).
+exclude_docs: |
+  memory/
+  plans/
+
+nav:
+  - English:
+      - Home: index.md
+      - Usage: USAGE.md
+      - Intent routing: INTENT-ROUTING.md
+      - Versioning: VERSIONING.md
+  - 日本語:
+      - ホーム: index.ja.md
+      - 使い方: USAGE.ja.md
+      - 意図ルーティング: INTENT-ROUTING.ja.md
+      - バージョン管理: VERSIONING.ja.md

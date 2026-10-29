@@ -49,6 +49,7 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 
 - **Kilo CLI / Kilo Code**：`.kilo/` の探索、slash ワークフロー（`/feature-delivery` 等）、`kilo.json` の MCP。
 - **Cursor**：`AGENTS.md`・`.cursor/rules`・MCP、および `@.kilo/commands`／`@.kilo/skills` の参照（slash／ネイティブ agent 切替は非対応。手順は同等に適用）。
+- **OpenCode**：`AGENTS.md`＋MCP（`opencode.json`）。slash／skill のネイティブ実行は無し（`interpret_intent` → `workflow_get` → `skill_get`）。
 
 ### 前提条件（ランタイム）
 
@@ -71,6 +72,7 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 | Kilo CLI | Kilo（CLI） | https://kilo.ai |
 | Kilo Code | Kilo Code（VS Code 拡張） | https://kilocode.ai |
 | Cursor | Cursor | https://cursor.com |
+| OpenCode | OpenCode | https://opencode.ai |
 | MCP | Model Context Protocol | https://modelcontextprotocol.io |
 | AGENTS.md | AGENTS.md | https://agents.md |
 

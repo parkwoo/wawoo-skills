@@ -108,6 +108,7 @@ These apply to **this kit itself** and to any project adopting the kit's convent
 
 - **Kilo**: auto-discovers `.kilo/` (skills/agents/commands) + `kilo.json`. **Native launch available.**
 - **Cursor**: `AGENTS.md` + `.cursor/rules` + **MCP** + `@file`. **No native execution of slash command / agent / SKILL.**
+- **OpenCode**: `AGENTS.md` + **MCP** (`opencode.json`). **No native execution of slash / SKILL**; use `interpret_intent` → `workflow_get` → `skill_get`.
 - Details: `docs/USAGE.md`.
 
 ---

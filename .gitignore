@@ -20,6 +20,9 @@ node_modules/
 # os
 .DS_Store
 
+# MkDocs build output
+/site/
+
 # E2E 実行ログ（再実行で生成。手順は internal/docs/plans/E2E-WORKFLOW-COVERAGE.md）
 docs/plans/evidence/
 

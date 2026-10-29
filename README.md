@@ -51,6 +51,7 @@ It lays **rails of reproducible steps and tool calls** — it does not take away
 
 - **Kilo CLI / Kilo Code**: discovery of `.kilo/`, slash workflows (`/feature-delivery`, etc.), MCP via `kilo.json`.
 - **Cursor**: `AGENTS.md`, `.cursor/rules`, MCP, and references via `@.kilo/commands` / `@.kilo/skills` (no slash or native agent switching; the same steps apply).
+- **OpenCode**: `AGENTS.md` + MCP via `opencode.json` (no native slash/skill execution; use `interpret_intent` → `workflow_get` → `skill_get`).
 
 ### Prerequisites (runtime)
 
@@ -73,6 +74,7 @@ The kit's **MCP server and maintenance scripts run on Python 3 (standard library
 | Kilo CLI | Kilo (CLI) | https://kilo.ai |
 | Kilo Code | Kilo Code (VS Code extension) | https://kilocode.ai |
 | Cursor | Cursor | https://cursor.com |
+| OpenCode | OpenCode | https://opencode.ai |
 | MCP | Model Context Protocol | https://modelcontextprotocol.io |
 | AGENTS.md | AGENTS.md | https://agents.md |
 

@@ -5,7 +5,7 @@
 本キットは **単体の汎用リポジトリ**です。社内 LLM API（co.taro.bz 等）とは別プロジェクトで、API 側が必要なときだけ `WAWOO_SKILLS_ROOT` で本 MCP を参照します。
 
 - 実装の詳細: `mcp/README.md`
-- MCP ツール一覧: [../mcp/README.md](../mcp/README.md)
+- MCP ツール一覧: [../mcp/README.ja.md](../mcp/README.ja.md)
 
 ---
 
@@ -120,7 +120,7 @@ interpret_intent(text)
 
 - **P2: phase 単位の道具立て** — `audit`/`research`/`verify` は `readonly-parallel`（並列可・読み取り中心）。実装系の workflow だけが `implement` を持つ。
 - **監査系に `implement` は無い** — `design-review`・`compliance-review`・`release-review`・`self-review` では `schedule.gate` が非空になり、実装が必要なら **workflow 切替を宣言**する。
-- **P3: 並列委譲** — 独立した対象は `delegate_subtask {subtask, phase}` で phase の `exit_criteria` を添えて subagent に渡す（MCP は子セッションを作らない）。
+- **P3: 並列委譲** — 独立した対象は `delegate_subtask {subtask, phase}` で phase の `exit_criteria` を添えて subagent に渡す（MCP は子セッションを作らない）。`model_tier: fast|reasoning` で機械的ステップ／推論ステップを振り分ける。
 - **P4: 完了条件** — `exit_criteria` を満たすまで phase を閉じない（例: `verify` は「未収束 FAILED 0／残留コンテナ 0」）。
 
 ---

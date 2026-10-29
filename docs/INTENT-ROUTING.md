@@ -122,7 +122,7 @@ Each workflow is decomposed into **phases**, available via `schedule.phases` and
 
 - **P2: per-phase tooling** — `audit` / `research` / `verify` are `readonly-parallel` (parallelizable, read-oriented). Only implementation workflows carry `implement`.
 - **Audit workflows have no `implement`** — for `design-review`, `compliance-review`, `release-review`, `self-review`, `schedule.gate` is non-empty; if implementation is needed, **declare a workflow switch**.
-- **P3: parallel delegation** — pass independent targets to a subagent via `delegate_subtask {subtask, phase}` with the phase's `exit_criteria` (MCP creates no child session).
+- **P3: parallel delegation** — pass independent targets to a subagent via `delegate_subtask {subtask, phase}` with the phase's `exit_criteria` (MCP creates no child session). Set `model_tier: fast|reasoning` to route mechanical vs reasoning steps.
 - **P4: done criteria** — do not close a phase until `exit_criteria` is met (e.g. `verify` = "0 unconverged FAILED / 0 leftover containers").
 
 ---

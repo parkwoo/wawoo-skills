@@ -82,11 +82,11 @@ python3 scripts/e2e_flows.py   # 公開スモーク（契約/E2E）
 
 **意図ルーティング**（任意だが推奨）: `interpret_intent` → `workflow_get` → … → `workflow_clear`。サブタスクは `delegate_subtask`。
 
-- 対外ガイド：**[docs/INTENT-ROUTING.md](INTENT-ROUTING.md)**（L0–L3・スコア JSON・ツールゲート）
+- 対外ガイド：**[docs/INTENT-ROUTING.ja.md](INTENT-ROUTING.ja.md)**（L0–L3・スコア JSON・ツールゲート）
 - 実装・常駐：`mcp/README.md`
 
 ## 5. 呼び出しの順序
-1. **Workflow**（入口）を選ぶ。曖昧な依頼は MCP **`interpret_intent`** で 16 workflow から選ぶ（[INTENT-ROUTING.md](INTENT-ROUTING.md)）。明示できるときは **`/delivery-lite`**（`docs/plans/ACTIVE.md` が進捗 SSOT）。儀式レベル（L0–L3）は `AGENTS.md` §3（`INTENT-ROUTING.md` の**ルート層** `L0–L3` とは別の軸）。
+1. **Workflow**（入口）を選ぶ。曖昧な依頼は MCP **`interpret_intent`** で 16 workflow から選ぶ（[INTENT-ROUTING.ja.md](INTENT-ROUTING.ja.md)）。明示できるときは **`/delivery-lite`**（`docs/plans/ACTIVE.md` が進捗 SSOT）。儀式レベル（L0–L3）は `AGENTS.md` §3（`INTENT-ROUTING.md` の**ルート層** `L0–L3` とは別の軸）。
 2. **カタログ／MCP** で候補を選ぶ（全部読まない）。
 3. 必要な **Skill** だけ開く。
 4. Workflow の**出力スキーマ**と**ゲート**（承認・証拠）に従う。

@@ -22,6 +22,16 @@ wawoo-skills addresses this "**the capability exists but is never invoked**" pro
 
 It lays **rails of reproducible steps and tool calls** — it does not take away the agent's creativity.
 
+## Capabilities
+
+- **Intent routing** — `interpret_intent` selects the workflow (explicit `/name` → **learned** SQLite → **upstream** LLM score; no static keyword table) and **gates which MCP tools** each workflow may call.
+- **Phases & gates** — every workflow decomposes into **phases** (`goal`, `agent`, `skills`, `mcp_tools_allow`, `exit_criteria`); **audit workflows are read-only** (no `implement`).
+- **Dynamic steering** — `steer_task` amends a running plan (add / reorder / reprioritize / scope_change / abort) at a step boundary.
+- **Delegation** — `delegate_subtask` carves off parallel, read-only subtasks and can target a **model tier** (`fast` or `reasoning`).
+- **Gates** — approval (Gₐ), evidence (Gₑ), observed failure (Gₒ): never "done" on inference alone.
+- **Progressive disclosure** — catalog → candidates → open only the skills you need (bounded context).
+- **Memory** — `memory_recall` / `memory_save` (secrets rejected).
+
 ## What changes (2 minutes)
 
 **Before — no routing.** You say "fix this bug". The agent improvises, skips the gates, and the next identical request takes a different path.

@@ -15,10 +15,20 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 | **契約**（`AGENTS.md`・Cursor rules） | 何を先に読み、何を勝手に省略しないかを固定 |
 | **ワークフロー**（`.kilo/commands`） | プロセスの入口。どの skill をどの順で使うかを明示 |
 | **カタログ／MCP** | 全 skill を一度に渡さず、候補選定→必要分だけ取得（段階的開示） |
-| **意図ルーティング** | `interpret_intent` で workflow 選定・学習 trigger・ツール権限ゲート（[docs/INTENT-ROUTING.md](docs/INTENT-ROUTING.md)） |
+| **意図ルーティング** | `interpret_intent` で workflow 選定・学習 trigger・ツール権限ゲート（[docs/INTENT-ROUTING.ja.md](docs/INTENT-ROUTING.ja.md)） |
 | **ゲート** | 承認・証拠・失敗観察。推測だけで「完了」にしない |
 
 エージェントの創造性を奪うのではなく、**再現可能な手順とツール呼び出し**のレールを敷くためのキットです。
+
+## 主な機能
+
+- **意図ルーティング** — `interpret_intent` が workflow を選ぶ（`/name` 明示 → **学習** SQLite → **上流** LLM スコア。静的なキーワード表は無し）。workflow ごとに使える **MCP ツールを限定**する。
+- **フェーズとゲート** — 各 workflow は **フェーズ**（`goal`・`agent`・`skills`・`mcp_tools_allow`・`exit_criteria`）に分解。**監査系は読み取り専用**（`implement` を持たない）。
+- **動的ステア** — `steer_task` が実行中プランを修正（add / reorder / reprioritize / scope_change / abort）。ステップ境界で適用。
+- **委譲** — `delegate_subtask` で並列の読み取り専用サブタスクを切り出し、**モデル階層**（`fast`／`reasoning`）を指定できる。
+- **ゲート** — 承認（Gₐ）・証拠（Gₑ）・失敗観察（Gₒ）。推測だけで「完了」にしない。
+- **段階的開示** — カタログ → 候補 → 必要な skill だけ開く（コンテキスト予算）。
+- **記憶** — `memory_recall` / `memory_save`（秘密は拒否）。
 
 ## 何が変わるか（2 分）
 
@@ -96,7 +106,7 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 ### Cursor
 1. このディレクトリを開く（`AGENTS.md` と `.cursor/rules` を読む）
 2. **Settings → MCP** で `wawoo-skills` を有効化（`.cursor/mcp.json`）
-3. MCP で `interpret_intent`（入口選定）→ `workflow_get`／`skill_get` 等（[INTENT-ROUTING.md](docs/INTENT-ROUTING.md)）
+3. MCP で `interpret_intent`（入口選定）→ `workflow_get`／`skill_get` 等（[INTENT-ROUTING.ja.md](docs/INTENT-ROUTING.ja.md)）
 - **slash command／agent は非対応**。手順は `@.kilo/commands/<name>.md` を開いて適用。
 - 詳細：`docs/USAGE.md`
 

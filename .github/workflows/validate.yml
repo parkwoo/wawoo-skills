@@ -7,6 +7,9 @@ on:
 
 jobs:
   assets-and-mcp:
+    # Heavy CI runs on the PUBLIC repo (free minutes). The private source repo skips it
+    # (GitHub-hosted minutes on private repos are billed / currently blocked).
+    if: github.repository == 'parkwoo/wawoo-skills'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

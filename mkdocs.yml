@@ -1,4 +1,5 @@
 site_name: wawoo-skills
+site_url: https://parkwoo.github.io/wawoo-skills/
 site_description: >-
   Invocation by design — a reusable kit of skills / agents / workflows / MCP
   servers for AI coding agents, so the same request takes the same steps.

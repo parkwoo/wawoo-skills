@@ -1,6 +1,6 @@
 # Usage (Kilo / Cursor / MCP)
 
-> Japanese version: [USAGE.ja.md](USAGE.ja.md)
+> Japanese version: [USAGE.ja.md](https://github.com/parkwoo/wawoo-skills/blob/master/docs/USAGE.ja.md)
 
 ## 0. Prerequisites
 

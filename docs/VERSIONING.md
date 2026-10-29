@@ -1,6 +1,6 @@
 # Versioning
 
-> Japanese version: [VERSIONING.ja.md](VERSIONING.ja.md)
+> Japanese version: [VERSIONING.ja.md](https://github.com/parkwoo/wawoo-skills/blob/master/docs/VERSIONING.ja.md)
 
 ## Scheme
 

@@ -5,7 +5,7 @@
 本キットは **単体の汎用リポジトリ**です。社内 LLM API（co.taro.bz 等）とは別プロジェクトで、API 側が必要なときだけ `WAWOO_SKILLS_ROOT` で本 MCP を参照します。
 
 - 実装の詳細: `mcp/README.md`
-- MCP ツール一覧: [../mcp/README.ja.md](../mcp/README.ja.md)
+- MCP ツール一覧: [mcp/README.ja.md](https://github.com/parkwoo/wawoo-skills/blob/master/mcp/README.ja.md)
 
 ---
 

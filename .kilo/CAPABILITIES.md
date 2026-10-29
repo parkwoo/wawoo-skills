@@ -36,7 +36,7 @@
 | `implement` | ✅ | 0.6KB | "Implement a piece of work based on a spec or set of tickets." | `.kilo/skills/implement/SKILL.md` |
 | `implement-spec` | ✅ | 2.7KB | "Implement the result of /to-spec and /to-tickets in code." | `.kilo/skills/implement-spec/SKILL.md` |
 | `incident-debugging` | ✅ | 1.1KB | Diagnose a software incident or high-impact defect through reproduction, evidence collection, fault isolation, mitigation, verifi… | `.kilo/skills/incident-debugging/SKILL.md` |
-| `ja-proofread` | ✅ | 2.3KB | Proofread Japanese text — docs (`*.ja.md`) and skill content — for non-Japanese mixed in (especially simplified Chinese), machine… | `.kilo/skills/ja-proofread/SKILL.md` |
+| `ja-proofread` | ✅ | 3.1KB | Proofread Japanese text — docs (`*.ja.md`) and skill content — for non-Japanese wording mixed in: simplified-Chinese-only charact… | `.kilo/skills/ja-proofread/SKILL.md` |
 | `language-policy` | ✅ | 1.9KB | Decide and enforce the writing language for code, engineering records, and explanatory docs via a three-tier policy (code = Engli… | `.kilo/skills/language-policy/SKILL.md` |
 | `marketing-psychology` | ✅ | 1.2KB | Apply psychological principles and behavioral science to copy and design. Useful for tightening hooks, framing, and pricing prese… | `.kilo/skills/marketing-psychology/SKILL.md` |
 | `memory` | ✅ | 1.8KB | Persist and recall durable project knowledge (decisions, constraints, gotchas, recurring fixes) across sessions. Use before start… | `.kilo/skills/memory/SKILL.md` |

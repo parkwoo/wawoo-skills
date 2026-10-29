@@ -31,11 +31,11 @@ KILO_GLOBAL_DIR=/path/to/config python3 scripts/install_global.py  # 別の配�
 - MCP は絶対パス登録（`/usr/bin/python3` ＋ `WAWOO_SKILLS_ROOT`／`WAWOO_MEMORY_READONLY`）。既定は recall-only（`=1`）で、書込を有効化するには `--memory-writable`（`=0`）。詳細は `mcp/README.md`。
 - 併せて **`ROUTER.md` を生成**し、`instructions` に **絶対パス**で冪等登録、`default_agent` を `wawoo-auto` に設定する（既定）。
   - Kilo の `instructions` は**絶対パス必須**（相対 `ROUTER.md` は実行時コンテキストに注入されない）。
-  - 既定 agent `wawoo-auto` が「最初のツール＝`workflow_get`／`interpret_intent`」を強制し、`code` 既定時のルーティング漏れを防ぐ。
+  - 既定エージェント `wawoo-auto` が「最初のツール＝`workflow_get`／`interpret_intent`」を強制し、`code` 既定時のルーティング漏れを防ぐ。
   - 変更は `--default-agent <name>`／`--no-default-agent`／`--force-default-agent` で制御。
-- **反映には Kilo の再起動が必要**（agent／command／instruction はサーバ起動時にキャッシュ。VS Code は Reload Window）。
+- **反映には Kilo の再起動が必要**（エージェント／command／instruction はサーバ起動時にキャッシュ。VS Code は Reload Window）。
 - キットの repo 相対 SSOT を前提とする手順は**キット内でのみ有効**。グローバル `AGENTS.md` にその旨を追記する。
-- `validate_assets`：同名 skill／command は **command 側で入口を明文化していれば警告しない**（`design-review`・`research` は対応済み）。未記載の衝突は `WARN` として出る（`scripts/validate_assets.py` の `documents_entry`）。
+- `validate_assets`：同名スキル／command は **command 側で入口を明文化していれば警告しない**（`design-review`・`research` は対応済み）。未記載の衝突は `WARN` として出る（`scripts/validate_assets.py` の `documents_entry`）。
 
 ## 2.5 OpenCode（https://opencode.ai）
 
@@ -54,7 +54,7 @@ OpenCode は `AGENTS.md` を読み、MCP サーバへ **stdio** で接続しま�
   }
 }
 ```
-- OpenCode は slash／skill のネイティブ実行を持たない。`AGENTS.md` ＋ MCP（`interpret_intent` → `workflow_get` → `skill_get`）で使う。
+- OpenCode は slash／スキルのネイティブ実行を持たない。`AGENTS.md` ＋ MCP（`interpret_intent` → `workflow_get` → `skill_get`）で使う。
 - `opencode_stdio_contract` E2E（MCP handshake＋`tools/list`）で検証。
 
 ## 3. Cursor（https://cursor.com）
@@ -64,7 +64,7 @@ OpenCode は `AGENTS.md` を読み、MCP サーバへ **stdio** で接続しま�
 
 **Cursor の制約**：
 - slash command（`/feature-delivery` 等）は**動かない**。
-- agent の切替は**無い**（役割は `@.kilo/agents/<role>.md` を読んで適用）。
+- エージェントの切替は**無い**（役割は `@.kilo/agents/<role>.md` を読んで適用）。
 - `SKILL.md` の**自動発見・自動起動**は**無い**。
 
 **フォールバック（MCP 無し）**：
@@ -86,24 +86,24 @@ python3 scripts/e2e_flows.py   # 公開スモーク（契約/E2E）
 - 実装・常駐：`mcp/README.md`
 
 ## 5. 呼び出しの順序
-1. **Workflow**（入口）を選ぶ。曖昧な依頼は MCP **`interpret_intent`** で 16 workflow から選ぶ（[INTENT-ROUTING.ja.md](INTENT-ROUTING.ja.md)）。明示できるときは **`/delivery-lite`**（`docs/plans/ACTIVE.md` が進捗 SSOT）。儀式レベル（L0–L3）は `AGENTS.md` §3（`INTENT-ROUTING.md` の**ルート層** `L0–L3` とは別の軸）。
+1. **Workflow**（入口）を選ぶ。曖昧な依頼は MCP **`interpret_intent`** で 16 ワークフローから選ぶ（[INTENT-ROUTING.ja.md](INTENT-ROUTING.ja.md)）。明示できるときは **`/delivery-lite`**（`docs/plans/ACTIVE.md` が進捗 SSOT）。儀式レベル（L0–L3）は `AGENTS.md` §3（`INTENT-ROUTING.md` の**ルート層** `L0–L3` とは別の軸）。
 2. **カタログ／MCP** で候補を選ぶ（全部読まない）。
 3. 必要な **Skill** だけ開く。
 4. Workflow の**出力スキーマ**と**ゲート**（承認・証拠）に従う。
 5. 作業前に `memory` を想起、決定後に保存（MCP `memory_save` は INDEX＋topic ファイル。`docs/memory/TEMPLATE.md`）。
 
-### 記憶（memory）
+### 記憶（記憶）
 
 - 正本: `docs/memory/`（`MEMORY-TOOLS.md` で Kilo／MCP の優先順）
 - 納品経路 `/feature-delivery` の入口・出口でも想起／保存
-- CI: `validate_assets.py` が memory 内の秘密らしき文字列を検出
-- E2E: `python3 scripts/e2e_flows.py`（**L0–L3**・MCP・workflow）。`python3 scripts/cli_adapters_mock.py`（**Kilo/Cursor 入口モック**）
+- CI: `validate_assets.py` が記憶内の秘密らしき文字列を検出
+- E2E: `python3 scripts/e2e_flows.py`（**L0–L3**・MCP・ワークフロー）。`python3 scripts/cli_adapters_mock.py`（**Kilo/Cursor 入口モック**）
 - 検証 CLI: `plan_active` / `plan_l2_backlog` / `plan_l3_record` / `plan_content`
 
 ## 6. コンテキスト予算
-- 契約 ≤500tok／カタログ ≤1k／Workflow ≤1.5k／**Skill 1 個 ≤2〜4KB**／Memory top-5。
+- 契約≤500tok／カタログ ≤1k／Workflow ≤1.5k／**Skill 1 個 ≤2〜4KB**／Memory top-5。
 - 段階的開示：全部を一度に渡さない。
-- 予算例外：入口 `SKILL.md` のみ先読み。詳細は各 skill の `references/`（例：`imagegen-frontend-mobile`・`ask-matt`・`wayfinder`・`design-brief`・`writing-for-agents`）。
+- 予算例外：入口 `SKILL.md` のみ先読み。詳細は各スキルの `references/`（例：`imagegen-frontend-mobile`・`ask-matt`・`wayfinder`・`design-brief`・`writing-for-agents`）。
 
 ## 7. 前提が必要なスキル（3）
 `to-spec`・`to-tickets`・`triage` は issue tracker が必要。初回に `setup-matt-pocock-skills` を実行。

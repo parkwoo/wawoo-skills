@@ -2,32 +2,32 @@
 
 **エージェントは能力を持っている。ただ、使っていないだけだ。**
 
-> **Invocation by design（呼び出しを設計する）** — AI コーディングエージェント向けの**再利用可能な skills／agents／workflows／MCP サーバ**の汎用キット。同じ依頼は、毎回同じ手順で。
+> **Invocation by design（呼び出しを設計する）** — AI コーディングエージェント向けの**再利用可能なスキル／エージェント／ワークフロー／MCP サーバ**の汎用キット。同じ依頼は、毎回同じ手順で。
 
 ## なぜこのキットか
 
-エージェントに skill や役割（agent）定義を置いても、実際の対話では**散文だけで進め、手順を読まない・選ばない・飛ばす**ことがよく起きます。結果として、同じタスクでも品質がぶれ、レビュー・法務・テストなどの**ゲートが形骸化**し、チームが用意した知識が使われません。
+エージェントにスキルや役割（エージェント）定義を置いても、実際の対話では**散文だけで進め、手順を読まない・選ばない・飛ばす**ことがよく起きます。結果として、同じタスクでも品質がぶれ、レビュー・法務・テストなどの**ゲートが形骸化**し、チームが用意した知識が使われません。
 
 wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に対し、次のように**呼び出しを設計**します。
 
 | 層 | 役割 |
 |---|---|
 | **契約**（`AGENTS.md`・Cursor rules） | 何を先に読み、何を勝手に省略しないかを固定 |
-| **ワークフロー**（`.kilo/commands`） | プロセスの入口。どの skill をどの順で使うかを明示 |
-| **カタログ／MCP** | 全 skill を一度に渡さず、候補選定→必要分だけ取得（段階的開示） |
-| **意図ルーティング** | `interpret_intent` で workflow 選定・学習 trigger・ツール権限ゲート（[docs/INTENT-ROUTING.ja.md](docs/INTENT-ROUTING.ja.md)） |
+| **ワークフロー**（`.kilo/commands`） | プロセスの入口。どのスキルをどの順で使うかを明示 |
+| **カタログ／MCP** | 全スキルを一度に渡さず、候補選定→必要分だけ取得（段階的開示） |
+| **意図ルーティング** | `interpret_intent` でワークフロー選定・学習 trigger・ツール権限ゲート（[docs/INTENT-ROUTING.ja.md](docs/INTENT-ROUTING.ja.md)） |
 | **ゲート** | 承認・証拠・失敗観察。推測だけで「完了」にしない |
 
 エージェントの創造性を奪うのではなく、**再現可能な手順とツール呼び出し**のレールを敷くためのキットです。
 
 ## 主な機能
 
-- **意図ルーティング** — `interpret_intent` が workflow を選ぶ（`/name` 明示 → **学習** SQLite → **上流** LLM スコア。静的なキーワード表は無し）。workflow ごとに使える **MCP ツールを限定**する。
-- **フェーズとゲート** — 各 workflow は **フェーズ**（`goal`・`agent`・`skills`・`mcp_tools_allow`・`exit_criteria`）に分解。**監査系は読み取り専用**（`implement` を持たない）。
+- **意図ルーティング** — `interpret_intent` がワークフローを選ぶ（`/name` 明示 → **学習** SQLite → **上流** LLM スコア。静的なキーワード表は無し）。ワークフローごとに使える **MCP ツールを限定**する。
+- **フェーズとゲート** — 各ワークフローは **フェーズ**（`goal`・`agent`・`skills`・`mcp_tools_allow`・`exit_criteria`）に分解。**監査系は読み取り専用**（`implement` を持たない）。
 - **動的ステア** — `steer_task` が実行中プランを修正（add / reorder / reprioritize / scope_change / abort）。ステップ境界で適用。
 - **委譲** — `delegate_subtask` で並列の読み取り専用サブタスクを切り出し、**モデル階層**（`fast`／`reasoning`）を指定できる。
 - **ゲート** — 承認（Gₐ）・証拠（Gₑ）・失敗観察（Gₒ）。推測だけで「完了」にしない。
-- **段階的開示** — カタログ → 候補 → 必要な skill だけ開く（コンテキスト予算）。
+- **段階的開示** — カタログ → 候補 → 必要なスキルだけ開く（コンテキスト予算）。
 - **記憶** — `memory_recall` / `memory_save`（秘密は拒否）。
 
 ## 何が変わるか（2 分）
@@ -40,7 +40,7 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 
 | こんな人に向く | こんな人には向かない |
 |---|---|
-| Kilo／Cursor を使い、skills＋agents は用意したのに**呼ばれない** | 単発のコード生成だけが欲しい |
+| Kilo／Cursor を使い、スキル＋エージェントは用意したのに**呼ばれない** | 単発のコード生成だけが欲しい |
 | 同じ依頼を毎回同じ手順で進めたい | プロセスより自由な即興を重んじる |
 | レビュー・法務・テストの**ゲート**を実際に回したい | ゲートや証拠が不要 |
 | チームの知識を wiki に眠らせず**エージェントに使わせたい** | — |
@@ -48,8 +48,8 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 ## 対応環境
 
 - **Kilo CLI / Kilo Code**：`.kilo/` の探索、slash ワークフロー（`/feature-delivery` 等）、`kilo.json` の MCP。
-- **Cursor**：`AGENTS.md`・`.cursor/rules`・MCP、および `@.kilo/commands`／`@.kilo/skills` の参照（slash／ネイティブ agent 切替は非対応。手順は同等に適用）。
-- **OpenCode**：`AGENTS.md`＋MCP（`opencode.json`）。slash／skill のネイティブ実行は無し（`interpret_intent` → `workflow_get` → `skill_get`）。
+- **Cursor**：`AGENTS.md`・`.cursor/rules`・MCP、および `@.kilo/commands`／`@.kilo/skills` の参照（slash／ネイティブエージェント切替は非対応。手順は同等に適用）。
+- **OpenCode**：`AGENTS.md`＋MCP（`opencode.json`）。slash／スキルのネイティブ実行は無し（`interpret_intent` → `workflow_get` → `skill_get`）。
 
 ### 前提条件（ランタイム）
 
@@ -101,7 +101,7 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 - スキル：`/` やモデルが `SKILL.md` を選択
 
 **最初の 10 分**（先に小さな成功を 1 つ）:
-1. 一文を `interpret_intent` に渡し、返ってきた workflow を読む。
+1. 一文を `interpret_intent` に渡し、返ってきたワークフローを読む。
 2. `/delivery-lite` を 1 回走らせる — `docs/plans/ACTIVE.md` が 1 行進む。
 3. `python3 scripts/validate_assets.py` → `OK: skills=… agents=… commands=…` なら準備完了。
 
@@ -109,7 +109,7 @@ wawoo-skills は、この「**能力はあるのに呼ばれない**」問題に
 1. このディレクトリを開く（`AGENTS.md` と `.cursor/rules` を読む）
 2. **Settings → MCP** で `wawoo-skills` を有効化（`.cursor/mcp.json`）
 3. MCP で `interpret_intent`（入口選定）→ `workflow_get`／`skill_get` 等（[INTENT-ROUTING.ja.md](docs/INTENT-ROUTING.ja.md)）
-- **slash command／agent は非対応**。手順は `@.kilo/commands/<name>.md` を開いて適用。
+- **slash command／エージェントは非対応**。手順は `@.kilo/commands/<name>.md` を開いて適用。
 - 詳細：`docs/USAGE.md`
 
 ### MCP
@@ -129,11 +129,11 @@ python3 scripts/e2e_flows.py           # MCP 契約スモーク
 ## ディレクトリ
 
 ```
-.kilo/{skills,agents,commands,CAPABILITIES.md}
+.kilo/{スキル,エージェント,commands,CAPABILITIES.md}
 .cursor/{rules,mcp.json}
 mcp/{server.py,intent_*.py,test_*.py,README.md}
 scripts/{gen_capabilities.py,validate_assets.py,readiness.json,…}
-docs/{USAGE.md,INTENT-ROUTING.md,VERSIONING.md,memory,plans}
+docs/{USAGE.md,INTENT-ROUTING.md,VERSIONING.md,記憶,plans}
 LICENSES/
 AGENTS.md
 kilo.json
@@ -145,14 +145,14 @@ kilo.json
 
 | 種類 | ライセンス | 場所 |
 |---|---|---|
-| このリポジトリで新しく書いた skill／agent／command／MCP | **MIT**（自由に使える。著作権表示を残す） | `LICENSE` |
-| Skills For Real Engineers 由来の skill（25 件） | **MIT** | `LICENSES/skills-for-real-engineers-MIT.txt` |
-| OpenDesign 由来の skill（10 件） | **Apache-2.0**（著作権表示と NOTICE を残す） | `LICENSES/open-design-Apache-2.0.txt` |
-| Kilo Marketplace 由来の agent（6 件） | **Apache-2.0** | `LICENSES/kilo-marketplace-*` |
-| その他（Kilo 組み込み skill 等） | 各ファイルの frontmatter／MIT | `.kilo/skills/ATTRIBUTION.md` |
+| このリポジトリで新しく書いたスキル／エージェント／command／MCP | **MIT**（自由に使える。著作権表示を残す） | `LICENSE` |
+| Skills For Real Engineers 由来のスキル（25 件） | **MIT** | `LICENSES/skills-for-real-engineers-MIT.txt` |
+| OpenDesign 由来のスキル（10 件） | **Apache-2.0**（著作権表示と NOTICE を残す） | `LICENSES/open-design-Apache-2.0.txt` |
+| Kilo Marketplace 由来のエージェント（6 件） | **Apache-2.0** | `LICENSES/kilo-marketplace-*` |
+| その他（Kilo 組み込みスキル等） | 各ファイルの frontmatter／MIT | `.kilo/skills/ATTRIBUTION.md` |
 
 - どのファイルがどこ由来かは `.kilo/skills/ATTRIBUTION.md` に一覧があります。
-- **ライセンスが確認できないものは入れていません**（Marketplace の business 3 件は除外）。`fal-gen` は**本リポジトリで自作**した skill（MIT）です（`.kilo/skills/ATTRIBUTION.md` 参照）。
+- **ライセンスが確認できないものは入れていません**（Marketplace の business 3 件は除外）。`fal-gen` は**本リポジトリで自作**したスキル（MIT）です（`.kilo/skills/ATTRIBUTION.md` 参照）。
 - 保証はありません（**AS IS**）。使う前に、必要なら各ライセンスを確認してください。
 
 ### 収録元（公式）
@@ -166,9 +166,9 @@ kilo.json
 ## 注意（最初に読む）
 
 - **画像生成は付属していません**：`imagegen-frontend-mobile` は「どんな画像を作るか」の**指示文（プロンプト）だけ**です。実際の生成は OpenAI Images／fal／社内ツール等を別途使います。無い場合は**プロンプトのみ**納品します。
-- **3 つの skill は issue tracker が必要**：`to-spec`・`to-tickets`・`triage` は GitHub Issues 等の tracker を前提にしています。初回に `setup-matt-pocock-skills` を実行して設定してください。
+- **3 つのスキルは issue tracker が必要**：`to-spec`・`to-tickets`・`triage` は GitHub Issues 等の tracker を前提にしています。初回に `setup-matt-pocock-skills` を実行して設定してください。
 - **秘密を書かない**：API キー・トークン・`.env` の中身をコミットしないでください。`memory_save` は秘密を拒否します。
-- **Cursor は slash command／agent 非対応**：`AGENTS.md`＋`.cursor/rules`＋MCP＋`@file` で使います（`docs/USAGE.md`）。
+- **Cursor は slash command／エージェント非対応**：`AGENTS.md`＋`.cursor/rules`＋MCP＋`@file` で使います（`docs/USAGE.md`）。
 
 ## バージョン
 

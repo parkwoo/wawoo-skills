@@ -7,6 +7,7 @@ site_dir: site
 
 theme:
   name: material
+  language: en
   features:
     - navigation.sections
     - navigation.top
@@ -16,20 +17,36 @@ theme:
 
 plugins:
   - search
+  - i18n:
+      docs_structure: suffix      # NAME.md (en) / NAME.ja.md (ja) -> language switcher + per-language nav
+      fallback_to_default: true
+      reconfigure_material: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+        - locale: ja
+          name: 日本語
+          nav_translations:
+            Home: ホーム
+            Usage: 使い方
+            Intent routing: 意図ルーティング
+            Versioning: バージョン管理
 
-# Keep only the user-facing pages (templates stay out of the site).
+# The docs intentionally link to the other language as `NAME.ja.md` (so GitHub
+# navigation stays in the reader's language). Those sibling-language links are
+# not separate pages in the i18n build, so ignore only the link-target warning.
+validation:
+  links:
+    not_found: ignore
+    absolute_links: ignore
+
 exclude_docs: |
   memory/
   plans/
 
 nav:
-  - English:
-      - Home: index.md
-      - Usage: USAGE.md
-      - Intent routing: INTENT-ROUTING.md
-      - Versioning: VERSIONING.md
-  - 日本語:
-      - ホーム: index.ja.md
-      - 使い方: USAGE.ja.md
-      - 意図ルーティング: INTENT-ROUTING.ja.md
-      - バージョン管理: VERSIONING.ja.md
+  - Home: index.md
+  - Usage: USAGE.md
+  - Intent routing: INTENT-ROUTING.md
+  - Versioning: VERSIONING.md

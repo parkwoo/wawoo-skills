@@ -1,2 +1,3 @@
-# Docs site build deps (all permissive licenses: MkDocs BSD, Material for MkDocs MIT).
+# Docs site build deps (all permissive licenses: MkDocs BSD, Material for MkDocs MIT, static-i18n MIT).
 mkdocs-material>=9.5
+mkdocs-static-i18n>=1.2

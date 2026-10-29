@@ -152,7 +152,7 @@ kilo.json
 | その他（Kilo 組み込み skill 等） | 各ファイルの frontmatter／MIT | `.kilo/skills/ATTRIBUTION.md` |
 
 - どのファイルがどこ由来かは `.kilo/skills/ATTRIBUTION.md` に一覧があります。
-- **ライセンスが確認できないものは入れていません**（Marketplace の business 3 件と `fal-gen` は除外）。
+- **ライセンスが確認できないものは入れていません**（Marketplace の business 3 件は除外）。`fal-gen` は**本リポジトリで自作**した skill（MIT）です（`.kilo/skills/ATTRIBUTION.md` 参照）。
 - 保証はありません（**AS IS**）。使う前に、必要なら各ライセンスを確認してください。
 
 ### 収録元（公式）

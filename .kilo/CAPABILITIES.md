@@ -4,7 +4,7 @@
 > Pick candidates from this catalog first and open only the `SKILL.md` you need (progressive disclosure).
 > `⚠️` marks items needing external setup (`scripts/readiness.json`). Not used in the standard flow.
 
-## Skills（63）
+## Skills（64）
 
 | name | ready | size | description | path |
 |---|---|---|---|---|
@@ -36,6 +36,7 @@
 | `implement` | ✅ | 0.6KB | "Implement a piece of work based on a spec or set of tickets." | `.kilo/skills/implement/SKILL.md` |
 | `implement-spec` | ✅ | 2.7KB | "Implement the result of /to-spec and /to-tickets in code." | `.kilo/skills/implement-spec/SKILL.md` |
 | `incident-debugging` | ✅ | 1.1KB | Diagnose a software incident or high-impact defect through reproduction, evidence collection, fault isolation, mitigation, verifi… | `.kilo/skills/incident-debugging/SKILL.md` |
+| `ja-proofread` | ✅ | 2.3KB | Proofread Japanese text — docs (`*.ja.md`) and skill content — for non-Japanese mixed in (especially simplified Chinese), machine… | `.kilo/skills/ja-proofread/SKILL.md` |
 | `language-policy` | ✅ | 1.9KB | Decide and enforce the writing language for code, engineering records, and explanatory docs via a three-tier policy (code = Engli… | `.kilo/skills/language-policy/SKILL.md` |
 | `marketing-psychology` | ✅ | 1.2KB | Apply psychological principles and behavioral science to copy and design. Useful for tightening hooks, framing, and pricing prese… | `.kilo/skills/marketing-psychology/SKILL.md` |
 | `memory` | ✅ | 1.8KB | Persist and recall durable project knowledge (decisions, constraints, gotchas, recurring fixes) across sessions. Use before start… | `.kilo/skills/memory/SKILL.md` |
@@ -47,7 +48,7 @@
 | `product-discovery` | ✅ | 1.1KB | Turn an ambiguous product or feature request into a scoped problem statement, user outcome, acceptance criteria, priorities, risk… | `.kilo/skills/product-discovery/SKILL.md` |
 | `prototype` | ✅ | 2.9KB | Build a throwaway prototype to answer a design question. Use when the user wants to sanity-check whether a state model or logic f… | `.kilo/skills/prototype/SKILL.md` |
 | `publication-boundary` | ✅ | 1.6KB | Keep internal development materials out of the public tree of an open-source repo. Use when adding docs or scripts, or auditing w… | `.kilo/skills/publication-boundary/SKILL.md` |
-| `reference-design-contract` | ✅ | 5.2KB | Turn vague taste, screenshots, URLs, product notes, or "make it feel like this" references into a grounded DESIGN.md plus an impl… | `.kilo/skills/reference-design-contract/SKILL.md` |
+| `reference-design-contract` | ✅ | 5.3KB | Turn vague taste, screenshots, URLs, product notes, or "make it feel like this" references into a grounded DESIGN.md plus an impl… | `.kilo/skills/reference-design-contract/SKILL.md` |
 | `release-readiness` | ✅ | 2.0KB | Prepare and review a software release for versioning, legal files, changelog accuracy, tags, release notes, deployment checks, an… | `.kilo/skills/release-readiness/SKILL.md` |
 | `research` | ✅ | 0.8KB | Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the u… | `.kilo/skills/research/SKILL.md` |
 | `research-decision-room` | ✅ | 6.1KB | Turn messy user research notes, interviews, support tickets, surveys, and product context into an evidence-backed decision room: … | `.kilo/skills/research-decision-room/SKILL.md` |

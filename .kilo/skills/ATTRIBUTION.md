@@ -1,6 +1,6 @@
 # スキル・エージェントの出典とライセンス
 
-`.kilo/skills`（63）・`.kilo/agents`（22）の由来。**流用・再配布時は各ライセンスを保持**する。
+`.kilo/skills`（64）・`.kilo/agents`（22）の由来。**流用・再配布時は各ライセンスを保持**する。
 ライセンス全文：`LICENSES/`。
 
 ## Skills
@@ -9,7 +9,7 @@
 | **Skills For Real Engineers**（Matt Pocock） | 25 | **MIT** | `LICENSES/skills-for-real-engineers-MIT.txt`（`writing-fragments`/`writing-beats`/`writing-shape`/`teach` を含む） |
 | **Kilo 組み込み** | 16 | **MIT**（frontmatter に明記） | `accessibility-audit` 等 |
 | **OpenDesign** | 10 | **Apache-2.0** | `LICENSES/open-design-Apache-2.0.txt`（各 skill ディレクトリに `LICENSE.txt` + `NOTICE.txt`） |
-| **本リポジトリ** | 12 | **MIT** | `deployment`・`compliance-legal`・`privacy-review`・`changelog`・`memory`・`slides`・`screenshots-marketing`・`plan-md`・`language-policy`・`publication-boundary`・`science-writing`・`viral-hooks` |
+| **本リポジトリ** | 13 | **MIT** | `deployment`・`compliance-legal`・`privacy-review`・`changelog`・`memory`・`slides`・`screenshots-marketing`・`plan-md`・`language-policy`・`publication-boundary`・`science-writing`・`viral-hooks`・`ja-proofread` |
 
 ## Agents
 | 由来 | 件数 | ライセンス | 備考 |
@@ -19,10 +19,10 @@
 | **本リポジトリ** | 4 | **MIT** | `market-researcher`・`compliance-reviewer`・`project-manager`・`wawoo-auto` |
 
 ## 同梱していないもの
-- **Marketplace business 3 件**（`competitive-ads-extractor`・`lead-research-assistant`・`content-research-writer`）… `license: NOASSERTION`
-- **`fal-gen`** … ライセンス不明
+- **Marketplace business 3 件**（`competitive-ads-extractor`・`lead-research-assistant`・`content-research-writer`）… `license: NOASSERTION`（**第三者**）
+- **`fal-gen`** … **本リポジトリで自作（MIT）**。fal.ai 依存のため同梱せず、利用者ごとのグローバル skill として運用する。
 
-> 本リポジトリには**含めていない**。必要な場合は各自でライセンス確認のうえ導入する。
+> Marketplace business 3 件は第三者で**ライセンス未確認**のため本リポジトリに含めていない。`fal-gen` は**自作**のためライセンス確認は不要（同梱しない理由は外部依存）。
 
 ## 注意
 - OpenDesign は **Apache-2.0**（LICENSE 保持）。Marketplace は **Apache-2.0**（NOTICE 帰属）。

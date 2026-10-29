@@ -154,7 +154,7 @@ This repository mixes **what we wrote** with **what others published**.
 | Others (Kilo built-in skills, etc.) | Per-file frontmatter / MIT | `.kilo/skills/ATTRIBUTION.md` |
 
 - `.kilo/skills/ATTRIBUTION.md` lists which file comes from where.
-- **We exclude anything whose license is unverified** (the 3 Marketplace "business" items and `fal-gen` are excluded).
+- **We exclude anything whose license is unverified** (the 3 Marketplace "business" items are excluded). `fal-gen` is a skill **we wrote ourselves** (MIT) — see `.kilo/skills/ATTRIBUTION.md`.
 - No warranty (**AS IS**). Verify each license as needed before use.
 
 ### Sources (official)

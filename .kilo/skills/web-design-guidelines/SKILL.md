@@ -11,7 +11,7 @@ triggers:
   - "check accessibility"
   - "audit design"
   - "review UX"
-  - "设计审查"
+  - "デザインレビュー"
 metadata:
   author: vercel
   version: "1.0.0"

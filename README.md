@@ -4,7 +4,7 @@
 
 > **Invocation by design.** A generic kit of reusable **skills / agents / workflows / MCP servers** for AI coding agents — so the same request takes the same steps, every time.
 
-> Japanese version: [README.ja.md](README.ja.md)
+> Japanese version: [README.ja.md](https://github.com/parkwoo/wawoo-skills/blob/master/README.ja.md)
 
 ## Why this kit
 

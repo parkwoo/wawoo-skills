@@ -29,10 +29,11 @@ plugins:
         - locale: ja
           name: 日本語
           nav_translations:
-            Home: ホーム
+            Introduction: はじめに
             Usage: 使い方
             Intent routing: 意図ルーティング
             Versioning: バージョン管理
+  - include-markdown          # Home includes the root README (single source, no duplication)
 
 # The docs intentionally link to the other language as `NAME.ja.md` (so GitHub
 # navigation stays in the reader's language). Those sibling-language links are
@@ -47,7 +48,7 @@ exclude_docs: |
   plans/
 
 nav:
-  - Home: index.md
+  - Introduction: index.md
   - Usage: USAGE.md
   - Intent routing: INTENT-ROUTING.md
   - Versioning: VERSIONING.md

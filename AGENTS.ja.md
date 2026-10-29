@@ -53,7 +53,7 @@ docs/                      … 使い方・意図ルーティング・版管理�
 | **横断の決定・制約** | `docs/memory/` | タスク完了ではなく、再発する知識のみ |
 | **監査（キット資産）** | CI／`validate_assets.py` | エージェントが口頭で「監査した」と言う代わりに実行 |
 
-**儀式レベル（L0–L3）**: 上の表（`docs/INTENT-ROUTING.md` の**ルート層** `L0–L3` とは別の軸）。迷ったら **L1＋`/delivery-lite`**。本番・法務・大規模は `/feature-delivery` または L2 へ。
+**セレモニーレベル（L0–L3）**: 上の表（`docs/INTENT-ROUTING.md` の**ルート層** `L0–L3` とは別の軸）。迷ったら **L1＋`/delivery-lite`**。本番・法務・大規模は `/feature-delivery` または L2 へ。
 
 **git commit**: 利用者が依頼したときのみ（タスク `done` と commit は別）。
 
@@ -65,7 +65,7 @@ docs/                      … 使い方・意図ルーティング・版管理�
 
 **Kilo 実運用（強制・0 番）**: MCP `wawoo-skills` が接続されている環境では、コード変更・調査・設計・文書生成などの**非自明な依頼では、最初のツール呼び出しを `wawoo-skills_workflow_get`（判断不能なら `wawoo-skills_interpret_intent`）にする**。ネイティブ `skill` ツール（`plan-md` 等）や記憶で代替して作業を始めたら §4 違反として扱い、途中でも `workflow_get` に戻る。接続不能な場合のみネイティブを使い、その旨を報告する。
 
-1. **入口＝Workflow**：通常は **`/delivery-lite`**（儀式 L1）。大規模・ゲート多めは `/feature-delivery`。Kilo は `/name`、Cursor は `@.kilo/commands/<name>.md`。依頼が曖昧なときは MCP **`interpret_intent`** → `schedule.workflow`（`docs/INTENT-ROUTING.md`）。`interpret_intent` が `needs_scoring` を返したら `scoring` を付けて再呼び出しする。
+1. **入口＝Workflow**：通常は **`/delivery-lite`**（セレモニー L1）。大規模・ゲート多めは `/feature-delivery`。Kilo は `/name`、Cursor は `@.kilo/commands/<name>.md`。依頼が曖昧なときは MCP **`interpret_intent`** → `schedule.workflow`（`docs/INTENT-ROUTING.md`）。`interpret_intent` が `needs_scoring` を返したら `scoring` を付けて再呼び出しする。
 2. **候補選定＝カタログ／MCP**：`.kilo/CAPABILITIES.md` または MCP `capabilities`／`skill_search`。**全部読まない**。`interpret_intent` 後は **`mcp_tools_allow` 外のツールを呼ばない**（終了時 `workflow_clear`）。
 3. **手順＝Skill**：Workflow が挙げた skill を**必要分だけ** `skill_get`／`@.kilo/skills/<name>/SKILL.md` で開く。phase があるときは `workflow_get {name, phase:<id>}` で goal／agent／skills／`exit_criteria` を取得し、`implement` を持たない workflow（監査系）では実装に進まず**切替を宣言**する。
 4. **出力＝スキーマ**：Workflow の出力形に従う。ゲート（承認・証拠・失敗観察）を飛ばさない。
